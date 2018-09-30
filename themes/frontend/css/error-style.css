@@ -1,0 +1,72 @@
+.page-error{
+	width: 25%;
+	margin: 100px auto;
+	text-align: center;
+}
+.page-error .code{
+	color: #364760;
+	font-size: 160px;
+	text-align: center;
+	line-height: 140px;
+	width: 100%;
+}
+.page-error .title{
+	color: #555;
+	font-size: 16px;
+	margin-top: 10px;
+	margin-bottom: 50px;
+	text-align: center;
+}
+.page-error .col-md-6{
+	padding: 0 5px;
+}
+.page-error .row{
+	margin: 0 -5px;
+}
+.page-error .arrow-icon {
+	background: url("../svg/arrow-white.svg") no-repeat center;
+	background-size: 10px;
+	width: 10px;
+	height: 10px;
+	position: absolute;
+	right: 15px;
+	top: 50%;
+	margin-top: -5px;
+}
+.page-error .arrow-icon.left {
+	left: 15px;
+	right: auto;
+}
+.page-error .arrow-icon.right {
+	-webkit-transform: rotate(180deg);
+	-moz-transform: rotate(180deg);
+	-ms-transform: rotate(180deg);
+	-o-transform: rotate(180deg);
+	transform: rotate(180deg);
+}
+.page-error .btn{
+	position: relative;
+	padding: 13px 15px;
+}
+.page-error .buttons{
+	margin-bottom: 50px;
+}
+.page-error .copyright{
+	border-top: 1px solid #e7ebf1;
+	color: #999;
+	font-size: 11px;
+	line-height: 20px;
+	padding:25px 20px;
+}
+.page-error .copyright div{
+	text-align: center;
+	margin-bottom: 10px;
+}
+@media screen and (max-width: 992px){
+	.page-error{
+		width: 50% !important;
+	}
+	.page-error .code{
+		font-size: 120px;
+	}
+}

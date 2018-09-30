@@ -1,0 +1,21 @@
+
+/* SLIDER */
+
+.slider-container {
+	position: relative;
+	margin-left: 3%;
+}
+
+
+/* SLIDER SPECIFIC */
+
+.ls-container a {
+	font-family: 'Open Sans' !important;
+	font-weight: 400 !important;
+	color: rgb(222, 242, 255);
+	color: rgba(222, 242, 255, .6);
+}
+
+.ls-container a:hover {
+	color: rgb(222, 242, 255);
+}
