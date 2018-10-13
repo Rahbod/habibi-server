@@ -33,6 +33,8 @@ class UsersManageController extends Controller
                 'dealershipRequests',
                 'dealershipRequest',
                 'deleteDealershipRequest',
+                'fetchAddresses',
+                'addAddress'
             )
         );
     }
@@ -84,15 +86,19 @@ class UsersManageController extends Controller
      * Creates a new model.
      * If creation is successful, the browser will be redirected to the 'views' page.
      */
-    /*public function actionCreate()
+    public function actionCreate()
     {
-        $model = new Users();
+        $model = new Users('create');
 
         // Uncomment the following line if AJAX validation is needed
         // $this->performAjaxValidation($model);
 
         if(isset($_POST['Users'])){
             $model->attributes = $_POST['Users'];
+            $model->status = 'active';
+            $model->password = $model->generatePassword();
+            $model->repeatPassword = $model->generatePassword();
+            $model->role_id = isset($_GET['role'])?$_GET['role']:1;
             if($model->save())
                 $this->redirect(array('views', 'id' => $model->id));
         }
@@ -100,7 +106,7 @@ class UsersManageController extends Controller
         $this->render('create', array(
             'model' => $model,
         ));
-    }*/
+    }
 
     /**
      * Creates a new model.
@@ -123,7 +129,7 @@ class UsersManageController extends Controller
         $avatar = array();
         if(isset($_POST['Users'])){
             $model->attributes = $_POST['Users'];
-            $model->role_id = 2;
+            $model->role_id = 3;
             $model->status = 'active';
             $model->create_date = time();
 
@@ -238,14 +244,15 @@ class UsersManageController extends Controller
      */
     public function actionAdmin()
     {
+        // users
         $model = new Users('search');
-        $model->unsetAttributes();  // clear any default values
+        $model->unsetAttributes();
         if(isset($_GET['Users']))
             $model->attributes = $_GET['Users'];
-        $model->role_id = 1;
-        $this->render('admin', array(
-            'model' => $model,
-        ));
+        $model->role_id = isset($_GET['role'])?$_GET['role']:1;
+
+        $role = UserRoles::model()->findByPk($model->role_id);
+        $this->render('admin', compact('model', 'role'));
     }
 
     /**
@@ -342,5 +349,39 @@ class UsersManageController extends Controller
     {
         DealershipRequests::model()->deleteByPk($id);
         $this->redirect(array('dealershipRequests'));
+    }
+
+    /**
+     * @param int $id brandID
+     * @return string
+     */
+    public function actionFetchAddresses($id)
+    {
+        $output = "<option value=''>آدرس موردنظر را انتخاب کنید...</option>";
+        $empty = "<option value=''>برای این کاربر آدرسی ثبت نشده است...</option>";
+        if ($addresses = UserAddresses::getList($id))
+            foreach ($addresses as $address)
+                $output .= "<option value='{$address->id}'>
+                                <div>{$address->town->name} - {$address->place->name}</div>
+                                <small>{$address->postal_address}</small>
+                            </option>";
+        echo $addresses?$output:$empty;
+        return;
+    }
+
+    public function actionAddAddress()
+    {
+        $model = new UserAddresses();
+
+        if(isset($_POST['UserAddresses'])){
+            $model->attributes = $_POST['UserAddresses'];
+            if($model->save()){
+                Yii::app()->user->setFlash('success', 'آدرس برای کاربر با موفقیت ثبت شد.');
+                $this->redirect(array($_GET['return']));
+            }else
+                Yii::app()->user->setFlash('failed', 'در ثبت اطلاعات خطایی رخ داده است! لطفا مجددا تلاش کنید.');
+        }
+
+        $this->render('add_address', compact('model'));
     }
 }

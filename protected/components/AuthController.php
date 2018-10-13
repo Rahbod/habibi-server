@@ -13,7 +13,7 @@ class AuthController extends CController
         if (is_array($temp))
             $controllers = $temp;
 
-        $modules = new Metadata;
+        $modules = new Metadata();
         $modules = $modules->getModules();
         foreach ($modules as $module) {
             $temp = $this->getActions($type, $module);

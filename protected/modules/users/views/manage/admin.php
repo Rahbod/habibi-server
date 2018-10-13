@@ -1,16 +1,43 @@
 <?php
 /* @var $this UsersManageController */
 /* @var $model Users */
-
-$this->breadcrumbs=array(
-    'کاربران'=>array('admin'),
-    'مدیریت کاربران',
-);
+/* @var $role UserRoles */
+if($role->role == 'user') {
+    $this->breadcrumbs = array(
+        'کاربران' => array("admin?role=$role->id"),
+        'مدیریت کاربران',
+    );
+    $labels = [
+        'کاربران',
+        'کاربر'
+    ];
+}
+elseif($role->role == 'repairman') {
+    $this->breadcrumbs = array(
+        'تعمیرکاران' => array("admin?role=$role->id"),
+        'مدیریت تعمیرکاران',
+    );
+    $labels = [
+        'تعمیرکاران',
+        'تعمیرکار'
+    ];
+}
+elseif($role->role == 'operator') {
+    $this->breadcrumbs = array(
+        'اپراتورها' => array("admin?role=$role->id"),
+        'مدیریت اپراتورها',
+    );
+    $labels = [
+        'اپراتورها',
+        'اپراتور'
+    ];
+}
 ?>
 
 <div class="box box-primary">
     <div class="box-header with-border">
-        <h3 class="box-title">مدیریت کاربران</h3>
+        <h3 class="box-title"><?= $this->breadcrumbs[0] ?></h3>
+        <a href="<?= $this->createUrl("create?role=$role->id") ?>" class="btn btn-default btn-sm">افزودن <?= $labels[1] ?> جدید</a>
     </div>
     <div class="box-body">
         <?php $this->renderPartial("//partial-views/_flashMessage"); ?>
@@ -32,8 +59,9 @@ $this->breadcrumbs=array(
                         'filter' => CHtml::activeDropDownList($model,'statusFilter',$model->statusLabels,array('prompt' => 'همه'))
                     ),array(
                         'header' => 'کلمه عبور',
-                        'value' => function($data){
-                            return $data->useGeneratedPassword()?$data->generatePassword():"کلمه عبور توسط کاربر تغییر یافته";
+                        'value' => function($model) use($labels) {
+                            /* @var$model Users */
+                            return $model->useGeneratedPassword()?$model->generatePassword():"کلمه عبور توسط {$labels[1]} تغییر یافته";
                         }
                     ),
                     array(

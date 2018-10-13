@@ -23,14 +23,7 @@
  * @property UserDetails $userDetails
  * @property UserTransactions[] $transactions
  * @property UserRoles $role
- * @property UserParking[] $parked
- * @property CarAlerts[] $alerts
- * @property UserPlans[] $plans
- * @property UserPlans $activePlan
- * @property Cars $cars
- * @property int $countParked
- * @property int $countCars
- * @property int $countAlerts
+ * @property UserAddresses[] $addresses
  * @property array $dealershipFilters
  */
 class Users extends CActiveRecord
@@ -71,15 +64,15 @@ class Users extends CActiveRecord
      */
     public function loadPropertyValues($values = array())
     {
-        if(isset($values) && $values){
-            $this->first_name = isset($values['first_name']) && !empty($values['first_name'])?$values['first_name']:null;
-            $this->last_name = isset($values['last_name']) && !empty($values['last_name'])?$values['last_name']:null;
-            $this->phone = isset($values['phone']) && !empty($values['phone'])?$values['phone']:null;
-            $this->mobile = isset($values['mobile']) && !empty($values['mobile'])?$values['mobile']:null;
-            $this->address = isset($values['address']) && !empty($values['address'])?$values['address']:null;
-            $this->avatar = isset($values['avatar']) && !empty($values['avatar'])?$values['avatar']:null;
-            $this->dealership_name = isset($values['dealership_name']) && !empty($values['dealership_name'])?$values['dealership_name']:null;
-        }elseif($this){
+        if (isset($values) && $values) {
+            $this->first_name = isset($values['first_name']) && !empty($values['first_name']) ? $values['first_name'] : null;
+            $this->last_name = isset($values['last_name']) && !empty($values['last_name']) ? $values['last_name'] : null;
+            $this->phone = isset($values['phone']) && !empty($values['phone']) ? $values['phone'] : null;
+            $this->mobile = isset($values['mobile']) && !empty($values['mobile']) ? $values['mobile'] : null;
+            $this->address = isset($values['address']) && !empty($values['address']) ? $values['address'] : null;
+            $this->avatar = isset($values['avatar']) && !empty($values['avatar']) ? $values['avatar'] : null;
+            $this->dealership_name = isset($values['dealership_name']) && !empty($values['dealership_name']) ? $values['dealership_name'] : null;
+        } elseif ($this) {
             $this->first_name = $this->userDetails->first_name;
             $this->last_name = $this->userDetails->last_name;
             $this->phone = $this->userDetails->phone;
@@ -98,13 +91,14 @@ class Users extends CActiveRecord
         // NOTE: you should only define rules for those attributes that
         // will receive user inputs.
         return array(
-            array('email, password', 'required', 'on' => 'insert,create,create-dealership'),
-            array('verifyCode', 'activeCaptcha', 'on' => 'insert,create'),
+            array('username, password', 'required', 'on' => 'insert,create,create-dealership'),
+//            array('verifyCode', 'activeCaptcha', 'on' => 'insert,create'),
             array('phone, mobile', 'numerical', 'integerOnly' => true, 'message' => '{attribute} باید عددی باشد.'),
             array('email', 'required', 'on' => 'update'),
             array('role_id', 'default', 'value' => 1),
             array('email', 'required', 'on' => 'email, OAuthInsert'),
             array('email', 'unique', 'on' => 'insert, create, create-dealership, OAuthInsert, update'),
+            array('username', 'unique', 'on' => 'insert, create, create-dealership, OAuthInsert, update'),
             array('change_password_request_count', 'numerical', 'integerOnly' => true),
             array('email', 'email'),
             array('email', 'filter', 'filter' => 'trim', 'on' => 'create, update, create-dealership'),
@@ -113,6 +107,7 @@ class Users extends CActiveRecord
             array('role_id', 'length', 'max' => 10),
             array('status', 'length', 'max' => 8),
             array('create_date', 'length', 'max' => 20),
+            array('create_date', 'default', 'value' => time()),
             array('phone, state_id', 'length', 'max' => 11),
             array('mobile', 'length', 'is' => 11, 'message' => 'شماره موبایل اشتباه است'),
             array('address', 'length', 'max' => 1000),
@@ -141,11 +136,13 @@ class Users extends CActiveRecord
 
     public function activeCaptcha()
     {
-        $code = Yii::app()->controller->createAction('captcha')->verifyCode;
-        if(empty($code))
-            $this->addError('verifyCode', 'کد امنیتی نمی تواند خالی باشد.');
-        elseif($code != $this->verifyCode)
-            $this->addError('verifyCode', 'کد امنیتی نامعتبر است.');
+        if(Yii::app()->controller->createAction('captcha')) {
+            $code = Yii::app()->controller->createAction('captcha')->verifyCode;
+            if (empty($code))
+                $this->addError('verifyCode', 'کد امنیتی نمی تواند خالی باشد.');
+            elseif ($code != $this->verifyCode)
+                $this->addError('verifyCode', 'کد امنیتی نامعتبر است.');
+        }
     }
 
     /**
@@ -155,7 +152,7 @@ class Users extends CActiveRecord
     {
         $bCrypt = new bCrypt();
         $record = Users::model()->findByAttributes(array('email' => $this->email));
-        if(!$bCrypt->verify($this->$attribute, $record->password))
+        if (!$bCrypt->verify($this->$attribute, $record->password))
             $this->addError($attribute, 'کلمه عبور فعلی اشتباه است');
     }
 
@@ -165,7 +162,7 @@ class Users extends CActiveRecord
     public function checkUnique($attribute, $params)
     {
         $record = UserDetails::model()->countByAttributes(array('mobile' => $this->mobile));
-        if($record)
+        if ($record)
             $this->addError($attribute, 'تلفن همراه تکراری می باشد.');
     }
 
@@ -181,15 +178,8 @@ class Users extends CActiveRecord
             'transactions' => array(self::HAS_MANY, 'UserTransactions', 'user_id'),
             'role' => array(self::BELONGS_TO, 'UserRoles', 'role_id'),
             'sessions' => array(self::HAS_MANY, 'Sessions', 'user_id', 'on' => 'user_type = "user"'),
-            'countParked' => array(self::STAT, 'UserParking', 'user_id'),
-            'countAlerts' => array(self::STAT, 'CarAlerts', 'user_id'),
-            'countCars' => array(self::STAT, 'Cars', 'user_id', 'condition' => 'status <> :deleted', 'params' => [':deleted' => Cars::STATUS_DELETED]),
-            'cars' => array(self::HAS_MANY, 'Cars', 'user_id'),
-            'parked' => array(self::HAS_MANY, 'UserParking', 'user_id'),
-            'activePlan' => array(self::HAS_ONE, 'UserPlans', 'user_id', 'on' => 'activePlan.expire_date = -1 OR activePlan.expire_date > :time', 'params' => [':time' => time()], 'order' => 'activePlan.id DESC'),
-            'plans' => array(self::HAS_MANY, 'UserPlans', 'user_id', 'order' => 'plans.id DESC'),
             'state' => array(self::BELONGS_TO, 'Towns', 'state_id'),
-            'alerts' => array(self::HAS_MANY, 'CarAlerts', 'user_id'),
+            'addresses' => array(self::HAS_MANY, 'UserAddresses', 'user_id'),
         );
     }
 
@@ -247,7 +237,7 @@ class Users extends CActiveRecord
         $criteria->compare('role_id', $this->role_id);
         $criteria->addSearchCondition('userDetails.first_name', $this->first_name);
         $criteria->addSearchCondition('userDetails.last_name', $this->last_name);
-        $criteria->with = array('userDetails', 'activePlan');
+        $criteria->with = array('userDetails');
         $criteria->order = 'status ,t.id DESC';
         return new CActiveDataProvider($this, array(
             'criteria' => $criteria,
@@ -267,7 +257,7 @@ class Users extends CActiveRecord
         $criteria->with = array('userDetails');
         $criteria->order = 'dealership_name';
 
-        if($this->dealershipFilters)
+        if ($this->dealershipFilters)
             $criteria = $this->applyDealershipFilters($criteria, $this->dealershipFilters);
 
         return new CActiveDataProvider($this, array(
@@ -317,7 +307,7 @@ class Users extends CActiveRecord
 
     protected function afterValidate()
     {
-        if($this->isNewRecord)
+        if ($this->isNewRecord)
             $this->password = $this->encrypt($this->password);
         parent::afterValidate();
     }
@@ -330,7 +320,7 @@ class Users extends CActiveRecord
 
     public function afterSave()
     {
-        if($this->isNewRecord){
+        if ($this->isNewRecord) {
             $model = new UserDetails;
             $model->user_id = $this->id;
             $model->first_name = $this->first_name;
@@ -340,21 +330,9 @@ class Users extends CActiveRecord
             $model->address = $this->address;
             $model->avatar = $this->avatar;
             $model->dealership_name = $this->dealership_name;
-            if(!$model->save())
+            if (!$model->save())
                 $this->addErrors($model->errors);
-
-            $freePlan = Plans::model()->findByPk(1);
-            if($freePlan){
-                $model = new UserPlans;
-                $model->user_id = $this->id;
-                $model->plan_id = $freePlan->id;
-                $model->join_date = time();
-                $model->expire_date = -1;
-                $model->price = 0;
-                if(!$model->save())
-                    $this->addErrors($model->errors);
-            }
-        }elseif($this->scenario == 'update'){
+        } elseif ($this->scenario == 'update') {
             $model = UserDetails::model()->findByPk($this->id);
             $model->first_name = $this->first_name;
             $model->last_name = $this->last_name;
@@ -363,7 +341,7 @@ class Users extends CActiveRecord
             $model->address = $this->address;
             $model->avatar = $this->avatar;
             $model->dealership_name = $this->dealership_name;
-            if(!@$model->save())
+            if (!@$model->save())
                 $this->addErrors($model->errors);
         }
         parent::afterSave();
@@ -382,43 +360,24 @@ class Users extends CActiveRecord
     }
 
     /**
-     * @param $plan Plans
-     * @return bool
+     * @param int|string $role Role ID or Role Name
+     * @param bool $toList
+     * @return CActiveRecord[]
      */
-    public function upgradePlan($plan)
+    public static function getUsersByRole($role, $toList = false)
     {
-        $model = new UserPlans();
-        $model->plan_id = $plan->id;
-        $model->user_id = $this->id;
-        $model->join_date = time();
-        $model->expire_date = strtotime(date('Y/m/d 23:59:59', ($model->join_date + 30 * 24 * 60 * 60))); // 30 days
-        $model->price = $plan->getPrice($this->role->role);
-        if($model->save())
-            return $model->id;
-        return false;
-    }
-
-    public function getActivePlanRule($name)
-    {
-        return $this->activePlan->plan->getRule($this->role->role, $name);
-    }
-
-    public function getActivePlanRules($encode = false)
-    {
-        $rules = $this->activePlan->plan->getRules($this->role->role);
-        if(!$rules)
-            return null;
-        return $encode?CJSON::encode($rules):$rules;
-    }
-
-    public function getActivePlanTitle()
-    {
-        return $this->activePlan->plan->title;
-    }
-
-    public function getValidAdCount()
-    {
-        $total = $this->getActivePlanRule('adsCount');
-        return $total - $this->countCars;
+        $criteria = new CDbCriteria();
+        if (intval($role))
+            $criteria->compare('role_id', $role);
+        else {
+            $criteria->with[] = "role";
+            $criteria->compare('role.role', $role);
+        }
+        if(!$toList)
+            return Users::model()->findAll($criteria);
+        else
+            return CHtml::listData(Users::model()->findAll($criteria), 'id', function ($model){
+                return $model->userDetails->showName;
+            });
     }
 }

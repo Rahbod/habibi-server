@@ -4,12 +4,53 @@ $(function () {
             'YII_CSRF_TOKEN': $('meta[name="csrf-token"]').attr('content')
         }
     });
+
+    if ($('.select-picker').length && $.fn.selectpicker)
+        $('.select-picker').selectpicker({
+            dropupAuto: false,
+            size: 7
+        });
+    $('.digitFormat').digitFormat();
+
+    $(document).on("keyup", '.digitFormat', function () {
+        $(this).digitFormat();
+    }).on("change", '.digitFormat', function () {
+        $(this).digitFormat();
+    }).on("keyup", '.numberFormat', function () {
+        $(this).numericFormat();
+    }).on("change", '.numberFormat', function () {
+        $(this).numericFormat();
+    });
+
     setInterval(function () {
         $(".callout:not(.message)").fadeOut('fast', function () {
             $(this).remove();
         });
     },5000);
 });
+
+
+$.fn.digitFormat = function () {
+    return this.each(function (event) {
+        if (event.which >= 37 && event.which <= 40) return;
+        $(this).val(function (index, value) {
+            return value
+                .replace(/\D/g, "")
+                .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        });
+    });
+};
+
+$.fn.numericFormat = function () {
+    return this.each(function (event) {
+        if (event.which >= 37 && event.which <= 40) return;
+        $(this).val(function (index, value) {
+            return value
+                .replace(/\D/g, "");
+        });
+    });
+};
+
 
 function submitAjaxForm(form ,url ,loading ,callback) {
     loading = typeof loading !== 'undefined' ? loading : null;

@@ -32,11 +32,13 @@
     $cs->registerCssFile($baseUrl . '/css/AdminLTE.css');
     $cs->registerCssFile($baseUrl . '/css/skins/skin-blue.min.css');
     $cs->registerCssFile($baseUrl . '/css/bootstrap-rtl.min.css');
+    $cs->registerCssFile($baseUrl . '/css/bootstrap-select.min.css');
     $cs->registerCssFile($baseUrl . '/css/rtl.css');
 
     $cs->registerCoreScript('jquery');
     $cs->registerCoreScript('jquery.ui');
     $cs->registerScriptFile($baseUrl . '/js/bootstrap.min.js');
+    $cs->registerScriptFile($baseUrl . '/js/bootstrap-select.min.js');
     $cs->registerScriptFile($baseUrl . '/js/app.min.js', CClientScript::POS_END);
     $cs->registerScriptFile($baseUrl . '/js/script.js');
     $cs->registerScript('icheck','

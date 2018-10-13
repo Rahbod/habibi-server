@@ -3,7 +3,7 @@ return array(
 	'onBeginRequest'=>create_function('$event', 'return ob_start("ob_gzhandler");'),
 	'onEndRequest'=>create_function('$event', 'return ob_end_flush();'),
 	'basePath' => dirname(__FILE__).DIRECTORY_SEPARATOR.'..',
-	'name'=>'آرا خودرو',
+	'name'=>'تعمیرکار',
 	'timeZone' => 'Asia/Tehran',
 	'theme' => 'abound',
 	'sourceLanguage' => '00',
@@ -19,10 +19,8 @@ return array(
 		'ext.yiiSortableModel.models.*',
 		'ext.dropZoneUploader.*',
 		'application.modules.places.models.*',
-		'application.modules.lists.models.*',
-		'application.modules.car.models.*',
 		'application.modules.setting.models.*',
-		'application.modules.news.models.*',
+		'application.modules.requests.models.*',
 	),
 
 	'modules'=>array(
@@ -39,54 +37,8 @@ return array(
 		'setting',
 		'pages',
 		'places',
-		'slideshow',
-		'map',
 		'contact',
-		'lists',
-		'car',
-		'news',
-		'newsletters',
-		'comments'=>array(
-			//you may override default config for all connecting models
-			'defaultModelConfig' => array(
-				//only registered users can post comments
-				'registeredOnly' => true,
-				'useCaptcha' => true,
-				//allow comment tree
-				'allowSubcommenting' => true,
-				//display comments after moderation
-				'premoderate' => true,
-				//action for postig comment
-				'postCommentAction' => '/comments/manage/postComment',
-				//super user condition(display comment list in admin view and automoderate comments)
-				'isSuperuser'=>'Yii::app()->user->checkAccess("moderate")',
-				//order direction for comments
-				'orderComments'=>'DESC',
-				'showEmail' => false
-			),
-			//the models for commenting
-			'commentableModels'=>array(
-				//model with individual settings
-				'News'=>array(
-					'registeredOnly'=>false,
-					'useCaptcha'=>false,
-					'premoderate' => true,
-					'orderComments'=>'DESC',
-					//config for create link to view model page(page with comments)
-					'module' => 'news',
-					'pageUrl'=>array(
-						'route'=>'news/',
-						'data'=>array('id'=>'id'),
-					)
-				),
-			),
-			//config for user models, which is used in application
-			'userConfig'=>array(
-				'class'=>'Users',
-				'nameProperty'=>'userDetails.showName',
-				'emailProperty'=>'email',
-			),
-		),
+        'requests',
 	),
 
 	// application components
@@ -95,16 +47,16 @@ return array(
 			'class' => 'YMHttpRequest',
 			'enableCsrfValidation'=>true,
 			'noValidationRoutes'=>array(
-				'users/public/verifyPlan'
+//				'users/public/verifyPlan'
 			),
 		),
 		'JWT' => array(
 			'class' => 'ext.jwt.JWT',
-			'key' => base64_encode(md5('Rahbod-AraKhodro-1396')),
+			'key' => base64_encode(md5('Rahbod-Habibi-1397')),
 		),
 		'JWS' => array(
 			'class' => 'ext.jwt.JWT',
-			'key' => base64_encode(sha1('Rahbod-AraKhodro-1396')),
+			'key' => base64_encode(sha1('Rahbod-Habibi-1397')),
 		),
 		'yexcel' => array(
 			'class' => 'ext.yexcel.Yexcel'
@@ -146,24 +98,9 @@ return array(
 			'rules'=>array(
 				'sitemap'=>'site/sitemap',
 				'sitemap.xml'=>'site/sitemapxml',
-				'news'=>'news/manage/all',
-				'news/latest'=>'news/manage/latest',
-				'news/tag/<id:\d+>/<title:(.*)>'=>'news/manage/tag',
-				'news/<id:\d+>/<title:(.*)>'=>'news/manage/view',
-				'sell' => 'car/public/sell',
-				'research' => 'car/public/research',
-				'research/<params:(.*)>' => 'car/public/research',
 				'dealership' => 'users/public/dealership',
-				'dealerships' => 'car/search/dealership',
-				'dealership/<id:\d+>-<title:(.*)>' => 'car/search/dealership',
-				'dealership/<id:\d+>' => 'car/search/dealership',
-                'car/<id:\d+>-<title:(.*)>'=>'car/public/view',
-				'/help'=>'site/help',
 				'<action:(about|contact|help|terms|search)>' => 'site/<action>',
-				'<action:(logout|dashboard|googleLogin|transactions|login|register|changePassword|profile|upgradePlan)>' => 'users/public/<action>',
-				'<action:(buyPlan|verifyPlan)>/<id:\d+>' => 'users/public/<action>',
-				'car/<action:(brand)>/<title:.*>' => 'car/search/<action>',
-//				'users/<id:\d+>'=>'users/public/viewProfile',
+				'<action:(logout|dashboard|googleLogin|transactions|login|register|changePassword|profile)>' => 'users/public/<action>',
 				'<module:\w+>/<id:\d+>'=>'<module>/manage/view',
 				'<module:\w+>/<controller:\w+>'=>'<module>/<controller>/index',
 				'<controller:\w+>/<action:\w+>/<id:\d+>/<title:(.*)>'=>'<controller>/<action>',

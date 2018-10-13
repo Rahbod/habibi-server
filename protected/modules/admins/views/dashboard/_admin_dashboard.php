@@ -3,44 +3,18 @@
 /* @var $statistics []*/
 $permissions = [
     'contact' => false,
-    'pendingCars' => false,
     'dealerRequests' => false,
-    'carReports' => false,
-    'newsComments' => false,
     'transactionStatistics' => false,
     'statistics' => false,
 ];
 if(Yii::app()->user->roles == 'admin'){
     $permissions['contact'] = true;
-    $permissions['pendingCars'] = true;
     $permissions['dealerRequests'] = true;
-    $permissions['carReports'] = true;
-    $permissions['newsComments'] = true;
     $permissions['statistics'] = true;
     $permissions['transactionStatistics'] = true;
 }
 ?>
 <div class="row boxed-statistics">
-    <!--Cars Statistics-->
-    <?php
-    if($permissions['pendingCars']):
-        ?>
-        <div class="col-lg-3 col-xs-6">
-            <!-- small box -->
-            <div class="small-box bg-red">
-                <div class="inner">
-                    <h3><?php echo $statistics['pendingCars'];?></h3>
-                    <p>آگهی تایید نشده</p>
-                </div>
-                <div class="icon">
-                    <i class="ion ion-android-apps"></i>
-                </div>
-                <a href="<?php echo $this->createUrl('/car/manage/admin');?>" class="small-box-footer">مشاهده آگهی ها <i class="fa fa-arrow-circle-left"></i></a>
-            </div>
-        </div>
-        <?php
-    endif;
-    ?>
     <!--Dealership Requests-->
     <?php
     if($permissions['dealerRequests']):
@@ -83,47 +57,6 @@ if(Yii::app()->user->roles == 'admin'){
     endif;
     ?>
 
-    <!-- Car Reports-->
-    <?php
-    if($permissions['newsComments']):
-        ?>
-        <div class="col-lg-3 col-xs-6">
-            <!-- small box -->
-            <div class="small-box bg-lime-active">
-                <div class="inner">
-                    <h3><?php echo $statistics['newsComments'];?></h3>
-                    <p>نظرات اخبار تایید نشده</p>
-                </div>
-                <div class="icon">
-                    <i class="ion ion-android-chat"></i>
-                </div>
-                <a href="<?php echo $this->createUrl('/comments/manage/admin');?>" class="small-box-footer">مشاهده نظرات <i class="fa fa-arrow-circle-left"></i></a>
-            </div>
-        </div>
-        <?php
-    endif;
-    ?>
-    
-    <!-- Car Reports-->
-    <?php
-    if($permissions['carReports']):
-        ?>
-        <div class="col-lg-3 col-xs-6">
-            <!-- small box -->
-            <div class="small-box bg-fuchsia">
-                <div class="inner">
-                    <h3><?php echo $statistics['carReports'];?></h3>
-                    <p>گزارشات اشکال در آگهی</p>
-                </div>
-                <div class="icon">
-                    <i class="ion ion-ios-flag"></i>
-                </div>
-                <a href="<?php echo $this->createUrl('/car/manage/problemReports');?>" class="small-box-footer">مشاهده گزارشات <i class="fa fa-arrow-circle-left"></i></a>
-            </div>
-        </div>
-        <?php
-    endif;
-    ?>
     <!--Transaction Statistics-->
     <?php
     if($permissions['transactionStatistics']):

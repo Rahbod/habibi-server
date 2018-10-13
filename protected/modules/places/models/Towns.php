@@ -13,7 +13,6 @@
  * @property Places[] $places
  * @property integer $carsCount
  * @property integer $dealershipsCount
- * @property Cars[] $cars
 // * @property Tags[] $tags
  */
 class Towns extends CActiveRecord
@@ -23,7 +22,7 @@ class Towns extends CActiveRecord
 	 */
 	public function tableName()
 	{
-		return 'ym_towns';
+		return '{{towns}}';
 	}
 
 	/**
@@ -53,8 +52,6 @@ class Towns extends CActiveRecord
 		return array(
 			'places' => array(self::HAS_MANY, 'Places', 'town_id'),
 			'tags' => array(self::HAS_MANY, 'Tags', 'tag_id'),
-			'cars' => array(self::HAS_MANY, 'Cars', 'state_id'),
-			'carsCount' => array(self::STAT, 'Cars', 'state_id', 'condition' => 't.status = :status', 'params' => [':status' => Cars::STATUS_APPROVED]),
 			'dealerships' => array(self::HAS_MANY, 'Users', 'state_id'),
 			'dealershipsCount' => array(self::STAT, 'Users', 'state_id'),
 		);
@@ -130,18 +127,16 @@ class Towns extends CActiveRecord
             return implode(',' ,CJSON::decode($model->tags));
     }
 
-    protected function beforeSave(){
-//        if($this->tags){
-//            foreach($this->tags as $tag){
-//                $model = Tags::model()->findByAttributes(array('title' => $tag));
-//                if(!$model){
-//                    $model = new Tags();
-//                    $model->title = $tag;
-//                    $model->save();
-//                }
-//            }
-//            $this->tags = !empty($this->tags) && is_array($this->tags) ? CJSON::encode($this->tags) : null;
-//        }
-        return true;
+    /**
+     * @param $id
+     * @param bool $count
+     * @return array|string
+     */
+    public static function getList($count = false)
+    {
+        if ($count)
+            return self::model()->count();
+        $data = self::model()->findAll();
+        return $data ? CHtml::listData($data, 'id', 'name') : [];
     }
 }

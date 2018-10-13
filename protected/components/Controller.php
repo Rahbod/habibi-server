@@ -96,12 +96,6 @@ class Controller extends AuthController
             ->where('name = "default_title"')
             ->queryScalar();
         $this->brands = Brands::model()->findAll(new CDbCriteria(['order' => 'title ASC']));
-        $this->chassis = Lists::getList('body_types');
-        $this->prices = [
-            '5-10', '10-15', '15-20', '20-25', '25-30', '30-35', '35-40', '40-45', '45-50',
-            '50-60', '60-70', '70-80', '90-100', '100-110', '110-120', '120-130', '130-140', '140-150', '150-160', '160-170', '170-180', '180-190', '190-200',
-            '200-300', '300-400', '400-500', '500-600', '600-700', '700-800', '800-900'
-        ];
         return true;
     }
 
@@ -118,34 +112,15 @@ class Controller extends AuthController
                     'url' => array('/admins/dashboard')
                 ),
                 array(
-                    'label' => '<i class="fa fa-picture-o"></i><span>اسلایدشو</span> <i class="fa fa-angle-left pull-left"></i>',
+                    'label' => '<i class="fa fa-ticket"></i><span>درخواست ها</span> <i class="fa fa-angle-left pull-left"></i>',
                     'url' => '#',
                     'itemOptions' => array('class' => 'treeview', 'tabindex' => "-1"),
                     'submenuOptions' => array('class' => 'treeview-menu'),
                     'items' => array(
-                        array('label' => '<i class="fa fa-circle-o"></i>مدیریت تصاویر', 'url' => Yii::app()->createUrl('/slideshow/manage/admin/')),
-                        array('label' => '<i class="fa fa-circle-o"></i>افزودن تصویر جدید', 'url' => Yii::app()->createUrl('/slideshow/manage/create')),
-                    )
-                ),
-                array(
-                    'label' => '<i class="fa fa-car"></i><span>آگهی ها</span> <i class="fa fa-angle-left pull-left"></i>',
-                    'url' => '#',
-                    'itemOptions' => array('class' => 'treeview', 'tabindex' => "-1"),
-                    'submenuOptions' => array('class' => 'treeview-menu'),
-                    'items' => array(
-                        array('label' => '<i class="fa fa-circle-o"></i>مدیریت آگهی های ماشین', 'url' => Yii::app()->createUrl('/car/manage/admin/')),
-                        array('label' => '<i class="fa fa-circle-o"></i>مدیریت برندها', 'url' => Yii::app()->createUrl('/car/brands/admin')),
-                        array('label' => '<i class="fa fa-circle-o"></i>گزارشات اشکال در آگهی', 'url' => Yii::app()->createUrl('/car/manage/problemReports')),
-                    )
-                ),
-                array(
-                    'label' => '<i class="fa fa-bars"></i><span>لیست ها</span> <i class="fa fa-angle-left pull-left"></i>',
-                    'url' => '#',
-                    'itemOptions' => array('class' => 'treeview', 'tabindex' => "-1"),
-                    'submenuOptions' => array('class' => 'treeview-menu'),
-                    'items' => array(
-                        array('label' => '<i class="fa fa-circle-o"></i>مدیریت', 'url' => Yii::app()->createUrl('/lists/manage/admin/')),
-                        array('label' => '<i class="fa fa-circle-o"></i>افزودن لیست', 'url' => Yii::app()->createUrl('/lists/manage/create')),
+                        array('label' => '<i class="fa fa-circle-o"></i>مدیریت درخواست ها', 'url' => Yii::app()->createUrl('/requests/manage/admin/')),
+                        array('label' => '<i class="fa fa-circle-o"></i>مدیریت انواع لوازم', 'url' => Yii::app()->createUrl('/requests/categories/admin')),
+                        array('label' => '<i class="fa fa-circle-o"></i>مدیریت تعرفه خدمات', 'url' => Yii::app()->createUrl('/requests/tariffs/admin/')),
+//                        array('label' => '<i class="fa fa-circle-o"></i>مدیریت برندها و مدل ها', 'url' => Yii::app()->createUrl('/requests/brands/admin')),
                     )
                 ),
                 array(
@@ -160,28 +135,6 @@ class Controller extends AuthController
                     )
                 ),
                 array(
-                    'label' => '<i class="fa fa-newspaper-o"></i><span>اخبار</span> <i class="fa fa-angle-left pull-left"></i>',
-                    'url' => '#',
-                    'itemOptions' => array('class' => 'treeview', 'tabindex' => "-1"),
-                    'submenuOptions' => array('class' => 'treeview-menu'),
-                    'items' => array(
-                        array('label' => '<i class="fa fa-circle-o"></i>مدیریت دسته بندی اخبار', 'url' => Yii::app()->createUrl('/news/category/admin')),
-                        array('label' => '<i class="fa fa-circle-o"></i>مدیریت اخبار', 'url' => Yii::app()->createUrl('/news/manage/admin')),
-                        array('label' => '<i class="fa fa-circle-o"></i>افزودن خبر', 'url' => Yii::app()->createUrl('/news/manage/create')),
-                    )
-                ),
-                array(
-                    'label' => '<i class="fa fa-paper-plane"></i><span>خبرنامه</span> <i class="fa fa-angle-left pull-left"></i>',
-                    'url' => '#',
-                    'itemOptions' => array('class' => 'treeview', 'tabindex' => "-1"),
-                    'submenuOptions' => array('class' => 'treeview-menu'),
-                    'items' => array(
-                        array('label' => '<i class="fa fa-circle-o"></i>مدیریت گیرندگان', 'url' => Yii::app()->createUrl('/newsletters/manage/admin')),
-                        array('label' => '<i class="fa fa-circle-o"></i>تاریخچه خبرنامه ها', 'url' => Yii::app()->createUrl('/newsletters/manage/messages')),
-                        array('label' => '<i class="fa fa-circle-o"></i>ارسال خبرنامه', 'url' => Yii::app()->createUrl('/newsletters/manage/send')),
-                    )
-                ),
-                array(
                     'label' => '<i class="fa fa-support"></i><span>تماس با ما</span> <i class="fa fa-angle-left pull-left"></i>',
                     'url' => '#',
                     'itemOptions' => array('class' => 'treeview', 'tabindex' => "-1"),
@@ -193,13 +146,12 @@ class Controller extends AuthController
                     )
                 ),
                 array(
-                    'label' => '<i class="fa fa-building"></i><span>نمایشگاه</span> <i class="fa fa-angle-left pull-left"></i>',
+                    'label' => '<i class="fa fa-building"></i><span>درخواست های همکاری</span> <i class="fa fa-angle-left pull-left"></i>',
                     'url' => '#',
                     'itemOptions' => array('class' => 'treeview', 'tabindex' => "-1"),
                     'submenuOptions' => array('class' => 'treeview-menu'),
                     'items' => array(
-                        array('label' => '<i class="fa fa-circle-o"></i>مدیریت نمایشگاه ها', 'url' => Yii::app()->createUrl('/users/manage/dealerships')),
-                        array('label' => '<i class="fa fa-circle-o"></i>درخواست های ثبت نمایشگاه', 'url' => Yii::app()->createUrl('/users/manage/dealershipRequests')),
+                        array('label' => '<i class="fa fa-circle-o"></i>مدیریت', 'url' => Yii::app()->createUrl('/users/manage/dealershipRequests')),
                     )
                 ),
                 array(
@@ -219,8 +171,9 @@ class Controller extends AuthController
                     'itemOptions' => array('class' => 'treeview', 'tabindex' => "-1"),
                     'submenuOptions' => array('class' => 'treeview-menu'),
                     'items' => array(
+                        array('label' => '<i class="fa fa-circle-o"></i>مدیریت تعیرکاران', 'url' => Yii::app()->createUrl('/users/manage/admin?role=3')),
+                        array('label' => '<i class="fa fa-circle-o"></i>مدیریت اپراتورها', 'url' => Yii::app()->createUrl('/users/manage?role=2')),
                         array('label' => '<i class="fa fa-circle-o"></i>مدیریت کاربران', 'url' => Yii::app()->createUrl('/users/manage')),
-                        array('label' => '<i class="fa fa-circle-o"></i>پلن ها', 'url' => Yii::app()->createUrl('/users/plans/admin')),
                     )
                 ),
                 array(
@@ -252,10 +205,10 @@ class Controller extends AuthController
     }
 
     /**
-     * @param $model
+     * @param $model CActiveRecord
      * @return string
      */
-    public function implodeErrors($model)
+    public function implodeErrors(CActiveRecord $model)
     {
         $errors = '';
         foreach($model->getErrors() as $err){

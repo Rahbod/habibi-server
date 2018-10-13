@@ -10,7 +10,7 @@ class PlacesTownsController extends Controller
 	public static function actionsType()
 	{
 		return array(
-			'backend' => array('create','update','admin','delete','index','view')
+			'backend' => array('create','update','admin','delete','index','view','fetchPlaces')
 		);
 	}
 
@@ -154,4 +154,19 @@ class PlacesTownsController extends Controller
 			Yii::app()->end();
 		}
 	}
+
+    /**
+     * @param int $id brandID
+     * @return string
+     */
+    public function actionFetchPlaces($id)
+    {
+        $output = "<option value=''>شهرستان موردنظر را انتخاب کنید...</option>";
+        $empty = "<option value=''>در این استان شهرستانی ثبت نشده، لطفا استان دیگری انتخاب کنید...</option>";
+        if ($models = Places::getCities($id))
+            foreach ($models as $id => $title)
+                $output .= "<option value='$id'>$title</option>";
+        echo $models?$output:$empty;
+        return;
+    }
 }
