@@ -26,25 +26,28 @@
                 <?php echo $form->error($model,'transferee'); ?>
             </div>
         </div>
-        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
-            <div class="form-group">
-                <?php echo $form->labelEx($model,'town_id'); ?>
-                <?php echo $form->dropDownList($model,'town_id', Towns::getList(),array(
-                    'class'=>'form-control town-change-trigger',
-                    'prompt' => 'استان موردنظر را انتخاب کنید...',
-                    'data-fetch-url' => $this->createUrl('/places/towns/fetchPlaces'),
-                    'data-target' => "#UserAddresses_place_id"
-                )); ?>
-                <?php echo $form->error($model,'town_id'); ?>
+
+        <?php if(!UserAddresses::$setDefaultLocation):?>
+            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
+                <div class="form-group">
+                    <?php echo $form->labelEx($model,'town_id'); ?>
+                    <?php echo $form->dropDownList($model,'town_id', Towns::getList(),array(
+                        'class'=>'form-control town-change-trigger',
+                        'prompt' => 'استان موردنظر را انتخاب کنید...',
+                        'data-fetch-url' => $this->createUrl('/places/towns/fetchPlaces'),
+                        'data-target' => "#UserAddresses_place_id"
+                    )); ?>
+                    <?php echo $form->error($model,'town_id'); ?>
+                </div>
             </div>
-        </div>
-        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
-            <div class="form-group">
-                <?php echo $form->labelEx($model,'place_id'); ?>
-                <?php echo $form->dropDownList($model,'place_id', [],array('class'=>'form-control','prompt' => 'ابتدا یک استان انتخاب کنید...','disabled' => true)); ?>
-                <?php echo $form->error($model,'place_id'); ?>
+            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
+                <div class="form-group">
+                    <?php echo $form->labelEx($model,'place_id'); ?>
+                    <?php echo $form->dropDownList($model,'place_id', [],array('class'=>'form-control','prompt' => 'ابتدا یک استان انتخاب کنید...','disabled' => true)); ?>
+                    <?php echo $form->error($model,'place_id'); ?>
+                </div>
             </div>
-        </div>
+        <?php endif;?>
     </div>
     <div class="row">
         <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
@@ -84,7 +87,7 @@
     </div>
 
     <div class="form-group">
-        <?php echo CHtml::submitButton($model->isNewRecord ? 'Create' : 'Save'); ?>
+        <?php echo CHtml::submitButton($model->isNewRecord ? 'ثبت' : 'ذخیره', array('class' => 'btn btn-success')); ?>
     </div>
 
     <?php $this->endWidget(); ?>

@@ -7,35 +7,102 @@ $this->breadcrumbs=array(
 	$model->id,
 );
 
-$this->menu=array(
-	array('label'=>'لیست Requests', 'url'=>array('index')),
-	array('label'=>'افزودن Requests', 'url'=>array('create')),
-	array('label'=>'ویرایش Requests', 'url'=>array('update', 'id'=>$model->id)),
-	array('label'=>'حذف Requests', 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>'Are you sure you want to delete this item?')),
-	array('label'=>'مدیریت Requests', 'url'=>array('admin')),
-);
 ?>
 
-<h1>نمایش Requests #<?php echo $model->id; ?></h1>
+<div class="box box-primary">
+    <div class="box-header with-border">
+        <h3 class="box-title">نمایش درخواست #<?= $model->id ?></h3>
+    </div>
+    <div class="box-body">
 
-<?php $this->widget('zii.widgets.CDetailView', array(
-	'data'=>$model,
-	'attributes'=>array(
-		'id',
-		'category_id',
-		'brand_id',
-		'model_id',
-		'user_id',
-		'user_address_id',
-		'operator_id',
-		'repairman_id',
-		'create_date',
-		'modified_date',
-		'description',
-		'requested_date',
-		'requested_time',
-		'service_date',
-		'service_time',
-		'status',
-	),
-)); ?>
+        <?php $this->renderPartial("//partial-views/_flashMessage"); ?>
+
+        <div class="form-group buttons text-left">
+            <!-- Invoicing -->
+            <?php if($model->status <= Requests::STATUS_AWAITING_PAYMENT): ?>
+                <a href="<?= $this->createUrl('invoicing')."/$model->id" ?>" class="btn btn-info">صدور فاکتور</a>
+            <?php endif; ?>
+
+            <!-- Manually Approve Payment -->
+            <?php if($model->status == Requests::STATUS_AWAITING_PAYMENT): ?>
+                <a href="<?= $this->createUrl('approvePayment')."/$model->id" ?>" class="btn btn-warning" onclick='if(!confirm("آیا از تایید پرداخت فاکتور اطمینان دارید؟")) return false;'>تایید پرداخت نقدی</a>
+            <?php endif; ?>
+
+            <?php if($model->status < Requests::STATUS_PAID): ?>
+                <?php if($model->status != Requests::STATUS_DELETED): ?>
+                    <a href="<?= $this->createUrl('delete')."/$model->id" ?>" class="btn btn-danger" onclick='if(!confirm("آیا از تعلیق این درخواست اطمینان دارید؟")) return false;'>تعلیق</a>
+                <?php else: ?>
+                    <a href="<?= $this->createUrl('delete')."/$model->id" ?>" class="btn btn-danger" onclick='if(!confirm("آیا از حذف این درخواست اطمینان دارید؟")) return false;'>حذف کامل</a>
+                <?php endif; ?>
+            <?php endif; ?>
+        </div>
+
+        <?php $this->widget('zii.widgets.CDetailView', array(
+            'data'=>$model,
+            'itemCssClass'=>array('',''),
+            'htmlOptions' => array('class'=>'detail-view table table-striped'),
+            'attributes'=>array(
+                'id',
+                [
+                    'label' => $model->getAttributeLabel('category_id'),
+                    'value' => $model->status?"<label class='label label-{$model->getStatusLabel(true)}'>{$model->getStatusLabel()}</label>":'-',
+                    'type' => 'raw'
+                ],
+                [
+                    'label' => $model->getAttributeLabel('category_id'),
+                    'value' => $model->category?$model->category->title:'<span class="text-danger">حذف شده</span>',
+                ],
+                [
+                    'label' => $model->getAttributeLabel('user_id'),
+                    'value' => $model->user && $model->user->userDetails?$model->user->userDetails->getShowName():'<span class="text-danger">حذف شده</span>',
+                ],
+                [
+                    'label' => $model->getAttributeLabel('user_address_id'),
+                    'value' => $model->userAddress?$model->userAddress->showAddress():'<span class="text-danger">حذف شده</span>',
+                    'type' => 'raw'
+                ],
+                [
+                    'label' => $model->getAttributeLabel('operator_id'),
+                    'value' => $model->operator_id == null?"مدیر":($model->operator && $model->operator->userDetails?$model->operator->userDetails->getShowName(false):'<span class="text-danger">حذف شده</span>'),
+                    'type' => 'raw'
+                ],
+                [
+                    'label' => $model->getAttributeLabel('repairman_id'),
+                    'value' => $model->repairman && $model->repairman->userDetails?$model->repairman->userDetails->getShowName(false):'<span class="text-danger">حذف شده</span>',
+                    'type' => 'raw'
+                ],
+
+                [
+                    'label' => $model->getAttributeLabel('requested_date'),
+                    'value' => $model->requested_date?"<span dir='ltr' class='text-right'>".JalaliDate::date('Y/m/d H:i', $model->requested_date)."</span>":null,
+                    'type' => 'raw'
+                ],
+                [
+                    'label' => $model->getAttributeLabel('requested_time'),
+                    'value' => $model->requested_time?Requests::$serviceTimes[$model->requested_time]:null,
+                    'type' => 'raw'
+                ],
+                [
+                    'label' => $model->getAttributeLabel('service_date'),
+                    'value' => $model->service_date?"<span dir='ltr' class='text-right'>".JalaliDate::date('Y/m/d H:i', $model->service_date)."</span>":null,
+                    'type' => 'raw'
+                ],
+                [
+                    'label' => $model->getAttributeLabel('service_time'),
+                    'value' => $model->service_time?Requests::$serviceTimes[$model->service_time]:null,
+                    'type' => 'raw'
+                ],
+                [
+                    'label' => $model->getAttributeLabel('create_date'),
+                    'value' => "<span dir='ltr' class='text-right'>".JalaliDate::date('Y/m/d H:i', $model->create_date)."</span>",
+                    'type' => 'raw'
+                ],
+                [
+                    'label' => $model->getAttributeLabel('modified_date'),
+                    'value' => "<span dir='ltr' class='text-right'>".JalaliDate::date('Y/m/d H:i', $model->modified_date)."</span>",
+                    'type' => 'raw'
+                ]
+            ),
+        )); ?>
+    </div>
+</div>

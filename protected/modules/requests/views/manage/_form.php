@@ -15,6 +15,9 @@
 //        }'
 //    );
 //else
+
+if($model->isNewRecord && isset($_GET['user_id']))
+    $model->user_id = $_GET['user_id'];
     $clientOptions = array(
         'validateOnSubmit' => true
     );
@@ -32,17 +35,6 @@
 <?php
 echo $form->errorSummary($model);
 ?>
-
-	<div class="form-group">
-		<?php echo $form->labelEx($model,'category_id'); ?>
-        <div class="input-group">
-            <?php echo $form->dropDownList($model,'category_id', Categories::getList(),array('class'=>'form-control')); ?>
-            <span class="input-group-btn">
-                <button type="button" data-toggle="modal" data-target="#add-category" class="btn btn-success"><i class="fa fa-plus"></i> افزودن نوع جدید</button>
-            </span>
-        </div>
-		<?php echo $form->error($model,'category_id'); ?>
-	</div>
 
 <!--	<div class="form-group">-->
 <!--		--><?php //echo $form->labelEx($model,'brand_id'); ?>
@@ -68,29 +60,45 @@ echo $form->errorSummary($model);
 
 	<div class="form-group">
 		<?php echo $form->labelEx($model,'user_id'); ?>
-        <?php echo $form->dropDownList($model,'user_id',
-            Users::getUsersByRole('user', true),
-            array(
-                'class'=>'form-control select-picker user-change-trigger',
-                'data-live-search' => true,
-                'data-fetch-url' => $this->createUrl('/users/manage/fetchAddresses'),
-                'data-target' => "#Requests_user_address_id",
-                'prompt' => 'کاربر درخواست دهنده را انتخاب کنید...'
-            )
-        ); ?>
+        <div class="input-group">
+            <?php echo $form->dropDownList($model,'user_id',
+                Users::getUsersByRole('user', true),
+                array(
+                    'class'=>'form-control select-picker user-change-trigger',
+                    'data-live-search' => true,
+                    'data-fetch-url' => $this->createUrl('/users/manage/fetchAddresses'),
+                    'data-target' => "#Requests_user_address_id",
+                    'prompt' => 'کاربر درخواست دهنده را انتخاب کنید...'
+                )
+            ); ?>
+            <span class="input-group-btn">
+                <a class="btn btn-success" href="<?= Yii::app()->createUrl("/users/manage/quickUser?return=/$this->route") ?>"><i class="fa fa-plus"></i> افزودن کاربر جدید</a>
+            </span>
+        </div>
 		<?php echo $form->error($model,'user_id'); ?>
 	</div>
 
 	<div class="form-group">
 		<?php echo $form->labelEx($model,'user_address_id'); ?>
         <div class="input-group">
-            <?php echo $form->dropDownList($model,'user_address_id', [],array('class'=>'form-control','prompt' => 'ابتدا کاربر را انتخاب کنید...','disabled' => true)); ?>
+            <?php echo $form->dropDownList($model,'user_address_id', [],array('class'=>'form-control','prompt' => 'ابتدا کاربر را انتخاب کنید...','data-id' => $model->user_address_id,'disabled' => true)); ?>
             <span class="input-group-btn">
                 <a disabled="true" class="btn btn-success" id="add-address-btn" data-toggle="modal" data-target="#add-address" href="<?= Yii::app()->createUrl("/users/manage/addAddress?return=/$this->route") ?>"><i class="fa fa-plus"></i> افزودن آدرس جدید</a>
             </span>
         </div>
 		<?php echo $form->error($model,'user_address_id'); ?>
 	</div>
+
+    <div class="form-group">
+        <?php echo $form->labelEx($model,'category_id'); ?>
+        <div class="input-group">
+            <?php echo $form->dropDownList($model,'category_id', Categories::getList(),array('class'=>'form-control')); ?>
+            <span class="input-group-btn">
+                <button type="button" data-toggle="modal" data-target="#add-category" class="btn btn-success"><i class="fa fa-plus"></i> افزودن نوع جدید</button>
+            </span>
+        </div>
+        <?php echo $form->error($model,'category_id'); ?>
+    </div>
 
 	<div class="form-group">
 		<?php echo $form->labelEx($model,'repairman_id'); ?>
@@ -129,7 +137,7 @@ echo $form->errorSummary($model);
 
 	<div class="form-group">
 		<?php echo $form->labelEx($model,'service_time'); ?>
-		<?php echo $form->dropDownList($model,'service_time',['am' => 'صبح', 'pm' => 'عصر', 'night' => 'شب'],array('class'=>'form-control')); ?>
+		<?php echo $form->dropDownList($model,'service_time',Requests::$serviceTimes,array('class'=>'form-control')); ?>
 		<?php echo $form->error($model,'service_time'); ?>
 	</div>
 
@@ -181,7 +189,10 @@ Yii::app()->clientScript->registerScript('model-load', '
         }
     });
     
-    function fetch(el){
+//    fetch($(".brand-change-trigger"));
+    fetch($("select.user-change-trigger"), $("#Requests_user_address_id").data("id"));
+    
+    function fetch(el, id = false){
         var url = el.data("fetch-url"),
             target = el.data("target"),
             val = el.val();
@@ -193,6 +204,8 @@ Yii::app()->clientScript->registerScript('model-load', '
                 dataType: "html",
                 success: function(html){
                     $(target).html(html);
+                    if(id)
+                        $(target).find("[value=\""+id+"\"]").attr("selected", true);
                 }
             });
             
@@ -200,5 +213,5 @@ Yii::app()->clientScript->registerScript('model-load', '
         }else  
             $(target).attr("disabled", true);
     }
-');
+', CClientScript::POS_READY);
 ?>

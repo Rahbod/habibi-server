@@ -131,25 +131,16 @@ class UserDetails extends CActiveRecord
     }
 
     /**
+     * @param bool $phone
      * @return string if user`s name is not empty return name ,otherwise return email
      */
-    public function getShowName()
+    public function getShowName($phone = true)
     {
 		$postfix = '';
-//		if($this->user->role_id == 2)
-//			$postfix = ' - نمایشگاه '.$this->dealership_name;
         if ($this->first_name or $this->last_name)
-            return "{$this->first_name} {$this->last_name} ({$this->user->email})".$postfix;
+            return $phone?"{$this->first_name} {$this->last_name} ({$this->mobile})".$postfix:"{$this->first_name} {$this->last_name}".$postfix;
         else
             return $this->user->email.$postfix;
-    }
-	
-	public function getShowDescription()
-    {
-		return $this->user->activePlan->plan->title.
-			' / انقضا '.'<span class="text-danger">'.($this->user->activePlan->expire_date>0?JalaliDate::date('Y/m/d',$this->user->activePlan->expire_date):'-').'</span>'.
-			' / '. Controller::parseNumbers($this->mobile).
-			' / '.$this->user->email;
     }
 
 	public function getAvatar()

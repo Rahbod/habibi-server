@@ -13,6 +13,7 @@
  * @property string $create_date
  * @property string $modified_date
  * @property string $final_cost
+ * @property string $status
  *
  * The followings are the available model relations:
  * @property Tariffs[] $ymTariffs
@@ -21,6 +22,9 @@
  */
 class Invoices extends CActiveRecord
 {
+    const STATUS_UNPAID = 0;
+    const STATUS_PAID = 1;
+
 	/**
 	 * @return string the associated database table name
 	 */
@@ -40,6 +44,7 @@ class Invoices extends CActiveRecord
 			array('request_id, creator_id, create_date, modified_date', 'required'),
 			array('request_id, creator_id, additional_cost, final_cost', 'length', 'max'=>10),
 			array('payment_method', 'length', 'max'=>7),
+			array('status', 'length', 'max'=>1),
 			array('create_date, modified_date', 'length', 'max'=>12),
 			array('additional_description', 'safe'),
 			// The following rule is used by search().
@@ -77,6 +82,7 @@ class Invoices extends CActiveRecord
             'create_date' => 'تاریخ صدور',
             'modified_date' => 'تاریخ تغییرات',
             'final_cost' => 'هزینه کل',
+            'status' => 'وضعیت',
 		);
 	}
 

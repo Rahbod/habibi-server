@@ -34,7 +34,8 @@ class UsersManageController extends Controller
                 'dealershipRequest',
                 'deleteDealershipRequest',
                 'fetchAddresses',
-                'addAddress'
+                'addAddress',
+                'quickUser'
             )
         );
     }
@@ -383,5 +384,30 @@ class UsersManageController extends Controller
         }
 
         $this->render('add_address', compact('model'));
+    }
+
+    public function actionQuickUser()
+    {
+        $model = new Users('quick');
+        $address = new UserAddresses('quick');
+
+
+        if(isset($_POST['Users'])) {
+            $model->attributes = $_POST['Users'];
+            if ($model->save()) {
+                // @todo send sms to user; send username and pass and app download link
+                if (isset($_POST['UserAddresses'])) {
+                    $address->attributes = $_POST['UserAddresses'];
+                    if ($address->save())
+                        Yii::app()->user->setFlash('success', 'کاربر با موفقیت ثبت شد.');
+                    else
+                        Yii::app()->user->setFlash('failed', 'کاربر با موفقیت ثبت شد. در ثبت آدرس خطایی رخ داده است! لطفا مجددا تلاش کنید.');
+                    $this->redirect(array($_GET['return'], 'user_id' => $model->id));
+                }
+            } else
+                Yii::app()->user->setFlash('failed', 'در ثبت اطلاعات خطایی رخ داده است! لطفا مجددا تلاش کنید.');
+        }
+
+        $this->render('quick_user', compact('model', 'address'));
     }
 }
