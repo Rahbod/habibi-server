@@ -1,20 +1,53 @@
 <?php
-/* @var $this DashboardController*/
+/* @var $this AdminsDashboardController */
 /* @var $statistics []*/
 $permissions = [
     'contact' => false,
+    'appRequests' => false,
+    'offlineRequests' => false,
     'dealerRequests' => false,
     'transactionStatistics' => false,
     'statistics' => false,
 ];
 if(Yii::app()->user->roles == 'admin'){
     $permissions['contact'] = true;
+    $permissions['appRequests'] = true;
+    $permissions['offlineRequests'] = true;
+    $permissions['dealerRequests'] = true;
+    $permissions['statistics'] = true;
+    $permissions['transactionStatistics'] = true;
+}
+if(Yii::app()->user->roles == 'operator'){
+    $permissions['contact'] = true;
+    $permissions['appRequests'] = true;
+    $permissions['offlineRequests'] = true;
     $permissions['dealerRequests'] = true;
     $permissions['statistics'] = true;
     $permissions['transactionStatistics'] = true;
 }
 ?>
 <div class="row boxed-statistics">
+    <!--App AND Offline Requests-->
+    <?php
+    if($permissions['appRequests']):
+        ?>
+        <div class="col-lg-3 col-xs-6">
+            <!-- small box -->
+            <div class="small-box bg-red">
+                <div class="inner">
+                    <h3><?php echo $statistics['appRequests'];?></h3>
+                    <p>درخواست های تعمیرات جدید</p>
+                </div>
+                <div class="icon">
+                    <i class="ion ion-document-text"></i>
+                </div>
+                <a href="<?php echo $this->createUrl('/requests/manage/pending');?>" class="small-box-footer">مشاهده درخواست ها <i class="fa fa-arrow-circle-left"></i></a>
+            </div>
+        </div>
+        <?php
+    endif;
+    ?>
+
     <!--Dealership Requests-->
     <?php
     if($permissions['dealerRequests']):
@@ -24,7 +57,7 @@ if(Yii::app()->user->roles == 'admin'){
             <div class="small-box bg-green">
                 <div class="inner">
                     <h3><?php echo $statistics['dealerRequests'];?></h3>
-                    <p>درخواست ثبت نمایشگاه</p>
+                    <p>درخواست همکاری</p>
                 </div>
                 <div class="icon">
                     <i class="ion ion-android-car"></i>

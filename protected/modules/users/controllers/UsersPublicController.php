@@ -81,8 +81,7 @@ class UsersPublicController extends Controller
     public function actionLogout()
     {
         Yii::app()->user->logout();
-        Yii::app()->user->setState('clinic', null);
-        $this->redirect(Yii::app()->createAbsoluteUrl('//'));
+        $this->redirect(Yii::app()->getBaseUrl(true));
     }
 
     /**
@@ -94,23 +93,8 @@ class UsersPublicController extends Controller
         $this->layout = '//layouts/panel';
         /* @var $user Users */
         $user = Users::model()->findByPk(Yii::app()->user->id);
-        $this->pageTitle = 'پروفایل من';
-        $this->pageHeader = $user->userDetails->getShowName();
-        $this->pageDescription = $user->userDetails->getShowDescription();
-        $this->pageLogo = $user->userDetails->avatar && file_exists(Yii::getPathOfAlias('webroot.uploads') . '/users/' . $user->userDetails->avatar)?Yii::app()->getBaseUrl(true) . '/uploads/users/' . $user->userDetails->avatar:false;
 
-        $criteria = new CDbCriteria();
-        $criteria->compare('user_id', $user->id);
-        $criteria->addCondition('status <> :deleted');
-        $criteria->params[':deleted'] = Cars::STATUS_DELETED;
-        $sells = Cars::model()->findAll($criteria);
-
-
-        $criteria = new CDbCriteria();
-        $criteria->compare('user_id', $user->id);
-        $alerts = CarAlerts::model()->findAll($criteria);
-
-        $this->render('dashboard', compact('user', 'sells', 'alerts'));
+        $this->render('dashboard', compact('user'));
     }
 
     /**
@@ -223,14 +207,6 @@ class UsersPublicController extends Controller
         $this->layout = '//layouts/public';
 
         $model = Users::model()->findByPk($id);
-        if($clinicID = Yii::app()->request->getQuery('clinic')){
-            $criteria = new CDbCriteria();
-            $criteria->addCondition('clinics.id = :id');
-            $criteria->params[':id'] = $clinicID;
-            $model->clinic = $model->clinics($criteria);
-            if($model->clinic)
-                $model->clinic = $model->clinic[0];
-        }
 
         $this->render('view-profile', array(
             'model' => $model,

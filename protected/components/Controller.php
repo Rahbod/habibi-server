@@ -112,6 +112,14 @@ class Controller extends AuthController
                     'url' => array('/admins/dashboard')
                 ),
                 array(
+                    'label' => '<div class="text-center"><button type="button" class="btn btn-success"><i class="fa fa-ticket"></i> <span>درخواست جدید</span></button></div>',
+                    'url' => array('/requests/manage/create'),
+                ),
+                array(
+                    'label' => '<i class="fa fa-flash"></i><span>درخواست های جدید</span>',
+                    'url' => array('/requests/manage/pending')
+                ),
+                array(
                     'label' => '<i class="fa fa-ticket"></i><span>درخواست ها</span> <i class="fa fa-angle-left pull-left"></i>',
                     'url' => '#',
                     'itemOptions' => array('class' => 'treeview', 'tabindex' => "-1"),
@@ -160,9 +168,10 @@ class Controller extends AuthController
                     'itemOptions' => array('class' => 'treeview', 'tabindex' => "-1"),
                     'submenuOptions' => array('class' => 'treeview-menu'),
                     'items' => array(
-                        array('label' => '<i class="fa fa-circle-o"></i>نقش مدیران', 'url' => Yii::app()->createUrl('/admins/roles/admin')),
-                        array('label' => '<i class="fa fa-circle-o"></i>مدیریت', 'url' => Yii::app()->createUrl('/admins/manage')),
                         array('label' => '<i class="fa fa-circle-o"></i>افزودن', 'url' => Yii::app()->createUrl('/admins/manage/create')),
+                        array('label' => '<i class="fa fa-circle-o"></i>مدیریت', 'url' => Yii::app()->createUrl('/admins/manage')),
+                        array('label' => '<i class="fa fa-circle-o"></i>مدیریت اپراتورها', 'url' => Yii::app()->createUrl('/admins/manage?role=3')),
+                        array('label' => '<i class="fa fa-circle-o"></i>نقش مدیران', 'url' => Yii::app()->createUrl('/admins/roles/admin')),
                     )
                 ),
                 array(
@@ -171,8 +180,7 @@ class Controller extends AuthController
                     'itemOptions' => array('class' => 'treeview', 'tabindex' => "-1"),
                     'submenuOptions' => array('class' => 'treeview-menu'),
                     'items' => array(
-                        array('label' => '<i class="fa fa-circle-o"></i>مدیریت تعیرکاران', 'url' => Yii::app()->createUrl('/users/manage/admin?role=3')),
-                        array('label' => '<i class="fa fa-circle-o"></i>مدیریت اپراتورها', 'url' => Yii::app()->createUrl('/users/manage?role=2')),
+                        array('label' => '<i class="fa fa-circle-o"></i>مدیریت تعیرکاران', 'url' => Yii::app()->createUrl('/users/manage/admin?role=2')),
                         array('label' => '<i class="fa fa-circle-o"></i>مدیریت کاربران', 'url' => Yii::app()->createUrl('/users/manage')),
                     )
                 ),
@@ -187,6 +195,81 @@ class Controller extends AuthController
                         array('label' => '<i class="fa fa-circle-o"></i>صفحات متنی', 'url' => Yii::app()->createUrl('/pages/manage/admin/slug/base')),
                         array('label' => '<i class="fa fa-circle-o"></i>شبکه های اجتماعی', 'url' => Yii::app()->createUrl('/setting/manage/socialLinks')),
                         array('label' => '<i class="fa fa-circle-o"></i>تنظیمات درگاه', 'url' => Yii::app()->createUrl('/setting/manage/gatewaySetting')),
+                    )
+                ),
+                array(
+                    'label' => '<i class="fa fa-lock"></i><span>ورود</span>',
+                    'url' => array('/admins/login'),
+                    'visible' => Yii::app()->user->isGuest
+                ),
+                array(
+                    'label' => '<i class="fa fa-sign-out text-danger"></i><span class="text-danger">خروج</span>',
+                    'url' => array('/admins/login/logout'),
+                    'visible' => !Yii::app()->user->isGuest
+                ),
+            );
+        elseif(Yii::app()->user->roles === 'operator')
+            return array(
+                array(
+                    'label' => 'منوی اپراتور',
+                    'itemOptions' => array('class' => 'header'),
+                ),
+                array(
+                    'label' => '<i class="fa fa-dashboard"></i><span>پیشخوان</span>',
+                    'url' => array('/admins/dashboard')
+                ),
+                array(
+                    'label' => '<div class="text-center"><button type="button" class="btn btn-success"><i class="fa fa-ticket"></i> <span>درخواست جدید</span></button></div>',
+                    'url' => array('/requests/manage/create'),
+                ),
+                array(
+                    'label' => '<i class="fa fa-flash"></i><span>درخواست های جدید</span>',
+                    'url' => array('/requests/manage/pending')
+                ),
+                array(
+                    'label' => '<i class="fa fa-list"></i><span>درخواست های من</span>',
+                    'url' => array('/requests/manage/my'),
+                ),
+                array(
+                    'label' => '<i class="fa fa-ticket"></i><span>درخواست ها</span> <i class="fa fa-angle-left pull-left"></i>',
+                    'url' => '#',
+                    'itemOptions' => array('class' => 'treeview', 'tabindex' => "-1"),
+                    'submenuOptions' => array('class' => 'treeview-menu'),
+                    'items' => array(
+//                        array('label' => '<i class="fa fa-circle-o"></i>مدیریت همه درخواست ها', 'url' => Yii::app()->createUrl('/requests/manage/admin/')),
+                        array('label' => '<i class="fa fa-circle-o"></i>مدیریت انواع لوازم', 'url' => Yii::app()->createUrl('/requests/categories/admin')),
+                        array('label' => '<i class="fa fa-circle-o"></i>مدیریت تعرفه خدمات', 'url' => Yii::app()->createUrl('/requests/tariffs/admin/')),
+//                        array('label' => '<i class="fa fa-circle-o"></i>مدیریت برندها و مدل ها', 'url' => Yii::app()->createUrl('/requests/brands/admin')),
+                    )
+                ),
+                array(
+                    'label' => '<i class="fa fa-support"></i><span>تماس با ما</span> <i class="fa fa-angle-left pull-left"></i>',
+                    'url' => '#',
+                    'itemOptions' => array('class' => 'treeview', 'tabindex' => "-1"),
+                    'submenuOptions' => array('class' => 'treeview-menu'),
+                    'items' => array(
+                        array('label' => '<i class="fa fa-circle-o"></i>مدیریت پیام ها', 'url' => Yii::app()->createUrl('/contact/messages/admin')),
+                        array('label' => '<i class="fa fa-circle-o"></i>مدیریت بخش های تماس ', 'url' => Yii::app()->createUrl('/contact/department/admin')),
+                        array('label' => '<i class="fa fa-circle-o"></i>مدیریت دریافت کنندگان ', 'url' => Yii::app()->createUrl('/contact/receivers/admin')),
+                    )
+                ),
+                array(
+                    'label' => '<i class="fa fa-building"></i><span>درخواست های همکاری</span> <i class="fa fa-angle-left pull-left"></i>',
+                    'url' => '#',
+                    'itemOptions' => array('class' => 'treeview', 'tabindex' => "-1"),
+                    'submenuOptions' => array('class' => 'treeview-menu'),
+                    'items' => array(
+                        array('label' => '<i class="fa fa-circle-o"></i>مدیریت', 'url' => Yii::app()->createUrl('/users/manage/dealershipRequests')),
+                    )
+                ),
+                array(
+                    'label' => '<i class="fa fa-users"></i><span>کاربران</span> <i class="fa fa-angle-left pull-left"></i>',
+                    'url' => '#',
+                    'itemOptions' => array('class' => 'treeview', 'tabindex' => "-1"),
+                    'submenuOptions' => array('class' => 'treeview-menu'),
+                    'items' => array(
+                        array('label' => '<i class="fa fa-circle-o"></i>مدیریت تعیرکاران', 'url' => Yii::app()->createUrl('/users/manage/admin?role=2')),
+                        array('label' => '<i class="fa fa-circle-o"></i>مدیریت کاربران', 'url' => Yii::app()->createUrl('/users/manage')),
                     )
                 ),
                 array(

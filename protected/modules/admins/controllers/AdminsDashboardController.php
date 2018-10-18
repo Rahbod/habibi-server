@@ -32,8 +32,14 @@ class AdminsDashboardController extends Controller
         $trCr->addCondition('date >= :today');
         $trCr->params[':today'] = strtotime(date('Y/m/d 00:00', time()));
 
+        $appRequestsCr = new CDbCriteria();
+        $appRequestsCr->compare('status', Requests::STATUS_PENDING);
+        $appRequestsCr->compare('request_type', '<>' . Requests::REQUEST_OFFLINE);
+
         $statistics = [
             'contact' => ContactMessages::model()->count('seen = 0'),
+            'appRequests' => Requests::model()->count($appRequestsCr),
+            'offlineRequests' => Requests::model()->countByAttributes(['status' => Requests::STATUS_PENDING, 'request_type' => Requests::REQUEST_OFFLINE]),
             'dealerRequests' => DealershipRequests::model()->count('status = 0'),
             'transactions' => UserTransactions::model()->count($trCr)
         ];

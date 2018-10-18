@@ -168,6 +168,8 @@ class AdminsManageController extends Controller
 		if(isset($_GET['Admins']))
 			$model->attributes=$_GET['Admins'];
 
+        $model->role_id = isset($_GET['role']) ? $_GET['role'] : 2;
+
 		$this->render('admin',array(
 			'model'=>$model,
 		));

@@ -10,13 +10,16 @@ $this->breadcrumbs=array(
 $this->menu=array(
 	array('label'=>'افزودن درخواست', 'url'=>array('create')),
 );
+
+
+$pending = isset($_GET['pending']);
 ?>
 
 <div class="box box-primary">
     <div class="box-header with-border">
         <?php if($recycleBin): ?>
             <h3 class="box-title">مدیریت درخواست های معلق</h3>
-            <a href="<?= $this->createUrl('admin') ?>" class="btn btn-primary btn-sm pull-left">
+            <a href="<?= $this->createUrl($pending?'pending':'admin') ?>" class="btn btn-primary btn-sm pull-left">
                 بازگشت
                 <i class="fa fa-arrow-left"></i>
             </a>
@@ -27,10 +30,15 @@ $this->menu=array(
                 <i class="fa fa-trash-o"></i>
                 زباله دان
             </a>
+            <a href="<?= $this->createUrl('pending') ?>" style="margin-left: 5px" class="btn btn-success btn-sm pull-left">
+                <i class="fa fa-flash"></i>
+                درخواست های جدید
+            </a>
         <?php endif; ?>
     </div>
     <div class="box-body">
-        <?php $this->renderPartial("//partial-views/_flashMessage"); ?>        <div class="table-responsive">
+        <?php $this->renderPartial("//partial-views/_flashMessage"); ?>
+        <div class="table-responsive">
             <?php $this->widget('zii.widgets.grid.CGridView', array(
                 'id'=>'requests-grid',
                 'dataProvider'=>$model->search($recycleBin),
@@ -68,8 +76,8 @@ $this->menu=array(
                     ],
                     [
                         'name' => 'operator_id',
-                        'value' => '$data->operator && $data->operator->userDetails?$data->operator->userDetails->getShowName(false):"-"',
-                        'filter' => Users::getUsersByRole('operator',true)
+                        'value' => '$data->operator?$data->operator->name_family:"-"',
+                        'filter' => Admins::getByRole('operator',true)
                     ],
                     [
                         'name' => 'repairman_id',
@@ -82,6 +90,17 @@ $this->menu=array(
                         'filter' => false
                     ],
                     [
+                        'name' => 'request_type',
+                        'header' => '',
+                        'value' => function($data){
+                            /** @var $data Requests */
+                            return $data->getRequestTypeLabel(true);
+                        },
+                        'htmlOptions' => ['class' => 'text-center'],
+                        'type' => 'raw',
+                        'filter' => $model->requestTypeLabels
+                    ],
+                    [
                         'name' => 'status',
                         'value' => function($data){
                             /** @var $data Requests */
@@ -92,13 +111,13 @@ $this->menu=array(
                     ],
                     [
                         'header' => '',
-                        'value' => function($data){
+                        'value' => function($data) use ($pending){
                             /** @var $data Requests */
                             if($data->status >= Requests::STATUS_PENDING &&
                                $data->status <= Requests::STATUS_AWAITING_PAYMENT)
                                 return CHtml::link('صدور فاکتور', array('/requests/manage/invoicing/'.$data->id), array('class' => 'btn btn-xs btn-info'));
                             else if($data->status == Requests::STATUS_DELETED)
-                                return CHtml::link('بازیابی درخواست', array('/requests/manage/restore/'.$data->id), array('class' => 'btn btn-xs btn-warning'));
+                                return CHtml::link('بازیابی درخواست', array('/requests/manage/restore/'.$data->id.($pending?'?pending':'')), array('class' => 'btn btn-xs btn-warning'));
                             return '';
                         },
                         'type' => 'raw',

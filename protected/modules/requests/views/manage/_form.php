@@ -16,11 +16,23 @@
 //    );
 //else
 
-if($model->isNewRecord && isset($_GET['user_id']))
+$route = $this->route;
+
+if($model->isNewRecord && isset($_GET['user_id'])) {
     $model->user_id = $_GET['user_id'];
-    $clientOptions = array(
-        'validateOnSubmit' => true
-    );
+    $route .= "?user_id={$model->user_id}";
+}
+
+if($model->isNewRecord && isset($_GET['address_id'])) {
+    $model->user_address_id = $_GET['address_id'];
+    $route .= $route != $this->route ? "&address_id={$model->user_address_id}" : "?address_id={$model->user_address_id}";
+}
+
+$route = urlencode($route);
+
+$clientOptions = array(
+    'validateOnSubmit' => true
+);
 ?>
 
 <?php $this->renderPartial("//partial-views/_flashMessage"); ?>
@@ -46,7 +58,7 @@ echo $form->errorSummary($model);
 //                'data-target' => "#Requests_model_id"
 //            )); ?>
 <!--            <span class="input-group-btn">-->
-<!--                <a class="btn btn-success" href="--><?//= Yii::app()->createUrl("/requests/brands/create?return=/$this->route") ?><!--"><i class="fa fa-plus"></i> افزودن برند جدید</a>-->
+<!--                <a class="btn btn-success" href="--><?//= Yii::app()->createUrl("/requests/brands/create?return=/$route") ?><!--"><i class="fa fa-plus"></i> افزودن برند جدید</a>-->
 <!--            </span>-->
 <!--        </div>-->
 <!--		--><?php //echo $form->error($model,'brand_id'); ?>
@@ -72,7 +84,7 @@ echo $form->errorSummary($model);
                 )
             ); ?>
             <span class="input-group-btn">
-                <a class="btn btn-success" href="<?= Yii::app()->createUrl("/users/manage/quickUser?return=/$this->route") ?>"><i class="fa fa-plus"></i> افزودن کاربر جدید</a>
+                <a class="btn btn-success" href="<?= Yii::app()->createUrl("/users/manage/quickUser?return=/$route") ?>"><i class="fa fa-plus"></i> افزودن کاربر جدید</a>
             </span>
         </div>
 		<?php echo $form->error($model,'user_id'); ?>
@@ -83,7 +95,7 @@ echo $form->errorSummary($model);
         <div class="input-group">
             <?php echo $form->dropDownList($model,'user_address_id', [],array('class'=>'form-control','prompt' => 'ابتدا کاربر را انتخاب کنید...','data-id' => $model->user_address_id,'disabled' => true)); ?>
             <span class="input-group-btn">
-                <a disabled="true" class="btn btn-success" id="add-address-btn" data-toggle="modal" data-target="#add-address" href="<?= Yii::app()->createUrl("/users/manage/addAddress?return=/$this->route") ?>"><i class="fa fa-plus"></i> افزودن آدرس جدید</a>
+                <a disabled="true" class="btn btn-success" id="add-address-btn" data-toggle="modal" data-target="#add-address" href="<?= Yii::app()->createUrl("/users/manage/addAddress?return=/$route") ?>"><i class="fa fa-plus"></i> افزودن آدرس جدید</a>
             </span>
         </div>
 		<?php echo $form->error($model,'user_address_id'); ?>
@@ -210,8 +222,11 @@ Yii::app()->clientScript->registerScript('model-load', '
             });
             
             $(target).attr("disabled", false);
-        }else  
+            $("#add-address-btn").data("foreign-id", val).attr("disabled", false);
+        }else{  
             $(target).attr("disabled", true);
+            $("#add-address-btn").data("foreign-id", val).attr("disabled", true);
+        }
     }
 ', CClientScript::POS_READY);
 ?>

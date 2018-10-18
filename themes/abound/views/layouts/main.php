@@ -51,7 +51,7 @@
     ?>
 </head>
 
-<body class="skin-blue sidebar-mini">
+<body class="skin-blue sidebar-mini" data-last-push="<?= Requests::getMaxID() ?>">
     <div class="wrapper">
         <?php $this->renderPartial('//partial-views/_header') ?>
         <?php $this->renderPartial('//partial-views/_sidebar') ?>
@@ -81,5 +81,46 @@
 <!-- Require the footer -->
 <?php $this->renderPartial('//partial-views/_footer') ?>
 
+
+<div class="push-notification" id="push-notification"></div>
+<audio style="display: none" id="sound1"><source src="<?= $baseUrl.'/css/beep.ogg' ?>"></audio>
+<?php
+Yii::app()->clientScript->registerScript('load-push','
+    var lastPush = $("body").data("last-push");
+    
+    push();
+    setInterval(function(){
+        push();
+    }, 15000);
+    
+    function push(){
+        $.ajax({
+            url:"'.$this->createUrl('/requests/manage/pending?pendingAjax=true&push=true&last=').'"+lastPush,
+            type: "get",
+            dataType: "json",
+            success: function(data){
+                if(data.push){
+                    $(data.push).each(function(key, tr) {
+                        $("#push-notification").append(tr);
+                        var el = $("#push-notification .push-item:last-of-type");
+                        setTimeout(function(){
+                            el.fadeOut(function(){
+                                el.remove();
+                            });                            
+                        },5000);
+                    });
+                    PlaySound("sound1");
+                }
+                lastPush = data.last;
+            }
+        });
+    }
+    
+    function PlaySound(soundObj) {
+      var sound = document.getElementById(soundObj);
+      sound.play();
+    }
+', CClientScript::POS_END);
+?>
 </body>
 </html>

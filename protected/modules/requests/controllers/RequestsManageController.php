@@ -29,12 +29,14 @@ class RequestsManageController extends Controller
                 'create',
                 'update',
                 'admin',
+                'pending',
                 'recycleBin',
                 'restore',
                 'delete',
                 'view',
                 'invoicing',
                 'approvePayment',
+                'my',
             )
         );
     }
@@ -54,7 +56,7 @@ class RequestsManageController extends Controller
             $model->save(false);
         }
 
-        if (!$model->operator_id && Yii::app()->user->roles == 'operator') {
+        if (!$model->operator_id && Yii::app()->user->type == 'admin') {
             $model->operator_id = Yii::app()->user->getId();
             $model->save(false);
         }
@@ -78,7 +80,8 @@ class RequestsManageController extends Controller
             $model->attributes = $_POST['Requests'];
             $model->status = Requests::STATUS_CONFIRMED;
             $model->requested_date = $model->service_date;
-            $model->operator_id = Yii::app()->user->type != 'admin' ? Yii::app()->user->id : 4;
+            $model->request_type = Requests::REQUEST_FROM_CALL;
+            $model->operator_id = Yii::app()->user->type == 'admin' ? Yii::app()->user->getId() : null;
             if ($model->save()) {
                 Yii::app()->user->setFlash('success', '<span class="icon-check"></span>&nbsp;&nbsp;اطلاعات با موفقیت ذخیره شد.');
                 $this->redirect(array('admin'));
@@ -137,6 +140,9 @@ class RequestsManageController extends Controller
             }
         }
         // if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
+        if (isset($_GET['pending']))
+            $this->redirect(array('pending'));
+
         if (!isset($_GET['ajax']))
             $this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('admin'));
     }
@@ -158,8 +164,45 @@ class RequestsManageController extends Controller
         $model->unsetAttributes();  // clear any default values
         if (isset($_GET['Requests']))
             $model->attributes = $_GET['Requests'];
+        $model->operator_id = Yii::app()->user->roles == 'operator'?Yii::app()->user->getId():null;
 
         $this->render('admin', array(
+            'model' => $model,
+        ));
+    }
+
+    /**
+     * Manages all models.
+     */
+    public function actionMy()
+    {
+        $model = new Requests('search');
+        $model->unsetAttributes();  // clear any default values
+        if (isset($_GET['Requests']))
+            $model->attributes = $_GET['Requests'];
+
+        $this->render('my_requests', array(
+            'model' => $model,
+        ));
+    }
+
+    /**
+     * Manages all models.
+     */
+    public function actionPending()
+    {
+        $model = new Requests('search');
+        $model->unsetAttributes();  // clear any default values
+        if (isset($_GET['Requests']))
+            $model->attributes = $_GET['Requests'];
+        $model->status = Requests::STATUS_PENDING;
+
+        if (isset($_GET['pendingAjax'])){
+            echo CJSON::encode($model->search());
+            Yii::app()->end();
+        }
+
+        $this->render('pending', array(
             'model' => $model,
         ));
     }

@@ -20,6 +20,7 @@
  * @property string $service_date
  * @property string $service_time
  * @property string $status
+ * @property string $request_type
  *
  * The followings are the available model relations:
  * @property Invoices[] $invoices
@@ -27,7 +28,7 @@
  * @property Brands $brand
  * @property Models $model
  * @property Users $user
- * @property Users $operator
+ * @property Admins $operator
  * @property Users $repairman
  * @property UserAddresses $userAddress
  */
@@ -42,6 +43,11 @@ class Requests extends CActiveRecord
     const STATUS_PAID = 6;
     const STATUS_DONE = 7;
 
+    const REQUEST_FROM_APP_ANDROID = 1;
+    const REQUEST_FROM_APP_IOS = 2;
+    const REQUEST_FROM_CALL = 3;
+    const REQUEST_OFFLINE = 4;
+
     public $statusLabels = array(
         self::STATUS_DELETED => 'معلق',
         self::STATUS_PENDING => 'در انتظار بررسی',
@@ -51,6 +57,13 @@ class Requests extends CActiveRecord
         self::STATUS_AWAITING_PAYMENT => 'در انتظار پرداخت',
         self::STATUS_PAID => 'پرداخت شده',
         self::STATUS_DONE => 'انجام شده',
+    );
+
+    public $requestTypeLabels = array(
+        self::REQUEST_FROM_APP_ANDROID => 'نرم افزار اندروید',
+        self::REQUEST_FROM_APP_IOS => 'نرم افزار آی او اس',
+        self::REQUEST_FROM_CALL => 'تماس تلفنی',
+        self::REQUEST_OFFLINE => 'درخواست آفلاین',
     );
 
     public static $serviceTimes = ['am' => 'صبح', 'pm' => 'عصر', 'night' => 'شب'];
@@ -71,18 +84,18 @@ class Requests extends CActiveRecord
         // NOTE: you should only define rules for those attributes that
         // will receive user inputs.
         return array(
-            array('category_id, user_id, user_address_id, operator_id, requested_date', 'required'),
-            array('requested_date', 'numerical', 'integerOnly' => true),
+            array('request_type,category_id, user_id, user_address_id, operator_id, requested_date', 'required'),
+            array('request_type,requested_date', 'numerical', 'integerOnly' => true),
             array('category_id, brand_id, model_id, user_id, user_address_id, operator_id, repairman_id', 'length', 'max' => 10),
             array('create_date, modified_date, service_date', 'length', 'max' => 12),
             array('create_date', 'default', 'value' => time()),
             array('modified_date', 'default', 'value' => time()),
             array('requested_time, service_time', 'length', 'max' => 255),
-            array('status', 'length', 'max' => 1),
+            array('request_type, status', 'length', 'max' => 1),
             array('description', 'safe'),
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
-            array('id, category_id, brand_id, model_id, user_id, user_address_id, operator_id, repairman_id, create_date, modified_date, description, requested_date, requested_time, service_date, service_time, status', 'safe', 'on' => 'search'),
+            array('id, request_type, category_id, brand_id, model_id, user_id, user_address_id, operator_id, repairman_id, create_date, modified_date, description, requested_date, requested_time, service_date, service_time, status', 'safe', 'on' => 'search'),
         );
     }
 
@@ -99,7 +112,7 @@ class Requests extends CActiveRecord
             'brand' => array(self::BELONGS_TO, 'Brands', 'brand_id'),
             'model' => array(self::BELONGS_TO, 'Models', 'model_id'),
             'user' => array(self::BELONGS_TO, 'Users', 'user_id'),
-            'operator' => array(self::BELONGS_TO, 'Users', 'operator_id'),
+            'operator' => array(self::BELONGS_TO, 'Admins', 'operator_id'),
             'repairman' => array(self::BELONGS_TO, 'Users', 'repairman_id'),
             'userAddress' => array(self::BELONGS_TO, 'UserAddresses', 'user_address_id'),
         );
@@ -127,6 +140,7 @@ class Requests extends CActiveRecord
             'service_date' => 'تاریخ سرویس',
             'service_time' => 'زمان سرویس',
             'status' => 'وضعیت درخواست',
+            'request_type' => 'نوع درخواست',
         );
     }
 
@@ -139,16 +153,15 @@ class Requests extends CActiveRecord
      * models according to data in model fields.
      * - Pass data provider to CGridView, CListView or any similar widget.
      *
-     * @return CActiveDataProvider the data provider that can return the models
+     * @return array|CActiveDataProvider
      * based on the search/filter conditions.
      */
-    public function search($recycleBin= false)
+    public function search($recycleBin = false)
     {
         // @todo Please modify the following code to remove attributes that should not be searched.
 
         $criteria = new CDbCriteria;
 
-        $criteria->compare('id', $this->id, true);
         $criteria->compare('category_id', $this->category_id, true);
         $criteria->compare('brand_id', $this->brand_id, true);
         $criteria->compare('model_id', $this->model_id, true);
@@ -163,23 +176,59 @@ class Requests extends CActiveRecord
         $criteria->compare('requested_time', $this->requested_time, true);
         $criteria->compare('service_date', $this->service_date, true);
         $criteria->compare('service_time', $this->service_time, true);
-        if($recycleBin)
+        $criteria->compare('request_type', $this->request_type);
+        if ($recycleBin)
             $criteria->addCondition('status = -1');
         else {
-            $criteria->compare('status', $this->status, true);
+            $criteria->compare('status', $this->status);
             $criteria->addCondition('status > 0');
         }
-        $criteria->order = 'id DESC';
-        return new CActiveDataProvider($this, array(
-            'criteria' => $criteria,
-        ));
+
+        $criteria->order = 'id';
+
+        if (isset($_GET['pendingAjax'])) {
+            if (isset($_GET['last']))
+                $criteria->compare('id', ' >'.(int)$_GET['last']);
+
+            $result = [];
+            if(isset($_GET['table'])) {
+                Yii::app()->controller->beginClip('table');
+                foreach (self::model()->findAll($criteria) as $data) {
+                    Yii::app()->controller->renderPartial('_item_view', array('data' => $data));
+                }
+                Yii::app()->controller->endClip();
+                $result['table'] = Yii::app()->controller->clips['table'];
+            }
+
+            if(isset($_GET['push'])) {
+                Yii::app()->controller->beginClip('push');
+                foreach (self::model()->findAll($criteria) as $data) {
+                    Yii::app()->controller->renderPartial('_push_view', array('data' => $data));
+                }
+                Yii::app()->controller->endClip();
+                $result['push'] = Yii::app()->controller->clips['push'];
+            }
+
+            $result['last'] = $this->getMaxID();
+
+            return $result;
+        }
+
+        $config = [
+            'criteria' => $criteria
+        ];
+
+        if(Yii::app()->controller->route === 'requests/manage/pending')
+            $config['pagination'] = false;
+
+        return new CActiveDataProvider($this, $config);
     }
 
     /**
      * Returns the static model of the specified AR class.
      * Please note that you should have this exact method in all your CActiveRecord descendants!
      * @param string $className active record class name.
-     * @return Requests the static model class
+     * @return CActiveRecord
      */
     public static function model($className = __CLASS__)
     {
@@ -220,8 +269,40 @@ class Requests extends CActiveRecord
         return $this->statusLabels[$this->status];
     }
 
+    /**
+     * @param bool $icon
+     * @return mixed
+     */
+    public function getRequestTypeLabel($icon = false)
+    {
+        if ($icon) {
+            switch ($this->request_type) {
+                case self::REQUEST_FROM_CALL:
+                    return "<span class='text-success fa fa-phone' data-toggle='tooltip' data-placement='top' title='{$this->getRequestTypeLabel()}'></span>";
+                case self::REQUEST_FROM_APP_ANDROID:
+                    return "<span class='text-success fa fa-android' data-toggle='tooltip' data-placement='top' title='{$this->getRequestTypeLabel()}'></span>";
+                case self::REQUEST_FROM_APP_IOS:
+                    return "<span class='text-gray fa fa-apple' data-toggle='tooltip' data-placement='top' title='{$this->getRequestTypeLabel()}'></span>";
+                case self::REQUEST_OFFLINE:
+                    return "<span class='text-danger fa fa-power-off' data-toggle='tooltip' data-placement='top' title='{$this->getRequestTypeLabel()}'></span>";
+                default:
+                    return '';
+            }
+        }
+        return $this->requestTypeLabels[$this->request_type];
+    }
+
     public function getLastInvoice()
     {
         return Invoices::model()->findByAttributes(['request_id' => $this->id, 'status' => Invoices::STATUS_UNPAID]);
+    }
+
+    /**
+     * @return mixed
+     */
+    public static function getMaxID()
+    {
+        $max = Requests::model()->find(array('order' => 'id DESC'));
+        return $max ? $max->id : 0;
     }
 }

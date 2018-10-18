@@ -7,11 +7,21 @@ $this->breadcrumbs=array(
 	$model->id,
 );
 
+$query = '';
+if (isset($_GET['pending']))
+    $query = '?pending';
+
 ?>
 
 <div class="box box-primary">
     <div class="box-header with-border">
-        <h3 class="box-title">نمایش درخواست #<?= $model->id ?></h3>
+        <h3 class="box-title">
+            نمایش درخواست #<?= $model->id ?>
+
+            <?php if($model->status): ?>
+                <label class='label label-<?= $model->getStatusLabel(true) ?>'><?= $model->getStatusLabel() ?></label>
+            <?php endif; ?>
+        </h3>
     </div>
     <div class="box-body">
 
@@ -19,7 +29,7 @@ $this->breadcrumbs=array(
 
         <div class="form-group buttons text-left">
             <!-- Invoicing -->
-            <?php if($model->status <= Requests::STATUS_AWAITING_PAYMENT): ?>
+            <?php if($model->status >= Requests::STATUS_CONFIRMED && $model->status <= Requests::STATUS_AWAITING_PAYMENT): ?>
                 <a href="<?= $this->createUrl('invoicing')."/$model->id" ?>" class="btn btn-info">صدور فاکتور</a>
             <?php endif; ?>
 
@@ -30,9 +40,9 @@ $this->breadcrumbs=array(
 
             <?php if($model->status < Requests::STATUS_PAID): ?>
                 <?php if($model->status != Requests::STATUS_DELETED): ?>
-                    <a href="<?= $this->createUrl('delete')."/$model->id" ?>" class="btn btn-danger" onclick='if(!confirm("آیا از تعلیق این درخواست اطمینان دارید؟")) return false;'>تعلیق</a>
+                        <a href="<?= $this->createUrl('delete')."/$model->id{$query}" ?>" class="btn btn-danger" onclick='if(!confirm("آیا از حذف این درخواست اطمینان دارید؟")) return false;'>انتقال به زباله دان</a>
                 <?php else: ?>
-                    <a href="<?= $this->createUrl('delete')."/$model->id" ?>" class="btn btn-danger" onclick='if(!confirm("آیا از حذف این درخواست اطمینان دارید؟")) return false;'>حذف کامل</a>
+                    <a href="<?= $this->createUrl('delete')."/$model->id{$query}" ?>" class="btn btn-danger" onclick='if(!confirm("آیا از حذف این درخواست اطمینان دارید؟")) return false;'>حذف کامل</a>
                 <?php endif; ?>
             <?php endif; ?>
         </div>
@@ -43,11 +53,6 @@ $this->breadcrumbs=array(
             'htmlOptions' => array('class'=>'detail-view table table-striped'),
             'attributes'=>array(
                 'id',
-                [
-                    'label' => $model->getAttributeLabel('category_id'),
-                    'value' => $model->status?"<label class='label label-{$model->getStatusLabel(true)}'>{$model->getStatusLabel()}</label>":'-',
-                    'type' => 'raw'
-                ],
                 [
                     'label' => $model->getAttributeLabel('category_id'),
                     'value' => $model->category?$model->category->title:'<span class="text-danger">حذف شده</span>',
@@ -63,12 +68,12 @@ $this->breadcrumbs=array(
                 ],
                 [
                     'label' => $model->getAttributeLabel('operator_id'),
-                    'value' => $model->operator_id == null?"مدیر":($model->operator && $model->operator->userDetails?$model->operator->userDetails->getShowName(false):'<span class="text-danger">حذف شده</span>'),
+                    'value' => $model->operator?$model->operator->name_family:'<span class="text-danger">حذف شده</span>',
                     'type' => 'raw'
                 ],
                 [
                     'label' => $model->getAttributeLabel('repairman_id'),
-                    'value' => $model->repairman && $model->repairman->userDetails?$model->repairman->userDetails->getShowName(false):'<span class="text-danger">حذف شده</span>',
+                    'value' => $model->repairman_id?($model->repairman && $model->repairman->userDetails?$model->repairman->userDetails->getShowName(false):'<span class="text-danger">حذف شده</span>'):null,
                     'type' => 'raw'
                 ],
 

@@ -94,13 +94,13 @@ class UsersManageController extends Controller
         // Uncomment the following line if AJAX validation is needed
         // $this->performAjaxValidation($model);
 
-        if(isset($_POST['Users'])){
+        if (isset($_POST['Users'])) {
             $model->attributes = $_POST['Users'];
             $model->status = 'active';
             $model->password = $model->generatePassword();
             $model->repeatPassword = $model->generatePassword();
-            $model->role_id = isset($_GET['role'])?$_GET['role']:1;
-            if($model->save())
+            $model->role_id = isset($_GET['role']) ? $_GET['role'] : 1;
+            if ($model->save())
                 $this->redirect(array('views', 'id' => $model->id));
         }
 
@@ -119,31 +119,31 @@ class UsersManageController extends Controller
         $model = new Users();
         $model->setScenario('create-dealership');
         $this->performAjaxValidation($model);
-        if($id){
+        if ($id) {
             $request = DealershipRequests::model()->findByPk($id);
-            if(!isset($_POST['Users'])){
+            if (!isset($_POST['Users'])) {
                 $model->attributes = $request->attributes;
                 $model->first_name = $request->manager_name;
                 $model->last_name = $request->manager_last_name;
             }
         }
         $avatar = array();
-        if(isset($_POST['Users'])){
+        if (isset($_POST['Users'])) {
             $model->attributes = $_POST['Users'];
             $model->role_id = 3;
             $model->status = 'active';
             $model->create_date = time();
 
             $avatar = new UploadedFiles($this->tempPath, $model->avatar);
-            if($model->save()){
+            if ($model->save()) {
                 $avatar->move($this->avatarPath);
-                if($id && $request){
+                if ($id && $request) {
                     $request->status = DealershipRequests::STATUS_SAVED;
                     $request->save(false);
                 }
                 Yii::app()->user->setFlash('success', 'اطلاعات با موفقیت ثبت شد.');
                 $this->redirect(array('dealershipRequests'));
-            }else
+            } else
                 Yii::app()->user->setFlash('failed', 'در ثبت اطلاعات خطایی رخ داده است! لطفا مجددا تلاش کنید.');
         }
 
@@ -159,18 +159,18 @@ class UsersManageController extends Controller
     {
         $model = $this->loadModel($id);
         $model->scenario = 'changeStatus';
-        if(isset($_POST['Users'])){
+        if (isset($_POST['Users'])) {
             $model->attributes = $_POST['Users'];
-            if($model->save()){
+            if ($model->save()) {
                 Yii::app()->user->setFlash('success', '<span class="icon-check"></span>&nbsp;&nbsp;اطلاعات با موفقیت ذخیره شد.');
-                if(isset($_POST['ajax'])){
+                if (isset($_POST['ajax'])) {
                     echo CJSON::encode(['status' => 'ok']);
                     Yii::app()->end();
-                }else
+                } else
                     $this->redirect(array('admin'));
-            }else{
+            } else {
                 Yii::app()->user->setFlash('failed', 'در ثبت اطلاعات خطایی رخ داده است! لطفا مجددا تلاش کنید.');
-                if(isset($_POST['ajax'])){
+                if (isset($_POST['ajax'])) {
                     echo CJSON::encode(['status' => 'error']);
                     Yii::app()->end();
                 }
@@ -196,14 +196,14 @@ class UsersManageController extends Controller
         $this->performAjaxValidation($model);
 
         $avatar = new UploadedFiles($this->avatarPath, $model->avatar);
-        if(isset($_POST['Users'])){
+        if (isset($_POST['Users'])) {
             $oldAvatar = $model->avatar;
             $model->attributes = $_POST['Users'];
-            if($model->save()){
+            if ($model->save()) {
                 $avatar->update($oldAvatar, $model->avatar, $this->tempPath);
                 Yii::app()->user->setFlash('success', 'اطلاعات با موفقیت ثبت شد.');
                 $this->refresh();
-            }else
+            } else
                 Yii::app()->user->setFlash('failed', 'در ثبت اطلاعات خطایی رخ داده است! لطفا مجددا تلاش کنید.');
         }
 
@@ -221,15 +221,15 @@ class UsersManageController extends Controller
 //        if($model->status == 'deleted')
 //            $model->delete();
 //        $model->updateByPk($model->id, array('status' => 'deleted'));
-        if($model->userDetails->avatar && is_file($this->avatarPath . $model->userDetails->avatar)){
+        if ($model->userDetails->avatar && is_file($this->avatarPath . $model->userDetails->avatar)) {
             $avatar = new UploadedFiles($this->avatarPath, $model->userDetails->avatar);
             $avatar->removeAll(true);
         }
         $model->delete();
 
         // if AJAX request (triggered by deletion via admin grid views), we should not redirect the browser
-        if(!isset($_GET['ajax']))
-            $this->redirect(isset($_POST['returnUrl'])?$_POST['returnUrl']:array('admin'));
+        if (!isset($_GET['ajax']))
+            $this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('admin'));
     }
 
     /**
@@ -248,9 +248,9 @@ class UsersManageController extends Controller
         // users
         $model = new Users('search');
         $model->unsetAttributes();
-        if(isset($_GET['Users']))
+        if (isset($_GET['Users']))
             $model->attributes = $_GET['Users'];
-        $model->role_id = isset($_GET['role'])?$_GET['role']:1;
+        $model->role_id = isset($_GET['role']) ? $_GET['role'] : 1;
 
         $role = UserRoles::model()->findByPk($model->role_id);
         $this->render('admin', compact('model', 'role'));
@@ -263,7 +263,7 @@ class UsersManageController extends Controller
     {
         $model = new Users('search');
         $model->unsetAttributes();  // clear any default values
-        if(isset($_GET['Users']))
+        if (isset($_GET['Users']))
             $model->attributes = $_GET['Users'];
         $model->role_id = 2;
         $this->render('dealerships', array(
@@ -280,7 +280,7 @@ class UsersManageController extends Controller
     {
         $model = new UserTransactions('search');
         $model->unsetAttributes();
-        if(isset($_GET['UserTransactions']))
+        if (isset($_GET['UserTransactions']))
             $model->attributes = $_GET['UserTransactions'];
         $model->user_id = $id;
         //
@@ -297,7 +297,7 @@ class UsersManageController extends Controller
 
         $model = new UserTransactions('search');
         $model->unsetAttributes();  // clear any default values
-        if(isset($_GET['UserTransactions']))
+        if (isset($_GET['UserTransactions']))
             $model->attributes = $_GET['UserTransactions'];
 
         $this->render('admin_transactions', array(
@@ -315,7 +315,7 @@ class UsersManageController extends Controller
     public function loadModel($id)
     {
         $model = Users::model()->findByPk($id);
-        if($model === null)
+        if ($model === null)
             throw new CHttpException(404, 'The requested page does not exist.');
         return $model;
     }
@@ -326,7 +326,7 @@ class UsersManageController extends Controller
      */
     protected function performAjaxValidation($model)
     {
-        if(isset($_POST['ajax']) && $_POST['ajax'] === 'users-form'){
+        if (isset($_POST['ajax']) && $_POST['ajax'] === 'users-form') {
             echo CActiveForm::validate($model);
             Yii::app()->end();
         }
@@ -335,7 +335,7 @@ class UsersManageController extends Controller
     public function actionDealershipRequests()
     {
         $model = new DealershipRequests('search');
-        if(isset($_GET['DealershipRequests']))
+        if (isset($_GET['DealershipRequests']))
             $model->attributes = $_GET['DealershipRequests'];
         $this->render('dealership_requests', compact('model'));
     }
@@ -366,7 +366,7 @@ class UsersManageController extends Controller
                                 <div>{$address->town->name} - {$address->place->name}</div>
                                 <small>{$address->postal_address}</small>
                             </option>";
-        echo $addresses?$output:$empty;
+        echo $addresses ? $output : $empty;
         return;
     }
 
@@ -374,12 +374,22 @@ class UsersManageController extends Controller
     {
         $model = new UserAddresses();
 
-        if(isset($_POST['UserAddresses'])){
+        if (isset($_POST['UserAddresses'])) {
             $model->attributes = $_POST['UserAddresses'];
-            if($model->save()){
+            if ($model->save()) {
                 Yii::app()->user->setFlash('success', 'آدرس برای کاربر با موفقیت ثبت شد.');
-                $this->redirect(array($_GET['return']));
-            }else
+
+                $return = $_GET['return'];
+                if(strpos($return, 'address_id') !== false)
+                {
+                    list($uri, $query) = explode("?",$return);
+                    parse_str($query, $params);
+                    unset($params['address_id']);
+                    $params['address_id'] = $model->id;
+                    $return = $uri."?".http_build_query($params);
+                }
+                $this->redirect(array($return));
+            } else
                 Yii::app()->user->setFlash('failed', 'در ثبت اطلاعات خطایی رخ داده است! لطفا مجددا تلاش کنید.');
         }
 
@@ -392,17 +402,20 @@ class UsersManageController extends Controller
         $address = new UserAddresses('quick');
 
 
-        if(isset($_POST['Users'])) {
+        if (isset($_POST['Users'])) {
             $model->attributes = $_POST['Users'];
+            $model->username = $model->mobile;
+            $model->status = 'active';
             if ($model->save()) {
                 // @todo send sms to user; send username and pass and app download link
                 if (isset($_POST['UserAddresses'])) {
                     $address->attributes = $_POST['UserAddresses'];
-                    if ($address->save())
+                    $address->user_id = $model->id;
+                    if ($address->save()) {
                         Yii::app()->user->setFlash('success', 'کاربر با موفقیت ثبت شد.');
-                    else
+                        $this->redirect(array($_GET['return'], 'user_id' => $model->id, 'address_id' => $address->id));
+                    } else
                         Yii::app()->user->setFlash('failed', 'کاربر با موفقیت ثبت شد. در ثبت آدرس خطایی رخ داده است! لطفا مجددا تلاش کنید.');
-                    $this->redirect(array($_GET['return'], 'user_id' => $model->id));
                 }
             } else
                 Yii::app()->user->setFlash('failed', 'در ثبت اطلاعات خطایی رخ داده است! لطفا مجددا تلاش کنید.');

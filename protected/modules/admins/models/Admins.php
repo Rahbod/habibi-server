@@ -167,4 +167,26 @@ class Admins extends CActiveRecord
 	{
 		return parent::model($className);
 	}
+
+    /**
+     * @param int|string $role Role ID or Role Name
+     * @param bool $toList
+     * @return CActiveRecord[]
+     */
+    public static function getByRole($role, $toList = false)
+    {
+        $criteria = new CDbCriteria();
+        if (intval($role))
+            $criteria->compare('role_id', $role);
+        else {
+            $criteria->with[] = "role";
+            $criteria->compare('role.role', $role);
+        }
+        if(!$toList)
+            return Admins::model()->findAll($criteria);
+        else
+            return CHtml::listData(Admins::model()->findAll($criteria), 'id', function ($model){
+                return $model->name_family;
+            });
+    }
 }

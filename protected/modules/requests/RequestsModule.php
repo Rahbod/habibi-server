@@ -7,6 +7,7 @@ class RequestsModule extends CWebModule
         'tariffs' => 'requests.controllers.RequestsTariffsController',
         'brands' => 'requests.controllers.RequestsBrandsController',
         'categories' => 'requests.controllers.RequestsCategoriesController',
+        'offline' => 'requests.controllers.RequestsOfflineController',
     );
 
 	public function init()

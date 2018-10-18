@@ -1,7 +1,7 @@
-.sidebar-menu li a .fa-angle-left,
-.sidebar-menu li .label, .sidebar-menu li .badge {
-	margin-top: -15px !important;
-}
+/*.sidebar-menu li a .fa-angle-left,*/
+/*.sidebar-menu li .label, .sidebar-menu li .badge {*/
+	/*margin-top: -15px !important;*/
+/*}*/
 .login-box, .register-box{
 	position: fixed;
 	z-index:3;
