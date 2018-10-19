@@ -8,7 +8,7 @@ class RequestsOfflineController extends Controller
     public function filters()
     {
         return array(
-            'checkAccess', // perform access control for CRUD operations
+            'checkAccess - receive', // perform access control for CRUD operations
             'postOnly + delete', // we only allow deletion via POST request
         );
     }
@@ -20,7 +20,7 @@ class RequestsOfflineController extends Controller
     {
         return array(
             'backend' => array(
-                'index', 'admin', 'delete'
+                'index', 'admin', 'delete', 'receive'
             )
         );
     }
