@@ -101,6 +101,8 @@ class Controller extends AuthController
 
     public static function createAdminMenu()
     {
+        $newReqCount = Requests::model()->countByAttributes(['status' => Requests::STATUS_PENDING]);
+        $myReqCount = Requests::model()->countByAttributes(['operator_id' => Yii::app()->user->getId()]);
         if(Yii::app()->user->roles === 'admin')
             return array(
                 array(
@@ -116,7 +118,7 @@ class Controller extends AuthController
                     'url' => array('/requests/manage/create'),
                 ),
                 array(
-                    'label' => '<i class="fa fa-flash"></i><span>درخواست های جدید</span>',
+                    'label' => '<i class="fa fa-flash"></i><span>درخواست های جدید</span>'.($newReqCount != 0?"<span id='new-req-count' class='badge bg-red pull-left'>{$newReqCount}</span>":''),
                     'url' => array('/requests/manage/pending')
                 ),
                 array(
@@ -223,11 +225,11 @@ class Controller extends AuthController
                     'url' => array('/requests/manage/create'),
                 ),
                 array(
-                    'label' => '<i class="fa fa-flash"></i><span>درخواست های جدید</span>',
+                    'label' => '<i class="fa fa-flash"></i><span>درخواست های جدید</span>'.($newReqCount!= 0?"<span id='new-req-count' class='badge bg-red pull-left'>{$newReqCount}</span>":''),
                     'url' => array('/requests/manage/pending')
                 ),
                 array(
-                    'label' => '<i class="fa fa-list"></i><span>درخواست های من</span>',
+                    'label' => '<i class="fa fa-list"></i><span>درخواست های من</span>'.($myReqCount!= 0?"<span id='my-req-count' class='badge bg-gray pull-left'>{$myReqCount}</span>":''),
                     'url' => array('/requests/manage/my'),
                 ),
                 array(

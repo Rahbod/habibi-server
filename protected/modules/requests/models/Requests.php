@@ -191,6 +191,8 @@ class Requests extends CActiveRecord
                 $criteria->compare('id', ' >'.(int)$_GET['last']);
 
             $result = [];
+            $result['count'] = self::model()->countByAttributes(['status' => Requests::STATUS_PENDING]);
+
             if(isset($_GET['table'])) {
                 Yii::app()->controller->beginClip('table');
                 foreach (self::model()->findAll($criteria) as $data) {
@@ -210,7 +212,6 @@ class Requests extends CActiveRecord
             }
 
             $result['last'] = $this->getMaxID();
-
             return $result;
         }
 

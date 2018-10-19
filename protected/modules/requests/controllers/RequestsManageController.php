@@ -180,6 +180,7 @@ class RequestsManageController extends Controller
         $model->unsetAttributes();  // clear any default values
         if (isset($_GET['Requests']))
             $model->attributes = $_GET['Requests'];
+        $model->operator_id = Yii::app()->user->getId();
 
         $this->render('my_requests', array(
             'model' => $model,

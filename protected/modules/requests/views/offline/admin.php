@@ -43,6 +43,10 @@ $this->menu=array(
                 ),
                 'pagerCssClass' => 'blank',
                 'columns'=>array(
+                        'sender',
+                        'to',
+                        'text',
+                        'create_date',
 //                    [
 //                        'name' => 'category_id',
 //                        'value' => '$data->category?$data->category->title:"-"',

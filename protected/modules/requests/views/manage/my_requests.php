@@ -81,6 +81,15 @@ $this->menu=array(
                         'filter' => false
                     ],
                     [
+                        'name' => 'status',
+                        'value' => function($data){
+                            /** @var $data Requests */
+                            return "<span class='label label-{$data->getStatusLabel(true)}'>{$data->getStatusLabel()}</span>";
+                        },
+                        'type' => 'raw',
+                        'filter' => $model->statusLabels
+                    ],
+                    [
                         'header' => '',
                         'value' => function($data){
                             /** @var $data Requests */

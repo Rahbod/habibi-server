@@ -40,8 +40,9 @@ class TextMessagesReceive extends CActiveRecord
 		// will receive user inputs.
 		return array(
 			array('sender, to, text, create_date, sms_date', 'required'),
-			array('create_date, sms_date', 'numerical', 'integerOnly'=>true),
+			array('create_date', 'numerical', 'integerOnly'=>true),
 			array('sender, to', 'length', 'max'=>15),
+			array('sms_date', 'length', 'max'=>30),
 			array('status', 'length', 'max'=>1),
 			array('status', 'default', 'value'=>0),
 			array('text', 'safe'),

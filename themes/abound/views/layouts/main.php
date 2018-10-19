@@ -107,11 +107,12 @@ Yii::app()->clientScript->registerScript('load-push','
                             el.fadeOut(function(){
                                 el.remove();
                             });                            
-                        },5000);
+                        },10000);
                     });
                     PlaySound("sound1");
                 }
                 lastPush = data.last;
+                $("#new-req-count").text(data.count);
             }
         });
     }
