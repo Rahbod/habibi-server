@@ -75,6 +75,7 @@ class TextMessagesReceive extends CActiveRecord
 			'text' => 'متن',
 			'create_date' => 'تاریخ دریافت',
 			'sms_date' => 'تاریخ پیامک',
+			'status' => 'وضعیت',
 		);
 	}
 
@@ -157,5 +158,35 @@ class TextMessagesReceive extends CActiveRecord
     {
         $max = self::model()->find(array('order' => 'id DESC'));
         return $max ? $max->id : 0;
+    }
+
+    /**
+     * @param bool $cssClass
+     * @return mixed
+     */
+    public function getStatusLabel($cssClass = false)
+    {
+        if ($cssClass) {
+            switch ($this->status) {
+                case self::STATUS_CHECKED:
+                    return 'success';
+                case self::STATUS_PENDING:
+                    return 'primary';
+                default:
+                    return 'default';
+            }
+        }
+        return $this->statusLabels[$this->status];
+    }
+
+    public static function ShowPhoneNumber($phone){
+        $phone = strpos($phone, '0', 0) !== 0?"0$phone":$phone;
+        $firstPart = substr($phone, 0, 4);
+        $secPart = substr($phone, 4, 3);
+        $thirdPart = substr($phone, 7, 2);
+        $forthPart = substr($phone, 9, 2);
+        $phone = "{$firstPart} {$secPart} {$thirdPart} {$forthPart}";
+        $phone = Controller::parseNumbers($phone);
+        return "<span dir='ltr' style='font-size: 16px;'>$phone</span>";
     }
 }

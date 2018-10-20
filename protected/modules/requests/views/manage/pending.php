@@ -64,7 +64,7 @@ $this->menu=array(
                     [
                         'name' => 'create_date',
                         'value' => function($data){
-                            return "<b>".JalaliDate::date("Y/m/d H:i", $data->create_date)."</b>";
+                            return "<b dir='ltr'>".JalaliDate::date("Y/m/d H:i", $data->create_date)."</b>";
                         },
                         'type' => 'raw',
                         'filter' => false

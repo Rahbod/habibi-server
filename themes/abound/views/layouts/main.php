@@ -94,6 +94,10 @@ Yii::app()->clientScript->registerScript('load-push','
         push();
     }, 15000);
     
+    setInterval(function(){
+        pushEm();
+    }, 5000);
+    
     function push(){
         $.ajax({
             url:"'.$this->createUrl('/requests/manage/pending?pendingAjax=true&push=true&last=').'"+lastPush,
@@ -116,7 +120,9 @@ Yii::app()->clientScript->registerScript('load-push','
                 $("#new-req-count").text(data.count);
             }
         });
-        
+    }
+    
+    function pushEm(){
         $.ajax({
             url:"'.$this->createUrl('/requests/offline/admin?pendingAjax=true&push=true&last=').'"+lastEmPush,
             type: "get",

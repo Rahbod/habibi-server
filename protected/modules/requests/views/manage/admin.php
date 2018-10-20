@@ -86,7 +86,10 @@ $pending = isset($_GET['pending']);
                     ],
                     [
                         'name' => 'modified_date',
-                        'value' => 'JalaliDate::date("Y/m/d", $data->modified_date)',
+                        'value' => function($data){
+                            return "<b dir='ltr'>".JalaliDate::date("Y/m/d H:i", $data->modified_date)."</b>";
+                        },
+                        'type' => 'raw',
                         'filter' => false
                     ],
                     [

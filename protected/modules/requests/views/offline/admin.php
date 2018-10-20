@@ -40,88 +40,83 @@ $this->menu=array(
                         'class' => 'pagination pagination-sm',
                     ),
                 ),
+                'rowHtmlOptionsExpression' => 'array("data-max" => $data->getMaxID())',
                 'pagerCssClass' => 'blank',
                 'columns'=>array(
                     [
                         'name' => 'sender',
+                        'value' => function($data){
+                            return "<b style='color: #007fff'>".TextMessagesReceive::ShowPhoneNumber($data->sender)."</b>";
+                        },
+                        'type' => 'raw'
                     ],
                     [
                         'name' => 'create_date',
                         'value' => function($data){
-                            return JalaliDate::date('Y/m/d H:i', $data->create_date);
+                            return "<b dir='ltr'>".JalaliDate::date("Y/m/d H:i", $data->create_date)."</b>";
                         },
                         'type' => 'raw'
                     ],
-
-//                    [
-//                        'name' => 'category_id',
-//                        'value' => '$data->category?$data->category->title:"-"',
-//                        'filter' => Categories::getList()
-//                    ],
-//                    [
-//                        'name' => 'user_id',
-//                        'value' => '$data->user && $data->user->userDetails?$data->user->userDetails->getShowName():"-"',
-//                        'filter' => Users::getUsersByRole('user',true)
-//                    ],
-//                    [
-//                        'name' => 'operator_id',
-//                        'value' => '$data->operator?$data->operator->name_family:"-"',
-//                        'filter' => Admins::getByRole('operator',true)
-//                    ],
-//                    [
-//                        'name' => 'repairman_id',
-//                        'value' => '$data->repairman && $data->repairman->userDetails?$data->repairman->userDetails->getShowName(false):"-"',
-//                        'filter' => Users::getUsersByRole('repairman',true)
-//                    ],
-//                    [
-//                        'name' => 'modified_date',
-//                        'value' => 'JalaliDate::date("Y/m/d", $data->modified_date)',
-//                        'filter' => false
-//                    ],
-//                    [
-//                        'name' => 'request_type',
-//                        'header' => '',
-//                        'value' => function($data){
-//                            /** @var $data Requests */
-//                            return $data->getRequestTypeLabel(true);
-//                        },
-//                        'htmlOptions' => ['class' => 'text-center'],
-//                        'type' => 'raw',
-//                        'filter' => $model->requestTypeLabels
-//                    ],
-//                    [
-//                        'name' => 'status',
-//                        'value' => function($data){
-//                            /** @var $data Requests */
-//                            return "<span class='label label-{$data->getStatusLabel(true)}'>{$data->getStatusLabel()}</span>";
-//                        },
-//                        'type' => 'raw',
-//                        'filter' => $recycleBin?false:$model->statusLabels
-//                    ],
-//                    [
-//                        'header' => '',
-//                        'value' => function($data) use ($pending){
-//                            /** @var $data Requests */
-//                            if($data->status >= Requests::STATUS_PENDING &&
-//                               $data->status <= Requests::STATUS_AWAITING_PAYMENT)
-//                                return CHtml::link('صدور فاکتور', array('/requests/manage/invoicing/'.$data->id), array('class' => 'btn btn-xs btn-info'));
-//                            else if($data->status == Requests::STATUS_DELETED)
-//                                return CHtml::link('بازیابی درخواست', array('/requests/manage/restore/'.$data->id.($pending?'?pending':'')), array('class' => 'btn btn-xs btn-warning'));
-//                            return '';
-//                        },
-//                        'type' => 'raw',
-//                        'filter' => false
-//                    ],
-                    array(
-                        'class'=>'CButtonColumn',
-                        'buttons' =>array(
-                            'delete' => array(
-                                'visible' => '$data->status < Requests::STATUS_PAID'
-                            )
-                        )
-                    ),
+                    [
+                        'name' => 'status',
+                        'value' => function($data){
+                            /** @var $data TextMessagesReceive */
+                            return "<span class='label label-{$data->getStatusLabel(true)}'>{$data->getStatusLabel()}</span>";
+                        },
+                        'type' => 'raw',
+                    ],
+                    [
+                        'header' => '',
+                        'value' => function($data){
+                            /** @var $data Requests */
+                            return CHtml::link('بررسی درخواست', Yii::app()->createUrl('/requests/offline/view/'.$data->id.'?pending'),[
+                                'class' => 'btn btn-xs btn-info'
+                            ]);
+                        },
+                        'htmlOptions' => ['class' => 'text-center'],
+                        'type' => 'raw',
+                    ],
+                    [
+                        'header' => '',
+                        'value' => function($data){
+                            /** @var $data Requests */
+                            return CHtml::link('حذف درخواست', Yii::app()->createUrl('/requests/offline/delete/'.$data->id.'/?pending'),[
+                                'class' => 'btn btn-xs btn-danger'
+                            ]);
+                        },
+                        'htmlOptions' => ['class' => 'text-center'],
+                        'type' => 'raw',
+                    ]
                 ),
             )); ?>
         </div>
     </div>
 </div>
+
+
+<?php
+Yii::app()->clientScript->registerScript('load-em-interval','
+    var lastEm = $("tbody tr:last-of-type").data("max");
+    
+    fetch();
+    setInterval(function(){
+        fetch();
+    }, 5000);
+    
+    function fetch(){
+        $.ajax({
+            url:"'.$this->createUrl('/requests/offline/admin?pendingAjax=true&table=true&last=').'"+lastEm,
+            type: "get",
+            dataType: "json",
+            success: function(data){
+                if(data.table){
+                    $(data.table).each(function(key, tr) {                       
+                        $("#requests-grid tbody").append(tr);
+                        $("#requests-grid tbody tr:last-of-type").addClass("bg-success");
+                    });
+                }    
+                lastEm = data.last;
+            }
+        });
+    }
+', CClientScript::POS_END);

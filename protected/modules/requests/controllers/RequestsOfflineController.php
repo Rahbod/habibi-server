@@ -31,8 +31,13 @@ class RequestsOfflineController extends Controller
      */
     public function actionView($id)
     {
-        $this->render('view',array(
-            'model'=>$this->loadModel($id),
+        $model = $this->loadModel($id);
+
+        $model->status = TextMessagesReceive::STATUS_CHECKED;
+        $model->save(false);
+
+        $this->render('view', array(
+            'model' => $model,
         ));
     }
 
