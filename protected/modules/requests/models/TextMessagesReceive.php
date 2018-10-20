@@ -11,15 +11,21 @@
  * @property string $sms_date
  * @property string $create_date
  * @property string $status
+ * @property string $operator_id
+ *
+ * The followings are the available model relations:
+ * @property Admins $operator
  */
 class TextMessagesReceive extends CActiveRecord
 {
     const STATUS_PENDING = 0;
-    const STATUS_CHECKED = 1;
+    const STATUS_OPERATOR_CHECKING = 1;
+    const STATUS_CHECKED = 2;
 
 
     public $statusLabels = [
         self::STATUS_PENDING => 'در انتظار بررسی',
+        self::STATUS_OPERATOR_CHECKING => 'در انتظار بررسی',
         self::STATUS_CHECKED => 'بررسی شده',
     ];
 
@@ -42,13 +48,14 @@ class TextMessagesReceive extends CActiveRecord
 			array('sender, to, text, create_date, sms_date', 'required'),
 			array('create_date', 'numerical', 'integerOnly'=>true),
 			array('sender, to', 'length', 'max'=>15),
+			array('operator_id', 'length', 'max'=>15),
 			array('sms_date', 'length', 'max'=>30),
 			array('status', 'length', 'max'=>1),
 			array('status', 'default', 'value'=>0),
 			array('text', 'safe'),
 			// The following rule is used by search().
 			// @todo Please remove those attributes that should not be searched.
-			array('id, sender, to, text, create_date, sms_date', 'safe', 'on'=>'search'),
+			array('id, sender, to, text, create_date, sms_date, operator_id', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -60,6 +67,7 @@ class TextMessagesReceive extends CActiveRecord
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
 		return array(
+            'operator' => array(self::BELONGS_TO, 'Admins', 'operator_id'),
 		);
 	}
 
@@ -72,6 +80,7 @@ class TextMessagesReceive extends CActiveRecord
 			'id' => 'ID',
 			'sender' => 'فرستنده',
 			'to' => 'دریافت کننده',
+            'operator_id' => 'اپراتور',
 			'text' => 'متن',
 			'create_date' => 'تاریخ دریافت',
 			'sms_date' => 'تاریخ پیامک',
@@ -104,7 +113,7 @@ class TextMessagesReceive extends CActiveRecord
 		$criteria->compare('create_date',$this->create_date,true);
 		$criteria->compare('sms_date',$this->sms_date,true);
 
-		$criteria->order = 'id';
+		$criteria->order = 'status, id';
 
         if (isset($_GET['pendingAjax'])) {
             if (isset($_GET['last']))
@@ -144,7 +153,7 @@ class TextMessagesReceive extends CActiveRecord
 	 * Returns the static model of the specified AR class.
 	 * Please note that you should have this exact method in all your CActiveRecord descendants!
 	 * @param string $className active record class name.
-	 * @return TextMessagesReceive the static model class
+	 * @return CActiveRecord|TextMessagesReceive
 	 */
 	public static function model($className=__CLASS__)
 	{
@@ -170,6 +179,8 @@ class TextMessagesReceive extends CActiveRecord
             switch ($this->status) {
                 case self::STATUS_CHECKED:
                     return 'success';
+                case self::STATUS_OPERATOR_CHECKING:
+                    return 'warning';
                 case self::STATUS_PENDING:
                     return 'primary';
                 default:

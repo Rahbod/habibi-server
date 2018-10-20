@@ -69,7 +69,7 @@ $this->menu=array(
                         'header' => '',
                         'value' => function($data){
                             /** @var $data Requests */
-                            return CHtml::link('بررسی درخواست', Yii::app()->createUrl('/requests/offline/view/'.$data->id.'?pending'),[
+                            return CHtml::link('بررسی درخواست', Yii::app()->createUrl('/requests/offline/view/'.$data->id),[
                                 'class' => 'btn btn-xs btn-info'
                             ]);
                         },
@@ -80,7 +80,7 @@ $this->menu=array(
                         'header' => '',
                         'value' => function($data){
                             /** @var $data Requests */
-                            return CHtml::link('حذف درخواست', Yii::app()->createUrl('/requests/offline/delete/'.$data->id.'/?pending'),[
+                            return CHtml::link('حذف درخواست', Yii::app()->createUrl('/requests/offline/delete/'.$data->id),[
                                 'class' => 'btn btn-xs btn-danger'
                             ]);
                         },
@@ -101,7 +101,7 @@ Yii::app()->clientScript->registerScript('load-em-interval','
     fetch();
     setInterval(function(){
         fetch();
-    }, 5000);
+    }, 10000);
     
     function fetch(){
         $.ajax({

@@ -3,7 +3,7 @@
 ?>
 
 <div class="push-item emergency" data-max="<?= $data->getMaxID() ?>">
-    <a href="<?= Yii::app()->createUrl('/requests/offline/view/'.$data->id.'?pending') ?>">
+    <a href="<?= Yii::app()->createUrl('/requests/offline/view/'.$data->id) ?>">
         <i class="alarm-icon"></i>
         <h5>
             درخواست فوری جدید

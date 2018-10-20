@@ -96,7 +96,7 @@ Yii::app()->clientScript->registerScript('load-push','
     
     setInterval(function(){
         pushEm();
-    }, 5000);
+    }, 10000);
     
     function push(){
         $.ajax({

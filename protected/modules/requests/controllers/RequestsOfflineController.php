@@ -20,7 +20,7 @@ class RequestsOfflineController extends Controller
     {
         return array(
             'backend' => array(
-                'index', 'admin', 'delete', 'receive'
+                'index', 'admin', 'delete', 'view', 'receive'
             )
         );
     }
@@ -33,8 +33,15 @@ class RequestsOfflineController extends Controller
     {
         $model = $this->loadModel($id);
 
-        $model->status = TextMessagesReceive::STATUS_CHECKED;
-        $model->save(false);
+        if ($model->status == TextMessagesReceive::STATUS_PENDING) {
+            $model->status = TextMessagesReceive::STATUS_OPERATOR_CHECKING;
+            $model->save(false);
+        }
+
+        if (!$model->operator_id && Yii::app()->user->type == 'admin') {
+            $model->operator_id = Yii::app()->user->getId();
+            $model->save(false);
+        }
 
         $this->render('view', array(
             'model' => $model,
@@ -54,7 +61,7 @@ class RequestsOfflineController extends Controller
         $this->loadModel($id)->delete();
 
         // if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
-        if(!isset($_GET['ajax']))
+        if (!isset($_GET['ajax']))
             $this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('admin'));
     }
 
@@ -71,18 +78,18 @@ class RequestsOfflineController extends Controller
      */
     public function actionAdmin()
     {
-        $model=new TextMessagesReceive('search');
+        $model = new TextMessagesReceive('search');
         $model->unsetAttributes();  // clear any default values
-        if(isset($_GET['TextMessagesReceive']))
-            $model->attributes=$_GET['TextMessagesReceive'];
+        if (isset($_GET['TextMessagesReceive']))
+            $model->attributes = $_GET['TextMessagesReceive'];
 
-        if (isset($_GET['pendingAjax'])){
+        if (isset($_GET['pendingAjax'])) {
             echo CJSON::encode($model->search());
             Yii::app()->end();
         }
 
-        $this->render('admin',array(
-            'model'=>$model,
+        $this->render('admin', array(
+            'model' => $model,
         ));
     }
 
@@ -95,9 +102,9 @@ class RequestsOfflineController extends Controller
      */
     public function loadModel($id)
     {
-        $model=TextMessagesReceive::model()->findByPk($id);
-        if($model===null)
-            throw new CHttpException(404,'The requested page does not exist.');
+        $model = TextMessagesReceive::model()->findByPk($id);
+        if ($model === null)
+            throw new CHttpException(404, 'The requested page does not exist.');
         return $model;
     }
 
@@ -107,31 +114,31 @@ class RequestsOfflineController extends Controller
      */
     protected function performAjaxValidation($model)
     {
-        if(isset($_POST['ajax']) && $_POST['ajax']==='text-messages-receive-form')
-        {
+        if (isset($_POST['ajax']) && $_POST['ajax'] === 'text-messages-receive-form') {
             echo CActiveForm::validate($model);
             Yii::app()->end();
         }
     }
 
-	public function actionReceive()
-	{
-        /** @var string $text*/
-        /** @var string $from*/
-        /** @var string $to*/
-        /** @var string $date*/
+    public function actionReceive()
+    {
+        set_time_limit(0);
+        /** @var string $text */
+        /** @var string $from */
+        /** @var string $to */
+        /** @var string $date */
 
         extract($_GET);
-		$model = new TextMessagesReceive();
-		$model->create_date = time();
-		$model->sender = $from;
-		$model->text = $text;
-		$model->to = $to;
-		$model->sms_date = $date;
+        $model = new TextMessagesReceive();
+        $model->create_date = time();
+        $model->sender = $from;
+        $model->text = $text;
+        $model->to = $to;
+        $model->sms_date = $date;
 
-		if($model->save())
-		    echo 'saved';
-		else
-		    var_dump($model->errors);
-	}
+        if ($model->save())
+            echo 'saved';
+        else
+            var_dump($model->errors);
+    }
 }
