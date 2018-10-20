@@ -303,7 +303,7 @@ class Requests extends CActiveRecord
      */
     public static function getMaxID()
     {
-        $max = Requests::model()->find(array('order' => 'id DESC'));
+        $max = self::model()->find(array('order' => 'id DESC'));
         return $max ? $max->id : 0;
     }
 }

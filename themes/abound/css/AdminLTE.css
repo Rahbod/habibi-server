@@ -4695,3 +4695,28 @@ ul.wysihtml5-toolbar > li {
   margin-top: 5px;
   line-height: 15px;
 }
+
+.push-notification .push-item.emergency{
+  background-color: #442521;
+  border: 1px solid #B00400;
+  -webkit-box-shadow:  4px 4px 8px #B0040040;
+  -moz-box-shadow:  4px 4px 8px #B0040040;
+  box-shadow:  4px 4px 8px #B0040040;
+}
+.push-notification .push-item .alarm-icon{
+  background: url("../svg/alarm.svg") no-repeat scroll center transparent;
+  background-size: cover;
+}
+.push-notification .push-item h5{
+  color: #fff;
+  padding: 5px 15px 5px 25px;
+}
+.push-notification .push-item h5 small{
+  color: #aaa;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  display: block;
+  margin-top: 5px;
+  line-height: 15px;
+}

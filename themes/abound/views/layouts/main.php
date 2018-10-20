@@ -51,7 +51,7 @@
     ?>
 </head>
 
-<body class="skin-blue sidebar-mini" data-last-push="<?= Requests::getMaxID() ?>">
+<body class="skin-blue sidebar-mini" data-last-push="<?= Requests::getMaxID() ?>" data-last-em-push="<?= TextMessagesReceive::getMaxID() ?>">
     <div class="wrapper">
         <?php $this->renderPartial('//partial-views/_header') ?>
         <?php $this->renderPartial('//partial-views/_sidebar') ?>
@@ -84,11 +84,12 @@
 
 <div class="push-notification" id="push-notification"></div>
 <audio style="display: none" id="sound1"><source src="<?= $baseUrl.'/css/beep.ogg' ?>"></audio>
+<audio style="display: none" id="sound2"><source src="<?= $baseUrl.'/css/em-beep.ogg' ?>"></audio>
 <?php
 Yii::app()->clientScript->registerScript('load-push','
     var lastPush = $("body").data("last-push");
+    var lastEmPush = $("body").data("last-em-push");
     
-    push();
     setInterval(function(){
         push();
     }, 15000);
@@ -99,7 +100,29 @@ Yii::app()->clientScript->registerScript('load-push','
             type: "get",
             dataType: "json",
             success: function(data){
-                if(data.push){
+                if(data.push){  
+                    $(data.push).each(function(key, tr) {
+                        $("#push-notification").append(tr);
+                        var el = $("#push-notification .push-item:last-of-type");
+                        setTimeout(function(){
+                            el.fadeOut(function(){
+                                el.remove();
+                            });                            
+                        },10000);
+                    });
+                    PlaySound("sound1");
+                }
+                lastPush = data.last;
+                $("#new-req-count").text(data.count);
+            }
+        });
+        
+        $.ajax({
+            url:"'.$this->createUrl('/requests/offline/admin?pendingAjax=true&push=true&last=').'"+lastPush,
+            type: "get",
+            dataType: "json",
+            success: function(data){
+                if(data.push){  
                     $(data.push).each(function(key, tr) {
                         $("#push-notification").append(tr);
                         var el = $("#push-notification .push-item:last-of-type");

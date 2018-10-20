@@ -111,9 +111,6 @@ class RequestsOfflineController extends Controller
         /** @var string $to*/
         /** @var string $date*/
 
-        Yii::app()->db->createCommand('ALTER TABLE `ym_text_messages_receive`
-MODIFY COLUMN `sms_date`  varchar(30) NOT NULL COMMENT \'تاریخ پیامک\' AFTER `text`;')->execute();
-
         extract($_GET);
 		$model = new TextMessagesReceive();
 		$model->create_date = time();

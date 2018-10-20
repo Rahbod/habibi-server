@@ -87,7 +87,7 @@ class TextMessagesReceive extends CActiveRecord
 	 * models according to data in model fields.
 	 * - Pass data provider to CGridView, CListView or any similar widget.
 	 *
-	 * @return CActiveDataProvider the data provider that can return the models
+	 * @return array|CActiveDataProvider
 	 * based on the search/filter conditions.
 	 */
 	public function search()
@@ -103,7 +103,36 @@ class TextMessagesReceive extends CActiveRecord
 		$criteria->compare('create_date',$this->create_date,true);
 		$criteria->compare('sms_date',$this->sms_date,true);
 
-		$criteria->order = 'create_date';
+		$criteria->order = 'id';
+
+        if (isset($_GET['pendingAjax'])) {
+            if (isset($_GET['last']))
+                $criteria->compare('id', ' >'.(int)$_GET['last']);
+
+            $result = [];
+            $result['count'] = self::model()->countByAttributes(['status' => Requests::STATUS_PENDING]);
+
+            if(isset($_GET['table'])) {
+                Yii::app()->controller->beginClip('table');
+                foreach (self::model()->findAll($criteria) as $data) {
+                    Yii::app()->controller->renderPartial('_item_view', array('data' => $data));
+                }
+                Yii::app()->controller->endClip();
+                $result['table'] = Yii::app()->controller->clips['table'];
+            }
+
+            if(isset($_GET['push'])) {
+                Yii::app()->controller->beginClip('push');
+                foreach (self::model()->findAll($criteria) as $data) {
+                    Yii::app()->controller->renderPartial('_push_view', array('data' => $data));
+                }
+                Yii::app()->controller->endClip();
+                $result['push'] = Yii::app()->controller->clips['push'];
+            }
+
+            $result['last'] = $this->getMaxID();
+            return $result;
+        }
 
 		return new CActiveDataProvider($this, array(
 			'criteria'=>$criteria,
@@ -120,4 +149,13 @@ class TextMessagesReceive extends CActiveRecord
 	{
 		return parent::model($className);
 	}
+
+    /**
+     * @return mixed
+     */
+    public static function getMaxID()
+    {
+        $max = self::model()->find(array('order' => 'id DESC'));
+        return $max ? $max->id : 0;
+    }
 }

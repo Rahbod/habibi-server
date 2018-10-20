@@ -21,7 +21,6 @@ $this->menu=array(
             <?php $this->widget('zii.widgets.grid.CGridView', array(
                 'id'=>'requests-grid',
                 'dataProvider'=>$model->search(),
-                'filter'=>$model,
                 'itemsCssClass'=>'table table-striped',
                 'template' => '{summary} {pager} {items} {pager}',
                 'ajaxUpdate' => true,
@@ -43,10 +42,17 @@ $this->menu=array(
                 ),
                 'pagerCssClass' => 'blank',
                 'columns'=>array(
-                        'sender',
-                        'to',
-                        'text',
-                        'create_date',
+                    [
+                        'name' => 'sender',
+                    ],
+                    [
+                        'name' => 'create_date',
+                        'value' => function($data){
+                            return JalaliDate::date('Y/m/d H:i', $data->create_date);
+                        },
+                        'type' => 'raw'
+                    ],
+
 //                    [
 //                        'name' => 'category_id',
 //                        'value' => '$data->category?$data->category->title:"-"',
