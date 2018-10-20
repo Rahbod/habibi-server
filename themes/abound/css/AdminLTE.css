@@ -4704,6 +4704,13 @@ ul.wysihtml5-toolbar > li {
   box-shadow:  4px 4px 8px #B0040040;
 }
 .push-notification .push-item .alarm-icon{
+  display: inline-block;
+  overflow: hidden;
+  width: 34px;
+  top: 13px;
+  right: 10px;
+  position: absolute;
+  height: 34px;
   background: url("../svg/alarm.svg") no-repeat scroll center transparent;
   background-size: cover;
 }

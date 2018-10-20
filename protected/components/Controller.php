@@ -103,6 +103,7 @@ class Controller extends AuthController
     {
         $newReqCount = Requests::model()->countByAttributes(['status' => Requests::STATUS_PENDING]);
         $myReqCount = Requests::model()->countByAttributes(['operator_id' => Yii::app()->user->getId()]);
+        $newEmReqCount = TextMessagesReceive::model()->countByAttributes(['status' => TextMessagesReceive::STATUS_PENDING]);
         if(Yii::app()->user->roles === 'admin')
             return array(
                 array(
@@ -118,8 +119,12 @@ class Controller extends AuthController
                     'url' => array('/requests/manage/create'),
                 ),
                 array(
-                    'label' => '<i class="fa fa-flash"></i><span>درخواست های جدید</span>'.($newReqCount != 0?"<span id='new-req-count' class='badge bg-red pull-left'>{$newReqCount}</span>":''),
+                    'label' => '<i class="fa fa-flash text-warning"></i><span class="text-warning">درخواست های جدید</span>'.($newReqCount!= 0?"<span id='new-req-count' class='badge bg-orange pull-left'>{$newReqCount}</span>":''),
                     'url' => array('/requests/manage/pending')
+                ),
+                array(
+                    'label' => '<i class="fa fa-phone text-danger"></i><span class="text-danger">درخواست های فوری</span>'.($newEmReqCount!= 0?"<span id='#new-em-req-count' class='badge bg-red pull-left'>{$newEmReqCount}</span>":''),
+                    'url' => array('/requests/offline/admin')
                 ),
                 array(
                     'label' => '<i class="fa fa-ticket"></i><span>درخواست ها</span> <i class="fa fa-angle-left pull-left"></i>',
@@ -225,7 +230,11 @@ class Controller extends AuthController
                     'url' => array('/requests/manage/create'),
                 ),
                 array(
-                    'label' => '<i class="fa fa-flash"></i><span>درخواست های جدید</span>'.($newReqCount!= 0?"<span id='new-req-count' class='badge bg-red pull-left'>{$newReqCount}</span>":''),
+                    'label' => '<i class="fa fa-flash"></i><span>درخواست های جدید</span>'.($newReqCount!= 0?"<span id='new-req-count' class='badge bg-orange pull-left'>{$newReqCount}</span>":''),
+                    'url' => array('/requests/manage/pending')
+                ),
+                array(
+                    'label' => '<i class="fa fa-phone"></i><span class="text-warning">درخواست های فوری</span>'.($newEmReqCount!= 0?"<span id='#new-em-req-count' class='badge bg-red pull-left'>{$newEmReqCount}</span>":''),
                     'url' => array('/requests/manage/pending')
                 ),
                 array(

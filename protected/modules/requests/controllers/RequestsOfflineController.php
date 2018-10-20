@@ -71,6 +71,11 @@ class RequestsOfflineController extends Controller
         if(isset($_GET['TextMessagesReceive']))
             $model->attributes=$_GET['TextMessagesReceive'];
 
+        if (isset($_GET['pendingAjax'])){
+            echo CJSON::encode($model->search());
+            Yii::app()->end();
+        }
+
         $this->render('admin',array(
             'model'=>$model,
         ));

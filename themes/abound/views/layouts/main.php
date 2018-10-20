@@ -103,7 +103,7 @@ Yii::app()->clientScript->registerScript('load-push','
                 if(data.push){  
                     $(data.push).each(function(key, tr) {
                         $("#push-notification").append(tr);
-                        var el = $("#push-notification .push-item:last-of-type");
+                        var el = $("#push-notification .push-item:not(.emergency):last-of-type");
                         setTimeout(function(){
                             el.fadeOut(function(){
                                 el.remove();
@@ -118,24 +118,24 @@ Yii::app()->clientScript->registerScript('load-push','
         });
         
         $.ajax({
-            url:"'.$this->createUrl('/requests/offline/admin?pendingAjax=true&push=true&last=').'"+lastPush,
+            url:"'.$this->createUrl('/requests/offline/admin?pendingAjax=true&push=true&last=').'"+lastEmPush,
             type: "get",
             dataType: "json",
             success: function(data){
                 if(data.push){  
                     $(data.push).each(function(key, tr) {
                         $("#push-notification").append(tr);
-                        var el = $("#push-notification .push-item:last-of-type");
+                        var el = $("#push-notification .push-item.emergency:last-of-type");
                         setTimeout(function(){
                             el.fadeOut(function(){
                                 el.remove();
                             });                            
-                        },10000);
+                        },20000);
                     });
-                    PlaySound("sound1");
+                    PlaySound("sound2");
                 }
-                lastPush = data.last;
-                $("#new-req-count").text(data.count);
+                lastEmPush = data.last;
+                $("#new-em-req-count").text(data.count);
             }
         });
     }
