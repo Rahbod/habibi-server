@@ -221,7 +221,7 @@ class UsersManageController extends Controller
 //        if($model->status == 'deleted')
 //            $model->delete();
 //        $model->updateByPk($model->id, array('status' => 'deleted'));
-        if ($model->userDetails->avatar && is_file($this->avatarPath . $model->userDetails->avatar)) {
+        if ($model->userDetails && $model->userDetails->avatar && is_file($this->avatarPath . $model->userDetails->avatar)) {
             $avatar = new UploadedFiles($this->avatarPath, $model->userDetails->avatar);
             $avatar->removeAll(true);
         }
@@ -380,14 +380,12 @@ class UsersManageController extends Controller
                 Yii::app()->user->setFlash('success', 'آدرس برای کاربر با موفقیت ثبت شد.');
 
                 $return = $_GET['return'];
-                if(strpos($return, 'address_id') !== false)
-                {
-                    list($uri, $query) = explode("?",$return);
-                    parse_str($query, $params);
-                    unset($params['address_id']);
-                    $params['address_id'] = $model->id;
-                    $return = $uri."?".http_build_query($params);
-                }
+                list($uri, $query) = explode("?",$return);
+                parse_str($query, $params);
+                unset($params['address_id']);
+                $params['address_id'] = $model->id;
+                $return = $uri."?".http_build_query($params);
+
                 $this->redirect(array($return));
             } else
                 Yii::app()->user->setFlash('failed', 'در ثبت اطلاعات خطایی رخ داده است! لطفا مجددا تلاش کنید.');
@@ -398,6 +396,14 @@ class UsersManageController extends Controller
 
     public function actionQuickUser()
     {
+        if(isset($_GET['mobile'])){
+            $mobile = $_GET['mobile'];
+            $mobile = TextMessagesReceive::NormalizePhone($mobile);
+            $user = Users::model()->findByAttributes(['username' => $mobile]);
+            if($user)
+                $this->redirect(array($_GET['return'], 'user_id' => $user->id));
+        }
+
         $model = new Users('quick');
         $address = new UserAddresses('quick');
 

@@ -9,7 +9,6 @@ class RequestsOfflineController extends Controller
     {
         return array(
             'checkAccess - receive', // perform access control for CRUD operations
-            'postOnly + delete', // we only allow deletion via POST request
         );
     }
 
@@ -20,7 +19,7 @@ class RequestsOfflineController extends Controller
     {
         return array(
             'backend' => array(
-                'index', 'admin', 'delete', 'view', 'receive'
+                'index', 'admin', 'delete', 'view', 'receive', 'my'
             )
         );
     }
@@ -140,5 +139,21 @@ class RequestsOfflineController extends Controller
             echo 'saved';
         else
             var_dump($model->errors);
+    }
+
+    /**
+     * Manages all models.
+     */
+    public function actionMy()
+    {
+        $model = new TextMessagesReceive('search');
+        $model->unsetAttributes();  // clear any default values
+        if (isset($_GET['TextMessagesReceive']))
+            $model->attributes = $_GET['TextMessagesReceive'];
+        $model->operator_id = Yii::app()->user->getId();
+
+        $this->render('my_requests', array(
+            'model' => $model,
+        ));
     }
 }

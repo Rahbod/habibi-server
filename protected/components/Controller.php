@@ -103,6 +103,7 @@ class Controller extends AuthController
     {
         $newReqCount = Requests::model()->countByAttributes(['status' => Requests::STATUS_PENDING]);
         $myReqCount = Requests::model()->countByAttributes(['operator_id' => Yii::app()->user->getId()]);
+        $myEmReqCount = TextMessagesReceive::model()->countByAttributes(['operator_id' => Yii::app()->user->getId()]);
         $newEmReqCount = TextMessagesReceive::model()->countByAttributes(['status' => TextMessagesReceive::STATUS_PENDING]);
         if(Yii::app()->user->roles === 'admin')
             return array(
@@ -230,19 +231,23 @@ class Controller extends AuthController
                     'url' => array('/requests/manage/create'),
                 ),
                 array(
-                    'label' => '<i class="fa fa-flash"></i><span>درخواست های جدید</span>'.($newReqCount!= 0?"<span id='new-req-count' class='badge bg-orange pull-left'>{$newReqCount}</span>":''),
+                    'label' => '<i class="fa fa-phone text-danger"></i><span class="text-danger">درخواست های فوری</span>'.($newEmReqCount!= 0?"<span id='#new-em-req-count' class='badge bg-red pull-left'>{$newEmReqCount}</span>":''),
                     'url' => array('/requests/manage/pending')
                 ),
                 array(
-                    'label' => '<i class="fa fa-phone"></i><span class="text-warning">درخواست های فوری</span>'.($newEmReqCount!= 0?"<span id='#new-em-req-count' class='badge bg-red pull-left'>{$newEmReqCount}</span>":''),
+                    'label' => '<i class="fa fa-list text-danger"></i><span class="text-danger">درخواست های فوری من</span>'.($myEmReqCount!= 0?"<span id='my-em-req-count' class='badge bg-gray pull-left'>{$myEmReqCount}</span>":''),
+                    'url' => array('/requests/offline/my'),
+                ),
+                array(
+                    'label' => '<i class="fa fa-flash text-warning"></i><span class="text-warning">درخواست های جدید</span>'.($newReqCount!= 0?"<span id='new-req-count' class='badge bg-orange pull-left'>{$newReqCount}</span>":''),
                     'url' => array('/requests/manage/pending')
                 ),
                 array(
-                    'label' => '<i class="fa fa-list"></i><span>درخواست های من</span>'.($myReqCount!= 0?"<span id='my-req-count' class='badge bg-gray pull-left'>{$myReqCount}</span>":''),
+                    'label' => '<i class="fa fa-list text-warning"></i><span class="text-warning">درخواست های من</span>'.($myReqCount!= 0?"<span id='my-req-count' class='badge bg-gray pull-left'>{$myReqCount}</span>":''),
                     'url' => array('/requests/manage/my'),
                 ),
                 array(
-                    'label' => '<i class="fa fa-ticket"></i><span>درخواست ها</span> <i class="fa fa-angle-left pull-left"></i>',
+                    'label' => '<i class="fa fa-ticket"></i><span>تنظیمات درخواست</span> <i class="fa fa-angle-left pull-left"></i>',
                     'url' => '#',
                     'itemOptions' => array('class' => 'treeview', 'tabindex' => "-1"),
                     'submenuOptions' => array('class' => 'treeview-menu'),
@@ -372,7 +377,7 @@ class Controller extends AuthController
                 return number_format($size, 1) . ' مگابایت';
             }else{
                 $size = (float)$size / (1024 * 1024 * 1024);
-                return number_format($size, 1) . ' مگابایت';
+                return number_format($size, 1) . ' گیگابایت';
             }
         }
         return 0;

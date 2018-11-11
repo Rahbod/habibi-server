@@ -132,25 +132,28 @@ echo $form->errorSummary($model);
 	</div>
 
 	<div class="form-group">
-		<?php echo $form->labelEx($model,'service_date'); ?>
-        <?php $this->widget('ext.PDatePicker.PDatePicker', array(
-            'id'=>'service_date',
-            'model' => $model,
-            'attribute' => 'service_date',
-            'options'=>array(
-                'format'=>'YYYY/MM/DD',
-            ),
-            'htmlOptions'=>array(
-                'class'=>'form-control'
-            ),
-        ));?>
-		<?php echo $form->error($model,'service_date'); ?>
-	</div>
-
-	<div class="form-group">
-		<?php echo $form->labelEx($model,'service_time'); ?>
-		<?php echo $form->dropDownList($model,'service_time',Requests::$serviceTimes,array('class'=>'form-control')); ?>
-		<?php echo $form->error($model,'service_time'); ?>
+        <div class="row">
+            <div class="col-lg-3 col-md-3 col-sm-4 col-xs-12">
+                <?php echo $form->labelEx($model,'service_date'); ?>
+                <?php $this->widget('ext.PDatePicker.PDatePicker', array(
+                    'id'=>'service_date',
+                    'model' => $model,
+                    'attribute' => 'service_date',
+                    'options'=>array(
+                        'format'=>'YYYY/MM/DD',
+                    ),
+                    'htmlOptions'=>array(
+                        'class'=>'form-control'
+                    ),
+                ));?>
+                <?php echo $form->error($model,'service_date'); ?>
+            </div>
+            <div class="col-lg-3 col-md-3 col-sm-4 col-xs-12">
+                <?php echo $form->labelEx($model,'service_time'); ?>
+                <?php echo $form->dropDownList($model,'service_time',Requests::$serviceTimes,array('class'=>'form-control')); ?>
+                <?php echo $form->error($model,'service_time'); ?>
+            </div>
+        </div>
 	</div>
 
 	<div class="buttons">

@@ -3,13 +3,16 @@
 /* @var $model Users */
 /* @var $address UserAddresses */
 /* @var $form CActiveForm */
+
+if(isset($_GET['mobile']))
+    $model->mobile = $_GET['mobile'];
 ?>
 
 
 <div class="box box-primary">
     <div class="box-header with-border">
         <h3 class="box-title">افزودن کاربر سریع</h3>
-        <a href="<?= $this->createUrl($_GET['return']) ?>" class="btn btn-primary btn-sm pull-left">
+        <a href="<?= $this->createUrl($model->mobile?"/requests/offline/view?id=".$_GET['rid']:$_GET['return']) ?>" class="btn btn-primary btn-sm pull-left">
             <span class="hidden-xs">بازگشت</span>
             <i class="fa fa-arrow-left"></i>
         </a>
@@ -32,7 +35,11 @@
                 <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
                     <div class="form-group">
                         <?php echo $form->labelEx($model,'mobile'); ?>
-                        <?php echo $form->telField($model,'mobile',array('class'=>"form-control",'maxLength' => 11));?>
+                        <?php echo $form->telField($model,'mobile',array(
+                            'class'=>"form-control",
+                            'maxLength' => 11,
+                            'readonly' => isset($_GET['mobile'])
+                        ));?>
                         <?php echo $form->error($model,'mobile'); ?>
                     </div>
                 </div>
@@ -133,7 +140,7 @@
 
 
             <div class="form-group">
-                <?php echo CHtml::submitButton($model->isNewRecord ? 'ثبت' : 'ذخیره', array('class' => 'btn btn-success')); ?>
+                <?php echo CHtml::submitButton($model->isNewRecord ? 'ثبت و ادامه' : 'ذخیره', array('class' => 'btn btn-success')); ?>
             </div>
 
             <?php $this->endWidget(); ?>

@@ -1,19 +1,15 @@
 <?php
-/* @var $this RequestsOfflineController */
-/* @var $model TextMessagesReceive */
-
+/* @var $this RequestsManageController */
+/* @var $model Requests */
 $this->breadcrumbs=array(
 	'مدیریت',
 );
 
-$this->menu=array(
-	array('label'=>'افزودن درخواست', 'url'=>array('create')),
-);
 ?>
 
 <div class="box box-primary">
     <div class="box-header with-border">
-        <h3 class="box-title">درخواست های آفلاین</h3>
+        <h3 class="box-title">مدیریت درخواست های فوری من</h3>
     </div>
     <div class="box-body">
         <?php $this->renderPartial("//partial-views/_flashMessage"); ?>
@@ -26,7 +22,7 @@ $this->menu=array(
                 'ajaxUpdate' => true,
                 'afterAjaxUpdate' => "function(id, data){
                     $('html, body').animate({
-                    scrollTop: ($('#'+id).offset().top-130)
+                        scrollTop: ($('#'+id).offset().top-130)
                     },1000,'easeOutCubic');
                 }",
                 'pager' => array(
@@ -40,37 +36,53 @@ $this->menu=array(
                         'class' => 'pagination pagination-sm',
                     ),
                 ),
-                'rowHtmlOptionsExpression' => 'array("data-max" => $data->getMaxID())',
                 'pagerCssClass' => 'blank',
+                'rowHtmlOptionsExpression' => 'array("data-max" => $data->getMaxID())',
                 'columns'=>array(
                     [
-                        'name' => 'sender',
-                        'value' => function($data){
-                            return "<b style='color: #007fff'>".TextMessagesReceive::ShowPhoneNumber($data->sender)."</b>";
-                        },
-                        'type' => 'raw'
+                        'name' => 'user_id',
+                        'value' => '$data->user && $data->user->userDetails?$data->user->userDetails->getShowName():"-"',
+                        'filter' => Users::getUsersByRole('user',true)
+                    ],
+                    [
+                        'name' => 'category_id',
+                        'value' => '$data->category?$data->category->title:"-"',
+                        'filter' => Categories::getList()
                     ],
                     [
                         'name' => 'create_date',
                         'value' => function($data){
                             return "<b dir='ltr'>".JalaliDate::date("Y/m/d H:i", $data->create_date)."</b>";
                         },
-                        'type' => 'raw'
+                        'type' => 'raw',
+                        'filter' => false
+                    ],
+                    [
+                        'name' => 'request_type',
+                        'header' => 'پلتفرم',
+                        'value' => function($data){
+                            /** @var $data Requests */
+                            return $data->getRequestTypeLabel(true);
+                        },
+                        'htmlOptions' => ['class' => 'text-center'],
+                        'type' => 'raw',
+                        'filter' => false
                     ],
                     [
                         'name' => 'status',
                         'value' => function($data){
-                            /** @var $data TextMessagesReceive */
+                            /** @var $data Requests */
                             return "<span class='label label-{$data->getStatusLabel(true)}'>{$data->getStatusLabel()}</span>";
                         },
                         'type' => 'raw',
+                        'filter' => $model->statusLabels
                     ],
                     [
                         'header' => '',
                         'value' => function($data){
                             /** @var $data Requests */
-                            return CHtml::link('بررسی درخواست', Yii::app()->createUrl('/requests/offline/view/'.$data->id),[
-                                'class' => 'btn btn-xs btn-info'
+                            return CHtml::link('بررسی درخواست', Yii::app()->createUrl('/requests/manage/view/'.$data->id.'?pending'),[
+                                    'class' => 'btn btn-xs btn-info'
                             ]);
                         },
                         'htmlOptions' => ['class' => 'text-center'],
@@ -80,33 +92,36 @@ $this->menu=array(
                         'header' => '',
                         'value' => function($data){
                             /** @var $data Requests */
-                            return CHtml::link('حذف درخواست', Yii::app()->createUrl('/requests/offline/delete/'.$data->id),[
+                            return CHtml::link('انتقال به زباله دان', Yii::app()->createUrl('/requests/manage/delete/'.$data->id.'/?pending'),[
                                 'class' => 'btn btn-xs btn-danger',
                                 'onclick' => 'if(!confirm("آیا از حذف درخواست اطمینان دارید؟")) return false;'
                             ]);
                         },
                         'htmlOptions' => ['class' => 'text-center'],
                         'type' => 'raw',
-                    ]
+                    ],
                 ),
             )); ?>
         </div>
     </div>
 </div>
-
-
+<style>
+    .bg-success {
+        background-color: #dff0d8 !important;
+    }
+</style>
 <?php
-Yii::app()->clientScript->registerScript('load-em-interval','
-    var lastEm = $("tbody tr:last-of-type").data("max");
+Yii::app()->clientScript->registerScript('load-interval','
+    var last = $("tbody tr:last-of-type").data("max");
     
     fetch();
     setInterval(function(){
         fetch();
-    }, 10000);
+    }, 15000);
     
     function fetch(){
         $.ajax({
-            url:"'.$this->createUrl('/requests/offline/admin?pendingAjax=true&table=true&last=').'"+lastEm,
+            url:"'.$this->createUrl('/requests/manage/pending?pendingAjax=true&table=true&last=').'"+last,
             type: "get",
             dataType: "json",
             success: function(data){
@@ -116,7 +131,7 @@ Yii::app()->clientScript->registerScript('load-em-interval','
                         $("#requests-grid tbody tr:last-of-type").addClass("bg-success");
                     });
                 }    
-                lastEm = data.last;
+                last = data.last;
             }
         });
     }

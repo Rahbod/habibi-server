@@ -7,7 +7,7 @@
         <i class="alarm-icon"></i>
         <h5>
             درخواست فوری جدید
-            <small><?= $data->sender ?></small>
+            <small dir="ltr" class="text-right"><?= TextMessagesReceive::SplitPhoneNumber($data->sender, false) ?></small>
         </h5>
     </a>
 </div>

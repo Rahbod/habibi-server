@@ -29,7 +29,13 @@ $this->breadcrumbs=array(
                 [
                     'name' => 'sender',
                     'value' => function($data){
-                        return "<b style='color: #007fff'>".TextMessagesReceive::ShowPhoneNumber($data->sender)."</b>";
+                        $o = "<b style='color: #007fff'>".TextMessagesReceive::ShowPhoneNumber($data->sender)."</b>";
+
+                    /* Button Click to Call */
+//                        $o .= "<a href='tel:".TextMessagesReceive::NormalizePhone($data->sender)."' class='btn btn-primary btn-xs'>
+//                                <i class='fa fa-phone'></i>
+//                                برقراری تماس</a>";
+                        return $o;
                     },
                     'type' => 'raw'
                 ],
@@ -45,5 +51,10 @@ $this->breadcrumbs=array(
                 ],
             ),
         )); ?>
+        <hr>
+        <div class="form-group buttons">
+            <a href="<?= $this->createUrl('/users/manage/quickUser?rid='.$model->id.'&mobile='.TextMessagesReceive::NormalizePhone($model->sender).'&return='.urlencode('/requests/manage/create')) ?>"
+                class="btn btn-success">تماس و پیگیری درخواست</a>
+        </div>
     </div>
 </div>

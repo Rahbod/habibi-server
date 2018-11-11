@@ -50,7 +50,7 @@ elseif($role->role == 'operator') {
                 'columns'=>array(
                     array(
                         'header' => 'نام کامل',
-                        'value' => '$data->userDetails->getShowName()',
+                        'value' => '$data->userDetails?$data->userDetails->getShowName():$data->username',
                         'filter' => CHtml::activeTextField($model,'first_name')
                     ),
                     array(
