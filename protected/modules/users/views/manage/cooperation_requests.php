@@ -20,8 +20,6 @@ $this->breadcrumbs=array(
                 'filter'=>$model,
                 'itemsCssClass'=>'table table-striped table-hover',
                 'columns'=>array(
-                    'first_name',
-                    'last_name',
                     [
                         'name' => 'mobile',
                         'value' => function($data){
@@ -29,6 +27,8 @@ $this->breadcrumbs=array(
                         },
                         'type' => 'raw'
                     ],
+                    'first_name',
+                    'last_name',
                     [
                         'name' => 'create_date',
                         'value' => function($data){
@@ -69,17 +69,6 @@ $this->breadcrumbs=array(
                         'htmlOptions' => ['class' => 'text-center'],
                         'type' => 'raw',
                     ]
-//                    array(
-//                        'class'=>'CButtonColumn',
-//                        'template' => '{add}',
-//                        'buttons' => array(
-//                            'add' => array(
-//                                'label' => 'ثبت نمایشگاه',
-//                                'options' => array('class' => 'btn btn-xs btn-info'),
-//                                'url' => 'Yii::app()->createUrl("/users/manage/createDealership/".$data->id)'
-//                            )
-//                        )
-//                    )
                 )
             )); ?>
         </div>

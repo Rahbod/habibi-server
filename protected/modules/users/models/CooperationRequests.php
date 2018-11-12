@@ -28,7 +28,7 @@ class CooperationRequests extends CActiveRecord
      */
     public function getStatusLabel()
     {
-        return $this->statusLabels[$this->status];
+        return self::$statusLabels[$this->status];
     }
 
 	/**
@@ -104,7 +104,6 @@ class CooperationRequests extends CActiveRecord
 		// @todo Please modify the following code to remove attributes that should not be searched.
 
 		$criteria=new CDbCriteria;
-
 		$criteria->compare('id',$this->id,true);
 		$criteria->compare('first_name',$this->first_name,true);
 		$criteria->compare('last_name',$this->last_name,true);
@@ -113,7 +112,7 @@ class CooperationRequests extends CActiveRecord
 		$criteria->compare('experience_level',$this->experience_level,true);
 		$criteria->compare('create_date',$this->create_date,true);
 		$criteria->compare('status',$this->status,true);
-		$criteria->order = 'status';
+		$criteria->order = 'status, create_date';
 		return new CActiveDataProvider($this, array(
 			'criteria'=>$criteria,
 		));
