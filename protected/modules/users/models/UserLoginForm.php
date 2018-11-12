@@ -33,13 +33,13 @@ class UserLoginForm extends CFormModel
 			// rememberMe needs to be a boolean
 			array('rememberMe', 'boolean'),
             array('email', 'email', 'on' => 'OAuth'),
-            array('verification_field_value', 'email', 'on' => 'emailAuth'),
+            array('verification_field_value', 'username', 'on' => 'usernameAuth'),
             array('verification_field_value', 'numerical', 'integerOnly' => true, 'on' => 'mobileAuth, nationalAuth'),
             array('verification_field_value', 'length', 'is' => 10, 'on' => 'nationalAuth'),
             array('verification_field_value', 'length', 'is' => 11, 'on' => 'mobileAuth'),
 			// multiple username
 			array('verification_field_value, verification_field', 'safe'),
-			array('verification_field_value', 'check', 'fields' => ['mobile', 'email']),
+			array('verification_field_value', 'check', 'fields' => ['username']),
 			// authenticate_field needs to be authenticated
 			array('authenticate_field', 'authenticate','except' => 'OAuth'),
 		);
@@ -48,23 +48,13 @@ class UserLoginForm extends CFormModel
 	public function check($attribute, $params)
 	{
         $criteria = new CDbCriteria();
-        $criteria->compare('email', $this->{$attribute});
+        $criteria->compare('username', $this->{$attribute});
         $criteria->limit = 1;
-        $email = Users::model()->find($criteria);
-        if($email){
-            $this->email = $email->email;
-            $this->verification_field = 'email';
-            $this->scenario = 'emailAuth';
-        }else{
-            $criteria = new CDbCriteria();
-            $criteria->compare('mobile', $this->{$attribute});
-            $criteria->limit = 1;
-            $mobile = UserDetails::model()->find($criteria);
-            if($mobile){
-                $this->email = $mobile->user->email;
-                $this->verification_field = 'mobile';
-                $this->scenario = 'mobileAuth';
-            }
+        $user = Users::model()->find($criteria);
+        if($user){
+            $this->username = $user->username;
+            $this->verification_field = 'username';
+            $this->scenario = 'usernameAuth';
         }
 	}
 
