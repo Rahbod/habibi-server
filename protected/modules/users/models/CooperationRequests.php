@@ -18,6 +18,19 @@ class CooperationRequests extends CActiveRecord
     const STATUS_PENDING = 0;
     const STATUS_REVIEWED = 1;
 
+    public static $statusLabels= [
+        self::STATUS_PENDING => 'در انتظار بررسی',
+        self::STATUS_REVIEWED => 'بررسی شده'
+    ];
+
+    /**
+     * @return array
+     */
+    public function getStatusLabel()
+    {
+        return $this->statusLabels[$this->status];
+    }
+
 	/**
 	 * @return string the associated database table name
 	 */
@@ -100,7 +113,7 @@ class CooperationRequests extends CActiveRecord
 		$criteria->compare('experience_level',$this->experience_level,true);
 		$criteria->compare('create_date',$this->create_date,true);
 		$criteria->compare('status',$this->status,true);
-		$criteria->order = 'id DESC';
+		$criteria->order = 'status';
 		return new CActiveDataProvider($this, array(
 			'criteria'=>$criteria,
 		));

@@ -1,6 +1,6 @@
 <?php
 /* @var $this UsersManageController */
-/* @var $model DealershipRequests */
+/* @var $model CooperationRequests */
 
 $this->breadcrumbs=array(
     'مدیریت درخواست های همکاری',
@@ -20,18 +20,55 @@ $this->breadcrumbs=array(
                 'filter'=>$model,
                 'itemsCssClass'=>'table table-striped table-hover',
                 'columns'=>array(
-                    'dealership_name',
-                    'manager_name',
-                    'manager_last_name',
-                    'creator_name',
-                    'creator_mobile',
-                    array(
-                        'name' => 'create_date',
-                        'filter' => false,
+                    'first_name',
+                    'last_name',
+                    [
+                        'name' => 'mobile',
                         'value' => function($data){
-                            return JalaliDate::date("Y/m/d - H:i", $data->create_date);
-                        }
-                    ),
+                            return "<b style='color: #007fff'>".TextMessagesReceive::ShowPhoneNumber($data->mobile)."</b>";
+                        },
+                        'type' => 'raw'
+                    ],
+                    [
+                        'name' => 'create_date',
+                        'value' => function($data){
+                            return "<b dir='ltr'>".JalaliDate::date("Y/m/d H:i", $data->create_date)."</b>";
+                        },
+                        'type' => 'raw'
+                    ],
+                    [
+                        'name' => 'status',
+                        'value' => function($data){
+                            /** @var $data TextMessagesReceive */
+                            $css = $data->status == CooperationRequests::STATUS_PENDING?'info':'success';
+                            return "<span class='label label-{$css}'>{$data->getStatusLabel()}</span>";
+                        },
+                        'type' => 'raw',
+                        'filter' => CooperationRequests::$statusLabels
+                    ],
+                    [
+                        'header' => '',
+                        'value' => function($data){
+                            /** @var $data Requests */
+                            return CHtml::link('بررسی درخواست', Yii::app()->createUrl('/users/manage/viewRequest/'.$data->id),[
+                                'class' => 'btn btn-xs btn-info'
+                            ]);
+                        },
+                        'htmlOptions' => ['class' => 'text-center'],
+                        'type' => 'raw',
+                    ],
+                    [
+                        'header' => '',
+                        'value' => function($data){
+                            /** @var $data Requests */
+                            return CHtml::link('حذف درخواست', Yii::app()->createUrl('/users/manage/deleteRequest/'.$data->id),[
+                                'class' => 'btn btn-xs btn-danger',
+                                'onclick' => 'if(!confirm("آیا از حذف درخواست اطمینان دارید؟")) return false;'
+                            ]);
+                        },
+                        'htmlOptions' => ['class' => 'text-center'],
+                        'type' => 'raw',
+                    ]
 //                    array(
 //                        'class'=>'CButtonColumn',
 //                        'template' => '{add}',
@@ -40,18 +77,6 @@ $this->breadcrumbs=array(
 //                                'label' => 'ثبت نمایشگاه',
 //                                'options' => array('class' => 'btn btn-xs btn-info'),
 //                                'url' => 'Yii::app()->createUrl("/users/manage/createDealership/".$data->id)'
-//                            )
-//                        )
-//                    ),
-//                    array(
-//                        'class'=>'CButtonColumn',
-//                        'template' => '{view} {delete}',
-//                        'buttons' => array(
-//                            'delete' => array(
-//                                'url' => 'Yii::app()->createUrl("/users/manage/deleteRequest/".$data->id)'
-//                            ),
-//                            'view' => array(
-//                                'url' => 'Yii::app()->createUrl("/users/manage/dealershipRequest/".$data->id)'
 //                            )
 //                        )
 //                    )

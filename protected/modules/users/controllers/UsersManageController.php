@@ -28,6 +28,7 @@ class UsersManageController extends Controller
                 'upload',
                 'deleteUpload',
                 'cooperationRequests',
+                'viewRequest',
                 'deleteRequest',
                 'fetchAddresses',
                 'addAddress',
@@ -255,7 +256,15 @@ class UsersManageController extends Controller
         $this->render('cooperation_requests', compact('model'));
     }
 
-    public function actionDeleteDealershipRequest($id)
+    public function actionViewRequest($id)
+    {
+        $model = CooperationRequests::model()->findByPk($id);
+        $model->status = CooperationRequests::STATUS_REVIEWED;
+        $model->save(false);
+        $this->render('view_cooperation_request', compact('model'));
+    }
+
+    public function actionDeleteRequest($id)
     {
         CooperationRequests::model()->deleteByPk($id);
         $this->redirect(array('cooperationRequests'));
