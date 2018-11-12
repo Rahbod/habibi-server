@@ -66,7 +66,7 @@ class Requests extends CActiveRecord
         self::REQUEST_OFFLINE => 'درخواست آفلاین',
     );
 
-    public static $serviceTimes = ['am' => 'صبح', 'pm' => 'عصر', 'night' => 'شب'];
+    public static $serviceTimes = ['am' => 'صبح - 8 تا 12', 'pm' => 'عصر - 12 تا 18', 'night' => 'شب - 18 تا 22'];
 
     /**
      * @return string the associated database table name

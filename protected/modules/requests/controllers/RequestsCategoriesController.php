@@ -41,7 +41,7 @@ class RequestsCategoriesController extends Controller
                 'attribute' => 'logo',
                 'rename' => 'random',
                 'validateOptions' => array(
-                    'acceptedTypes' => array('svg')
+                    'acceptedTypes' => array('png')
                 )
             ),
             'deleteUpload' => array( // delete brand logo uploaded
