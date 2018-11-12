@@ -69,17 +69,6 @@ $this->breadcrumbs=array(
                         'htmlOptions' => ['class' => 'text-center'],
                         'type' => 'raw',
                     ]
-//                    array(
-//                        'class'=>'CButtonColumn',
-//                        'template' => '{add}',
-//                        'buttons' => array(
-//                            'add' => array(
-//                                'label' => 'ثبت نمایشگاه',
-//                                'options' => array('class' => 'btn btn-xs btn-info'),
-//                                'url' => 'Yii::app()->createUrl("/users/manage/createDealership/".$data->id)'
-//                            )
-//                        )
-//                    )
                 )
             )); ?>
         </div>

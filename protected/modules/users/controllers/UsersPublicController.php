@@ -28,7 +28,6 @@ class UsersPublicController extends Controller
                 'upgradePlan',
                 'buyPlan',
                 'verifyPlan',
-                'dealership',
             )
         );
     }
@@ -802,34 +801,6 @@ class UsersPublicController extends Controller
             'transaction' => $model,
             'plan' => $plan,
             'user' => $user
-        ));
-    }
-
-    public function actionDealership()
-    {
-        Yii::app()->theme = 'frontend';
-        $this->layout = '//layouts/public';
-
-        $model = new DealershipRequestForm;
-        $request = new DealershipRequests();
-
-        // collect user input data
-        if(isset($_POST['DealershipRequestForm'])){
-            $model->attributes = $_POST['DealershipRequestForm'];
-            // validate user input and redirect to the previous page if valid
-            if($model->validate()){
-                $request->attributes = $_POST['DealershipRequestForm'];
-                if($request->save()){
-                    Yii::app()->user->setFlash('success', 'درخواست شما با موفقیت ارسال و ثبت گردید. در اسرع وقت کارشناسان با شما تماس خواهند گرفت.');
-                    $this->refresh();
-                }else
-                    Yii::app()->user->setFlash('failed', 'متاسفانه در ثبت نام مشکلی بوجود آمده است. لطفا مجددا سعی کنید.');
-            }else
-                Yii::app()->user->setFlash('failed', 'متاسفانه در ثبت نام مشکلی بوجود آمده است. لطفا مجددا سعی کنید.');
-        }
-
-        $this->render('dealership', array(
-            'model' => $model,
         ));
     }
 }

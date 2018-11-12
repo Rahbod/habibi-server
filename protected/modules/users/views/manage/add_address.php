@@ -1,7 +1,7 @@
 <?php
 /* @var $this UsersManageController */
 /* @var $model Users */
-/* @var $request DealershipRequests*/
+/* @var $request CooperationRequests*/
 /* @var $form CActiveForm */
 
 $this->breadcrumbs = array(

@@ -48,21 +48,21 @@ if(Yii::app()->user->roles == 'operator'){
     endif;
     ?>
 
-    <!--Dealership Requests-->
+    <!--Cooperation Requests-->
     <?php
-    if($permissions['dealerRequests']):
+    if($permissions['cooperationRequests']):
         ?>
         <div class="col-lg-3 col-xs-6">
             <!-- small box -->
             <div class="small-box bg-green">
                 <div class="inner">
-                    <h3><?php echo $statistics['dealerRequests'];?></h3>
+                    <h3><?php echo $statistics['cooperationRequests'];?></h3>
                     <p>درخواست همکاری</p>
                 </div>
                 <div class="icon">
                     <i class="ion ion-android-car"></i>
                 </div>
-                <a href="<?php echo $this->createUrl('/users/manage/dealershipRequests');?>" class="small-box-footer">مشاهده درخواست ها <i class="fa fa-arrow-circle-left"></i></a>
+                <a href="<?php echo $this->createUrl('/users/manage/cooperationRequests');?>" class="small-box-footer">مشاهده درخواست ها <i class="fa fa-arrow-circle-left"></i></a>
             </div>
         </div>
         <?php

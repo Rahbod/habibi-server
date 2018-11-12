@@ -40,7 +40,7 @@ class AdminsDashboardController extends Controller
             'contact' => ContactMessages::model()->count('seen = 0'),
             'appRequests' => Requests::model()->count($appRequestsCr),
             'offlineRequests' => Requests::model()->countByAttributes(['status' => Requests::STATUS_PENDING, 'request_type' => Requests::REQUEST_OFFLINE]),
-            'dealerRequests' => DealershipRequests::model()->count('status = 0'),
+            'cooperationRequests' => CooperationRequests::model()->count('status = 0'),
             'transactions' => UserTransactions::model()->count($trCr)
         ];
         $this->render('index', compact('statistics'));
