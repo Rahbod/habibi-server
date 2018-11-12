@@ -199,7 +199,7 @@ class Controller extends AuthController
                     'submenuOptions' => array('class' => 'treeview-menu'),
                     'items' => array(
                         array('label' => '<i class="fa fa-circle-o"></i>عمومی', 'url' => Yii::app()->createUrl('/setting/manage/changeSetting')),
-                        array('label' => '<i class="fa fa-circle-o"></i>گوگل مپ', 'url' => Yii::app()->createUrl('/map/manage/update/1')),
+//                        array('label' => '<i class="fa fa-circle-o"></i>گوگل مپ', 'url' => Yii::app()->createUrl('/map/manage/update/1')),
                         array('label' => '<i class="fa fa-circle-o"></i>صفحات متنی', 'url' => Yii::app()->createUrl('/pages/manage/admin/slug/base')),
                         array('label' => '<i class="fa fa-circle-o"></i>شبکه های اجتماعی', 'url' => Yii::app()->createUrl('/setting/manage/socialLinks')),
                         array('label' => '<i class="fa fa-circle-o"></i>تنظیمات درگاه', 'url' => Yii::app()->createUrl('/setting/manage/gatewaySetting')),
@@ -258,24 +258,24 @@ class Controller extends AuthController
 //                        array('label' => '<i class="fa fa-circle-o"></i>مدیریت برندها و مدل ها', 'url' => Yii::app()->createUrl('/requests/brands/admin')),
                     )
                 ),
-                array(
-                    'label' => '<i class="fa fa-support"></i><span>تماس با ما</span> <i class="fa fa-angle-left pull-left"></i>',
-                    'url' => '#',
-                    'itemOptions' => array('class' => 'treeview', 'tabindex' => "-1"),
-                    'submenuOptions' => array('class' => 'treeview-menu'),
-                    'items' => array(
-                        array('label' => '<i class="fa fa-circle-o"></i>مدیریت پیام ها', 'url' => Yii::app()->createUrl('/contact/messages/admin')),
-                        array('label' => '<i class="fa fa-circle-o"></i>مدیریت بخش های تماس ', 'url' => Yii::app()->createUrl('/contact/department/admin')),
-                        array('label' => '<i class="fa fa-circle-o"></i>مدیریت دریافت کنندگان ', 'url' => Yii::app()->createUrl('/contact/receivers/admin')),
-                    )
-                ),
+//                array(
+//                    'label' => '<i class="fa fa-support"></i><span>تماس با ما</span> <i class="fa fa-angle-left pull-left"></i>',
+//                    'url' => '#',
+//                    'itemOptions' => array('class' => 'treeview', 'tabindex' => "-1"),
+//                    'submenuOptions' => array('class' => 'treeview-menu'),
+//                    'items' => array(
+//                        array('label' => '<i class="fa fa-circle-o"></i>مدیریت پیام ها', 'url' => Yii::app()->createUrl('/contact/messages/admin')),
+//                        array('label' => '<i class="fa fa-circle-o"></i>مدیریت بخش های تماس ', 'url' => Yii::app()->createUrl('/contact/department/admin')),
+//                        array('label' => '<i class="fa fa-circle-o"></i>مدیریت دریافت کنندگان ', 'url' => Yii::app()->createUrl('/contact/receivers/admin')),
+//                    )
+//                ),
                 array(
                     'label' => '<i class="fa fa-building"></i><span>درخواست های همکاری</span> <i class="fa fa-angle-left pull-left"></i>',
                     'url' => '#',
                     'itemOptions' => array('class' => 'treeview', 'tabindex' => "-1"),
                     'submenuOptions' => array('class' => 'treeview-menu'),
                     'items' => array(
-                        array('label' => '<i class="fa fa-circle-o"></i>مدیریت', 'url' => Yii::app()->createUrl('/users/manage/dealershipRequests')),
+                        array('label' => '<i class="fa fa-circle-o"></i>مدیریت', 'url' => Yii::app()->createUrl('/users/manage/cooperationRequests')),
                     )
                 ),
                 array(
