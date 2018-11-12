@@ -50,7 +50,6 @@ class Users extends CActiveRecord
     public $mobile;
     public $address;
     public $avatar;
-    public $dealership_name;
     public $statusFilter;
     public $repeatPassword;
     public $oldPassword;
@@ -71,7 +70,6 @@ class Users extends CActiveRecord
             $this->mobile = isset($values['mobile']) && !empty($values['mobile']) ? $values['mobile'] : null;
             $this->address = isset($values['address']) && !empty($values['address']) ? $values['address'] : null;
             $this->avatar = isset($values['avatar']) && !empty($values['avatar']) ? $values['avatar'] : null;
-            $this->dealership_name = isset($values['dealership_name']) && !empty($values['dealership_name']) ? $values['dealership_name'] : null;
         } elseif ($this) {
             $this->first_name = $this->userDetails->first_name;
             $this->last_name = $this->userDetails->last_name;
@@ -79,7 +77,6 @@ class Users extends CActiveRecord
             $this->mobile = $this->userDetails->mobile;
             $this->address = $this->userDetails->address;
             $this->avatar = $this->userDetails->avatar;
-            $this->dealership_name = $this->userDetails->dealership_name;
         }
     }
 
@@ -113,11 +110,11 @@ class Users extends CActiveRecord
             array('mobile', 'length', 'is' => 11, 'message' => 'شماره موبایل اشتباه است'),
             array('address', 'length', 'max' => 1000),
             array('avatar', 'length', 'max' => 255),
-            array('type, first_name, last_name, phone, mobile, address, avatar, dealership_name', 'safe'),
+            array('type, first_name, last_name, phone, mobile, address, avatar', 'safe'),
 
             // Register rules
             array('mobile, first_name, last_name, repeatPassword', 'required', 'on' => 'create, create-dealership'),
-            array('dealership_name, state_id', 'required', 'on' => 'create-dealership'),
+            array('state_id', 'required', 'on' => 'create-dealership'),
             array('repeatPassword', 'compare', 'compareAttribute' => 'password', 'on' => 'create, create-dealership', 'message' => 'کلمه های عبور همخوانی ندارند'),
 
             // change password rules
@@ -131,7 +128,7 @@ class Users extends CActiveRecord
 
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
-            array('type, state_id, roleId, create_date, status, verification_token, change_password_request_count, email ,statusFilter, first_name, last_name, phone, mobile, address, avatar, dealership_name', 'safe', 'on' => 'search'),
+            array('type, state_id, roleId, create_date, status, verification_token, change_password_request_count, email ,statusFilter, first_name, last_name, phone, mobile, address, avatar', 'safe', 'on' => 'search'),
         );
     }
 
@@ -209,7 +206,6 @@ class Users extends CActiveRecord
             'last_name' => 'نام خانوادگی',
             'address' => 'آدرس',
             'avatar' => 'تصویر',
-            'dealership_name' => 'نام نمایشگاه',
             'verifyCode' => 'کد امنیتی',
             'state_id' => 'استان',
         );
@@ -243,56 +239,6 @@ class Users extends CActiveRecord
         return new CActiveDataProvider($this, array(
             'criteria' => $criteria,
         ));
-    }
-
-
-    public function searchDealers()
-    {
-        // @todo Please modify the following code to remove attributes that should not be searched.
-
-        $criteria = new CDbCriteria;
-        $criteria->alias = 'dealership';
-        $criteria->compare('role_id', $this->role_id);
-        $criteria->compare('userDetails.dealership_name', $this->dealership_name, true);
-        $criteria->compare('state_id', $this->state_id);
-        $criteria->with = array('userDetails');
-        $criteria->order = 'dealership_name';
-
-        if ($this->dealershipFilters)
-            $criteria = $this->applyDealershipFilters($criteria, $this->dealershipFilters);
-
-        return new CActiveDataProvider($this, array(
-            'criteria' => $criteria,
-            'pagination' => array('pageSize' => 20)
-        ));
-    }
-
-    /**
-     * Apply selected dealership filters.
-     * @param CDbCriteria $criteria
-     * @param array $filters
-     * @return CDbCriteria
-     */
-    protected function applyDealershipFilters($criteria, $filters)
-    {
-        foreach ($filters as $filter => $value) {
-            switch ($filter) {
-                case "state":
-                    $criteria->with[] = 'state';
-                    $criteria->compare('state.slug', $value, true);
-                    break;
-
-                case "name":
-                    $criteria->with[] = 'userDetails';
-                    $criteria->compare('userDetails.dealership_name', urldecode($value), true);
-                    break;
-            }
-        }
-
-//        if (!isset($filters['order']))
-//            $criteria->order = "car.update_date DESC";
-
-        return $criteria;
     }
 
     /**
@@ -330,7 +276,6 @@ class Users extends CActiveRecord
             $model->mobile = $this->mobile;
             $model->address = $this->address;
             $model->avatar = $this->avatar;
-            $model->dealership_name = $this->dealership_name;
             if (!$model->save())
                 $this->addErrors($model->errors);
         } elseif ($this->scenario == 'update') {
@@ -341,7 +286,6 @@ class Users extends CActiveRecord
             $model->mobile = $this->mobile;
             $model->address = $this->address;
             $model->avatar = $this->avatar;
-            $model->dealership_name = $this->dealership_name;
             if (!@$model->save())
                 $this->addErrors($model->errors);
         }

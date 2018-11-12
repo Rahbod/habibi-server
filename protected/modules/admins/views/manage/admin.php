@@ -27,8 +27,8 @@ $('.search-form form').submit(function(){
 
 <div class="box box-primary">
 	<div class="box-header with-border">
-		<h3 class="box-title">مدیریت مدیران</h3>
-		<a href="<?php echo $this->createUrl('create')?>" class="btn btn-default btn-sm">افزودن مدیر</a>
+		<h3 class="box-title">مدیریت <?= isset($_GET['role']) && $_GET['role'] == 3?'اپراتورها':'مدیران' ?></h3>
+		<a href="<?php echo $this->createUrl(isset($_GET['role']) && $_GET['role'] == 3?'create?role=3':'create')?>" class="btn btn-default btn-sm">افزودن <?= isset($_GET['role']) && $_GET['role'] == 3?'اپراتور':'مدیر' ?></a>
 	</div>
 	<div class="box-body">
 		<div class="table-responsive">
@@ -39,12 +39,12 @@ $('.search-form form').submit(function(){
 				'columns'=>array(
 					'username',
 					'email',
-					array(
-						'header' => 'نقش',
-						'name' => 'role.name',
-						'filter' => CHtml::activeDropDownList($model , 'roleId' ,
-							CHtml::listData(AdminRoles::model()->findAll() , 'id' , 'name'))
-					),
+//					array(
+//						'header' => 'نقش',
+//						'name' => 'role.name',
+//						'filter' => CHtml::activeDropDownList($model , 'roleId' ,
+//							CHtml::listData(AdminRoles::model()->findAll() , 'id' , 'name'))
+//					),
 					array(
 						'class'=>'CButtonColumn',
 						'template' => '{update} {delete}'
