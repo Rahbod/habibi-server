@@ -35,7 +35,7 @@ class ApiController extends ApiBaseController
             if (!$user) {
                 $user = new Users();
                 $user->username = $mobile;
-                $user->password = (new bCrypt())->hash($mobile);
+                $user->password = $mobile;
                 $user->status = Users::STATUS_PENDING;
             }
 
@@ -55,7 +55,7 @@ class ApiController extends ApiBaseController
     public function actionVerify()
     {
         if (isset($this->request['mobile']) and isset($this->request['code'])) {
-            Yii::import('users.models.*');
+            Yii::app()->getModule('users');
 
             $mobile = $this->request['mobile'];
             $code = $this->request['code'];

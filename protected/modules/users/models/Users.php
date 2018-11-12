@@ -97,7 +97,6 @@ class Users extends CActiveRecord
             array('username, password', 'required', 'on' => 'insert,create,create-dealership'),
 //            array('verifyCode', 'activeCaptcha', 'on' => 'insert,create'),
             array('phone, mobile', 'numerical', 'integerOnly' => true, 'message' => '{attribute} باید عددی باشد.'),
-            array('email', 'required', 'on' => 'update'),
             array('role_id', 'default', 'value' => 1),
             array('email', 'required', 'on' => 'email, OAuthInsert'),
             array('email', 'unique', 'on' => 'insert, create, create-dealership, OAuthInsert, update'),
