@@ -13,8 +13,8 @@ $this->menu=array(
 
 <div class="box box-primary">
     <div class="box-header with-border">
-        <h3 class="box-title">مدیریت Tariffs</h3>
-        <a href="<?= $this->createUrl('create') ?>" class="btn btn-default btn-sm">افزودن Tariffs</a>
+        <h3 class="box-title">مدیریت تعرفه ها</h3>
+        <a href="<?= $this->createUrl('create') ?>" class="btn btn-default btn-sm">افزودن تعرفه جدید</a>
     </div>
     <div class="box-body">
         <?php $this->renderPartial("//partial-views/_flashMessage"); ?>        <div class="table-responsive">
@@ -50,6 +50,7 @@ $this->menu=array(
                     ],
                     array(
                         'class'=>'CButtonColumn',
+                        'template' => '{update} {delete}'
                     ),
                 ),
             )); ?>

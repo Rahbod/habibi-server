@@ -25,14 +25,11 @@ class UsersManageController extends Controller
                 'delete',
                 'userTransactions',
                 'transactions',
-                'dealerships',
-                'createDealership',
-                'updateDealership',
                 'upload',
                 'deleteUpload',
-                'dealershipRequests',
-                'dealershipRequest',
-                'deleteDealershipRequest',
+                'cooperationRequests',
+                'viewRequest',
+                'deleteRequest',
                 'fetchAddresses',
                 'addAddress',
                 'quickUser'
@@ -110,50 +107,10 @@ class UsersManageController extends Controller
     }
 
     /**
-     * Creates a new model.
-     * If creation is successful, the browser will be redirected to the 'views' page.
-     */
-    public function actionCreateDealership($id = false)
-    {
-        $request = null;
-        $model = new Users();
-        $model->setScenario('create-dealership');
-        $this->performAjaxValidation($model);
-        if ($id) {
-            $request = DealershipRequests::model()->findByPk($id);
-            if (!isset($_POST['Users'])) {
-                $model->attributes = $request->attributes;
-                $model->first_name = $request->manager_name;
-                $model->last_name = $request->manager_last_name;
-            }
-        }
-        $avatar = array();
-        if (isset($_POST['Users'])) {
-            $model->attributes = $_POST['Users'];
-            $model->role_id = 3;
-            $model->status = 'active';
-            $model->create_date = time();
-
-            $avatar = new UploadedFiles($this->tempPath, $model->avatar);
-            if ($model->save()) {
-                $avatar->move($this->avatarPath);
-                if ($id && $request) {
-                    $request->status = DealershipRequests::STATUS_SAVED;
-                    $request->save(false);
-                }
-                Yii::app()->user->setFlash('success', 'اطلاعات با موفقیت ثبت شد.');
-                $this->redirect(array('dealershipRequests'));
-            } else
-                Yii::app()->user->setFlash('failed', 'در ثبت اطلاعات خطایی رخ داده است! لطفا مجددا تلاش کنید.');
-        }
-
-        $this->render('create-dealership', compact('model', 'avatar', 'request'));
-    }
-
-    /**
      * Updates a particular model.
      * If update is successful, the browser will be redirected to the 'views' page.
      * @param integer $id the ID of the model to be updated
+     * @throws CHttpException
      */
     public function actionUpdate($id)
     {
@@ -183,37 +140,11 @@ class UsersManageController extends Controller
     }
 
     /**
-     * Updates a particular model.
-     * If update is successful, the browser will be redirected to the 'views' page.
-     * @param integer $id the ID of the model to be updated
-     */
-    public function actionUpdateDealership($id)
-    {
-        $model = $this->loadModel($id);
-        $model->loadPropertyValues();
-        $request = DealershipRequests::model()->findByAttributes(array('email' => $model->email));
-
-        $this->performAjaxValidation($model);
-
-        $avatar = new UploadedFiles($this->avatarPath, $model->avatar);
-        if (isset($_POST['Users'])) {
-            $oldAvatar = $model->avatar;
-            $model->attributes = $_POST['Users'];
-            if ($model->save()) {
-                $avatar->update($oldAvatar, $model->avatar, $this->tempPath);
-                Yii::app()->user->setFlash('success', 'اطلاعات با موفقیت ثبت شد.');
-                $this->refresh();
-            } else
-                Yii::app()->user->setFlash('failed', 'در ثبت اطلاعات خطایی رخ داده است! لطفا مجددا تلاش کنید.');
-        }
-
-        $this->render('update-dealership', compact('model', 'avatar', 'request'));
-    }
-
-    /**
      * Deletes a particular model.
      * If deletion is successful, the browser will be redirected to the 'admin' page.
      * @param integer $id the ID of the model to be deleted
+     * @throws CDbException
+     * @throws CHttpException
      */
     public function actionDelete($id)
     {
@@ -254,21 +185,6 @@ class UsersManageController extends Controller
 
         $role = UserRoles::model()->findByPk($model->role_id);
         $this->render('admin', compact('model', 'role'));
-    }
-
-    /**
-     * Manages all models.
-     */
-    public function actionDealerships()
-    {
-        $model = new Users('search');
-        $model->unsetAttributes();  // clear any default values
-        if (isset($_GET['Users']))
-            $model->attributes = $_GET['Users'];
-        $model->role_id = 2;
-        $this->render('dealerships', array(
-            'model' => $model,
-        ));
     }
 
     /**
@@ -332,24 +248,26 @@ class UsersManageController extends Controller
         }
     }
 
-    public function actionDealershipRequests()
+    public function actionCooperationRequests()
     {
-        $model = new DealershipRequests('search');
-        if (isset($_GET['DealershipRequests']))
-            $model->attributes = $_GET['DealershipRequests'];
-        $this->render('dealership_requests', compact('model'));
+        $model = new CooperationRequests('search');
+        if (isset($_GET['CooperationRequests']))
+            $model->attributes = $_GET['CooperationRequests'];
+        $this->render('cooperation_requests', compact('model'));
     }
 
-    public function actionDealershipRequest($id)
+    public function actionViewRequest($id)
     {
-        $model = DealershipRequests::model()->findByPk($id);
-        $this->render('view_dealership_request', compact('model'));
+        $model = CooperationRequests::model()->findByPk($id);
+        $model->status = CooperationRequests::STATUS_REVIEWED;
+        $model->save(false);
+        $this->render('view_cooperation_request', compact('model'));
     }
 
-    public function actionDeleteDealershipRequest($id)
+    public function actionDeleteRequest($id)
     {
-        DealershipRequests::model()->deleteByPk($id);
-        $this->redirect(array('dealershipRequests'));
+        CooperationRequests::model()->deleteByPk($id);
+        $this->redirect(array('cooperationRequests'));
     }
 
     /**
