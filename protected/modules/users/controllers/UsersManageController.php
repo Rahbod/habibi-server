@@ -380,11 +380,16 @@ class UsersManageController extends Controller
                 Yii::app()->user->setFlash('success', 'آدرس برای کاربر با موفقیت ثبت شد.');
 
                 $return = $_GET['return'];
-                list($uri, $query) = explode("?",$return);
-                parse_str($query, $params);
-                unset($params['address_id']);
+                if (strpos($return, '?', 0) !== false) {
+                    list($uri, $query) = explode("?", $return);
+                    parse_str($query, $params);
+                    unset($params['address_id']);
+                } else {
+                    $uri = $return;
+                    $params = [];
+                }
                 $params['address_id'] = $model->id;
-                $return = $uri."?".http_build_query($params);
+                $return = $uri . "?" . http_build_query($params);
 
                 $this->redirect(array($return));
             } else
@@ -396,11 +401,11 @@ class UsersManageController extends Controller
 
     public function actionQuickUser()
     {
-        if(isset($_GET['mobile'])){
+        if (isset($_GET['mobile'])) {
             $mobile = $_GET['mobile'];
             $mobile = TextMessagesReceive::NormalizePhone($mobile);
             $user = Users::model()->findByAttributes(['username' => $mobile]);
-            if($user)
+            if ($user)
                 $this->redirect(array($_GET['return'], 'user_id' => $user->id));
         }
 
@@ -420,13 +425,18 @@ class UsersManageController extends Controller
                         Yii::app()->user->setFlash('success', 'کاربر با موفقیت ثبت شد.');
 
                         $return = $_GET['return'];
-                        list($uri, $query) = explode("?",$return);
-                        parse_str($query, $params);
-                        unset($params['user_id']);
-                        unset($params['address_id']);
+                        if (strpos($return, '?', 0) !== false) {
+                            list($uri, $query) = explode("?", $return);
+                            parse_str($query, $params);
+                            unset($params['user_id']);
+                            unset($params['address_id']);
+                        } else {
+                            $uri = $return;
+                            $params = [];
+                        }
                         $params['user_id'] = $model->id;
                         $params['address_id'] = $address->id;
-                        $return = $uri."?".http_build_query($params);
+                        $return = $uri . "?" . http_build_query($params);
 
                         $this->redirect(array($return));
                     } else
