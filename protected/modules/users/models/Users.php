@@ -38,6 +38,11 @@ class Users extends CActiveRecord
         return '{{users}}';
     }
 
+    const STATUS_PENDING = 'pending';
+    const STATUS_ACTIVE = 'active';
+    const STATUS_BLOCKED = 'blocked';
+    const STATUS_DELETED = 'deleted';
+
     public $statusLabels = array(
         'pending' => 'در انتظار تایید',
         'active' => 'فعال',
