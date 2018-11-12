@@ -571,4 +571,16 @@ class Controller extends AuthController
         for($i = 2;$i <= $index;$i++)
             @unlink($dbPath . DIRECTORY_SEPARATOR . $files[$i]);
     }
+
+    public static function generateRandomInt($length = 4)
+    {
+        $characters = '123456789';
+        $charactersLength = strlen($characters);
+        $randomString = '';
+
+        for ($i = 0; $i < $length; $i++)
+            $randomString .= $characters[mt_rand(0, $charactersLength - 1)];
+
+        return $randomString;
+    }
 }
