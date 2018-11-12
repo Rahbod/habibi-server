@@ -39,6 +39,7 @@ return array(
 		'places',
 		'contact',
         'requests',
+        'map',
 	),
 
 	// application components
