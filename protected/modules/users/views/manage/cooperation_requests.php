@@ -20,8 +20,6 @@ $this->breadcrumbs=array(
                 'filter'=>$model,
                 'itemsCssClass'=>'table table-striped table-hover',
                 'columns'=>array(
-                    'first_name',
-                    'last_name',
                     [
                         'name' => 'mobile',
                         'value' => function($data){
@@ -29,6 +27,8 @@ $this->breadcrumbs=array(
                         },
                         'type' => 'raw'
                     ],
+                    'first_name',
+                    'last_name',
                     [
                         'name' => 'create_date',
                         'value' => function($data){

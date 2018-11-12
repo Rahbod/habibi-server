@@ -5,7 +5,7 @@ $permissions = [
     'contact' => false,
     'appRequests' => false,
     'offlineRequests' => false,
-    'dealerRequests' => false,
+    'cooperationRequests' => false,
     'transactionStatistics' => false,
     'statistics' => false,
 ];
@@ -13,7 +13,7 @@ if(Yii::app()->user->roles == 'admin'){
     $permissions['contact'] = true;
     $permissions['appRequests'] = true;
     $permissions['offlineRequests'] = true;
-    $permissions['dealerRequests'] = true;
+    $permissions['cooperationRequests'] = true;
     $permissions['statistics'] = true;
     $permissions['transactionStatistics'] = true;
 }
@@ -21,7 +21,7 @@ if(Yii::app()->user->roles == 'operator'){
     $permissions['contact'] = true;
     $permissions['appRequests'] = true;
     $permissions['offlineRequests'] = true;
-    $permissions['dealerRequests'] = true;
+    $permissions['cooperationRequests'] = true;
     $permissions['statistics'] = true;
     $permissions['transactionStatistics'] = true;
 }

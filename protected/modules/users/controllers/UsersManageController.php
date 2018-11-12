@@ -251,8 +251,10 @@ class UsersManageController extends Controller
     public function actionCooperationRequests()
     {
         $model = new CooperationRequests('search');
+        $model->unsetAttributes();
         if (isset($_GET['CooperationRequests']))
             $model->attributes = $_GET['CooperationRequests'];
+
         $this->render('cooperation_requests', compact('model'));
     }
 
