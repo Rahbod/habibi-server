@@ -407,7 +407,6 @@ class UsersManageController extends Controller
         $model = new Users('quick');
         $address = new UserAddresses('quick');
 
-
         if (isset($_POST['Users'])) {
             $model->attributes = $_POST['Users'];
             $model->username = $model->mobile;
@@ -419,7 +418,17 @@ class UsersManageController extends Controller
                     $address->user_id = $model->id;
                     if ($address->save()) {
                         Yii::app()->user->setFlash('success', 'کاربر با موفقیت ثبت شد.');
-                        $this->redirect(array($_GET['return'], 'user_id' => $model->id, 'address_id' => $address->id));
+
+                        $return = $_GET['return'];
+                        list($uri, $query) = explode("?",$return);
+                        parse_str($query, $params);
+                        unset($params['user_id']);
+                        unset($params['address_id']);
+                        $params['user_id'] = $model->id;
+                        $params['address_id'] = $address->id;
+                        $return = $uri."?".http_build_query($params);
+
+                        $this->redirect(array($return));
                     } else
                         Yii::app()->user->setFlash('failed', 'کاربر با موفقیت ثبت شد. در ثبت آدرس خطایی رخ داده است! لطفا مجددا تلاش کنید.');
                 }
