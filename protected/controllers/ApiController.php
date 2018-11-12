@@ -9,8 +9,8 @@ class ApiController extends ApiBaseController
     public function filters()
     {
         return array(
-            'RestAccessControl + register',
-            'RestAuthControl - register',
+            'RestAccessControl + register, verify',
+            'RestAuthControl - register, verify',
         );
     }
 
@@ -26,8 +26,10 @@ class ApiController extends ApiBaseController
     public function actionRegister()
     {
         if (isset($this->request['mobile'])) {
+            Yii::import('users.models.*');
+
             $mobile = $this->request['mobile'];
-            $user = Users::model()->find('mobile = :mobile', [':mobile' => $mobile]);
+            $user = Users::model()->find('username = :mobile', [':mobile' => $mobile]);
 
             $code = Controller::generateRandomInt();
             if (!$user) {
@@ -53,9 +55,11 @@ class ApiController extends ApiBaseController
     public function actionVerify()
     {
         if (isset($this->request['mobile']) and isset($this->request['code'])) {
+            Yii::import('users.models.*');
+
             $mobile = $this->request['mobile'];
             $code = $this->request['code'];
-            $user = Users::model()->find('mobile = :mobile', [':mobile' => $mobile]);
+            $user = Users::model()->find('username = :mobile', [':mobile' => $mobile]);
 
             if (!$user)
                 $this->_sendResponse(404, CJSON::encode([
@@ -71,7 +75,7 @@ class ApiController extends ApiBaseController
                 // Login user
                 $login = new UserLoginForm;
                 $login->scenario = 'app_login';
-                $login->username = $mobile;
+                $login->verification_field_value = $mobile;
                 $login->password = $mobile;
                 if ($login->validate() && $login->login()) {
                     $this->_sendResponse(200, CJSON::encode([
@@ -82,8 +86,7 @@ class ApiController extends ApiBaseController
                     $this->_sendResponse(400, CJSON::encode([
                         'status' => false,
                         'message' => $login->getError('authenticate_field')
-                    ]),
-                        'application/json');
+                    ]), 'application/json');
             } else
                 $this->_sendResponse(400, CJSON::encode([
                     'status' => false,

@@ -33,7 +33,7 @@ class UserLoginForm extends CFormModel
 			// rememberMe needs to be a boolean
 			array('rememberMe', 'boolean'),
             array('email', 'email', 'on' => 'OAuth'),
-            array('verification_field_value', 'username', 'on' => 'usernameAuth'),
+            //array('verification_field_value', 'email', 'on' => 'emailAuth'),
             array('verification_field_value', 'numerical', 'integerOnly' => true, 'on' => 'mobileAuth, nationalAuth'),
             array('verification_field_value', 'length', 'is' => 10, 'on' => 'nationalAuth'),
             array('verification_field_value', 'length', 'is' => 11, 'on' => 'mobileAuth'),
@@ -54,7 +54,7 @@ class UserLoginForm extends CFormModel
         if($user){
             $this->username = $user->username;
             $this->verification_field = 'username';
-            $this->scenario = 'usernameAuth';
+            $this->scenario = 'emailAuth';
         }
 	}
 

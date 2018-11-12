@@ -47,7 +47,7 @@ return array(
 			'class' => 'YMHttpRequest',
 			'enableCsrfValidation'=>true,
 			'noValidationRoutes'=>array(
-//				'users/public/verifyPlan'
+				'api/'
 			),
 		),
 		'JWT' => array(
