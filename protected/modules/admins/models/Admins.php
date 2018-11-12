@@ -149,8 +149,9 @@ class Admins extends CActiveRecord
 		$criteria->compare('username',$this->username,true);
 		$criteria->compare('password',$this->password,true);
 		$criteria->compare('email',$this->email,true);
-        $criteria->addSearchCondition('role.id' , $this->roleId );
-        $criteria->with = array('role');
+		$criteria->compare('role_id',$this->role_id);
+//        $criteria->addSearchCondition('role.id' , $this->roleId );
+//        $criteria->with = array('role');
 		$criteria->addCondition('username <> "rahbod"');
 		return new CActiveDataProvider($this, array(
 			'criteria'=>$criteria,

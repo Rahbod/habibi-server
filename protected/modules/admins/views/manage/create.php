@@ -2,20 +2,20 @@
 /* @var $this AdminsManageController */
 /* @var $model Admins */
 
-$this->breadcrumbs=array(
-    'پیشخوان'=> array('/admins'),
-    'مدیران'=> array('/admins/manage'),
-	'مدیریت'=>array('admin'),
-	'افزودن',
-);
-
-$this->menu=array(
-	array('label'=>'مدیریت مدیران', 'url'=>array('index')),
-);
+if(isset($_GET['role']) && $_GET['role'] == 3)
+    $this->breadcrumbs=array(
+        'مدیریت اپراتورها'=>array('admin?role=3'),
+        'افزودن اپراتور',
+    );
+else
+    $this->breadcrumbs=array(
+        'مدیریت مدیران'=>array('admin'),
+        'افزودن مدیر',
+    );
 ?>
 <div class="box box-primary">
 	<div class="box-header with-border">
-		<h3 class="box-title">افزودن مدیر</h3>
+		<h3 class="box-title">افزودن <?= isset($_GET['role']) && $_GET['role'] == 3?'اپراتور':'مدیر' ?></h3>
 	</div>
 	<div class="box-body">
 		<?php $this->renderPartial('_form', array('model'=>$model)); ?>

@@ -4,10 +4,10 @@
  */
 class SendSMS extends CComponent
 {
-    public $username = '9135751808';
-    public $password = '802FE9';
-    public $lineNumber = '30004505004844';
-    public $messagePostfix = 'http://carcadeh.ir';
+    public $username = '09122520014';
+    public $password = '461b97';
+    public $lineNumber = '30004747473705';
+    public $messagePostfix = '';
 
     private $_client;
     private $_invalid_numbers=array();
@@ -22,7 +22,7 @@ class SendSMS extends CComponent
             $this->lineNumber = $line;
         date_default_timezone_set('Asia/Tehran');
         try {
-            @$this->_client = new SoapClient('http://n.sms.ir/ws/SendReceive.asmx?wsdl',array('encoding' => 'UTF-8'));
+            @$this->_client = new SoapClient('http://ip.sms.ir/ws/SendReceive.asmx?wsdl',array('encoding' => 'UTF-8'));
         }catch (Exception $e){
             throw new CHttpException(501, $e->getMessage());
         }

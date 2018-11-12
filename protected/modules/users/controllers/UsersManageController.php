@@ -380,11 +380,16 @@ class UsersManageController extends Controller
                 Yii::app()->user->setFlash('success', 'آدرس برای کاربر با موفقیت ثبت شد.');
 
                 $return = $_GET['return'];
-                list($uri, $query) = explode("?",$return);
-                parse_str($query, $params);
-                unset($params['address_id']);
+                if (strpos($return, '?', 0) !== false) {
+                    list($uri, $query) = explode("?", $return);
+                    parse_str($query, $params);
+                    unset($params['address_id']);
+                } else {
+                    $uri = $return;
+                    $params = [];
+                }
                 $params['address_id'] = $model->id;
-                $return = $uri."?".http_build_query($params);
+                $return = $uri . "?" . http_build_query($params);
 
                 $this->redirect(array($return));
             } else
@@ -396,17 +401,16 @@ class UsersManageController extends Controller
 
     public function actionQuickUser()
     {
-        if(isset($_GET['mobile'])){
+        if (isset($_GET['mobile'])) {
             $mobile = $_GET['mobile'];
             $mobile = TextMessagesReceive::NormalizePhone($mobile);
             $user = Users::model()->findByAttributes(['username' => $mobile]);
-            if($user)
+            if ($user)
                 $this->redirect(array($_GET['return'], 'user_id' => $user->id));
         }
 
         $model = new Users('quick');
         $address = new UserAddresses('quick');
-
 
         if (isset($_POST['Users'])) {
             $model->attributes = $_POST['Users'];
@@ -419,7 +423,22 @@ class UsersManageController extends Controller
                     $address->user_id = $model->id;
                     if ($address->save()) {
                         Yii::app()->user->setFlash('success', 'کاربر با موفقیت ثبت شد.');
-                        $this->redirect(array($_GET['return'], 'user_id' => $model->id, 'address_id' => $address->id));
+
+                        $return = $_GET['return'];
+                        if (strpos($return, '?', 0) !== false) {
+                            list($uri, $query) = explode("?", $return);
+                            parse_str($query, $params);
+                            unset($params['user_id']);
+                            unset($params['address_id']);
+                        } else {
+                            $uri = $return;
+                            $params = [];
+                        }
+                        $params['user_id'] = $model->id;
+                        $params['address_id'] = $address->id;
+                        $return = $uri . "?" . http_build_query($params);
+
+                        $this->redirect(array($return));
                     } else
                         Yii::app()->user->setFlash('failed', 'کاربر با موفقیت ثبت شد. در ثبت آدرس خطایی رخ داده است! لطفا مجددا تلاش کنید.');
                 }

@@ -30,7 +30,9 @@ if(isset($_GET['mobile']))
         )); ?>
             <?php echo $form->errorSummary($model) ?>
             <?php echo $form->errorSummary($address) ?>
-
+            <h5 class="well">
+                <i class="fa fa-angle-left"></i>
+                اطلاعات کاربر</h5>
             <div class="row">
                 <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
                     <div class="form-group">
@@ -43,9 +45,7 @@ if(isset($_GET['mobile']))
                         <?php echo $form->error($model,'mobile'); ?>
                     </div>
                 </div>
-            </div>
-            <div class="row">
-                <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">
+                <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
                     <div class="form-group">
                         <?php echo $form->labelEx($model,'first_name'); ?>
                         <?php echo $form->textField($model,'first_name',array('class'=>"form-control"));?>
@@ -53,14 +53,14 @@ if(isset($_GET['mobile']))
                     </div>
                 </div>
 
-                <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">
+                <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
                     <div class="form-group">
                         <?php echo $form->labelEx($model,'last_name'); ?>
                         <?php echo $form->textField($model,'last_name',array('class'=>"form-control"));?>
                         <?php echo $form->error($model,'last_name'); ?>
                     </div>
                 </div>
-                <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">
+                <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
                     <div class="form-group">
                         <?php echo $form->labelEx($model,'email'); ?>
                         <?php echo $form->emailField($model,'email',array('class'=>"form-control ltr text-right"));?>
@@ -70,15 +70,11 @@ if(isset($_GET['mobile']))
             </div>
 
 <!--            User Address-->
+            <hr>
+            <h5 class="well">
+                <i class="fa fa-angle-left"></i>
+                اطلاعات آدرس</h5>
             <div class="row">
-                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
-                    <div class="form-group">
-                        <?php echo $form->labelEx($address,'transferee'); ?>
-                        <?php echo $form->textField($address,'transferee',array('class'=>"form-control",'size'=>60,'maxlength'=>255)); ?>
-                        <?php echo $form->error($address,'transferee'); ?>
-                    </div>
-                </div>
-
                 <?php if(!UserAddresses::$setDefaultLocation):?>
                     <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
                         <div class="form-group">
@@ -104,18 +100,26 @@ if(isset($_GET['mobile']))
             <div class="row">
                 <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
                     <div class="form-group">
+                        <?php echo $form->labelEx($address,'transferee'); ?>
+                        <?php echo $form->textField($address,'transferee',array('class'=>"form-control",'size'=>60,'maxlength'=>255)); ?>
+                        <?php echo $form->error($address,'transferee'); ?>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
+                    <div class="form-group">
                         <?php echo $form->labelEx($address,'landline_tel'); ?>
                         <?php echo $form->telField($address,'landline_tel',array('class'=>"form-control", 'maxlength' => 11));?>
                         <?php echo $form->error($address,'landline_tel'); ?>
                     </div>
                 </div>
-                <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
-                    <div class="form-group">
-                        <?php echo $form->labelEx($address,'emergency_tel'); ?>
-                        <?php echo $form->telField($address,'emergency_tel',array('class'=>"form-control", 'maxlength' => 11));?>
-                        <?php echo $form->error($address,'emergency_tel'); ?>
-                    </div>
-                </div>
+
+<!--                <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">-->
+<!--                    <div class="form-group">-->
+<!--                        --><?php //echo $form->labelEx($address,'emergency_tel'); ?>
+<!--                        --><?php //echo $form->telField($address,'emergency_tel',array('class'=>"form-control", 'maxlength' => 11));?>
+<!--                        --><?php //echo $form->error($address,'emergency_tel'); ?>
+<!--                    </div>-->
+<!--                </div>-->
                 <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
                     <div class="form-group">
                         <?php echo $form->labelEx($address,'district'); ?>

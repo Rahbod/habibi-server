@@ -12,7 +12,6 @@
  * @property string $address
  * @property string $avatar
  * @property string $mobile
- * @property string $dealership_name
  *
  * The followings are the available model relations:
  * @property Users $user
@@ -38,7 +37,7 @@ class UserDetails extends CActiveRecord
 			array('user_id', 'required'),
 			array('first_name, last_name, mobile', 'required', 'on' => 'update'),
 			array('user_id, zip_code', 'length', 'max'=>10),
-			array('first_name, last_name, dealership_name', 'length', 'max'=>50),
+			array('first_name, last_name', 'length', 'max'=>50),
 			array('mobile', 'length', 'is'=>11, 'message'=>'شماره موبایل اشتباه است'),
 			array('phone', 'length', 'max'=>11),
 			array('address', 'length', 'max'=>1000),
@@ -46,7 +45,7 @@ class UserDetails extends CActiveRecord
 			array('phone, mobile', 'numerical', 'integerOnly' => true),
 			// The following rule is used by search().
 			// @todo Please remove those attributes that should not be searched.
-			array('user_id, first_name, last_name, phone, zip_code, address, avatar, mobile, dealership_name', 'safe', 'on'=>'search'),
+			array('user_id, first_name, last_name, phone, zip_code, address, avatar, mobile', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -76,7 +75,6 @@ class UserDetails extends CActiveRecord
 			'address' => 'آدرس',
 			'avatar' => 'آواتار',
 			'mobile' => 'موبایل',
-			'dealership_name' => 'نام نمایشگاه',
 		);
 	}
 
