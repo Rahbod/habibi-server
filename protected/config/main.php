@@ -48,7 +48,8 @@ return array(
 			'class' => 'YMHttpRequest',
 			'enableCsrfValidation'=>true,
 			'noValidationRoutes'=>array(
-				'api/'
+				'api/',
+				'oauth/',
 			),
 		),
 		'JWT' => array(
