@@ -24,6 +24,7 @@
  * @property UserTransactions[] $transactions
  * @property UserRoles $role
  * @property UserAddresses[] $addresses
+ * @property Requests[] $requests
  * @property array $dealershipFilters
  */
 class Users extends CActiveRecord
@@ -182,6 +183,7 @@ class Users extends CActiveRecord
             'sessions' => array(self::HAS_MANY, 'Sessions', 'user_id', 'on' => 'user_type = "user"'),
             'state' => array(self::BELONGS_TO, 'Towns', 'state_id'),
             'addresses' => array(self::HAS_MANY, 'UserAddresses', 'user_id'),
+            'requests' => array(self::HAS_MANY, 'Requests', 'user_id'),
         );
     }
 

@@ -215,4 +215,39 @@ class ApiController extends ApiBaseController
                 'status' => false,
                 'message' => 'Device ID, Address ID, Description, Date and Time variables is required.']), 'application/json');
     }
+
+    /**
+     * Get list of user requests
+     */
+    public function actionRequests()
+    {
+        $requests = [];
+
+        foreach($this->user->requests as $request) {
+            $temp = [
+                'id' => intval($request->id),
+                'deviceID' => intval($request->category_id),
+                'addressID' => intval($request->user_address_id),
+                'createDate' => $request->create_date,
+                'description' => $request->description,
+                'requestedDate' => $request->requested_date,
+                'requestedTime' => $request->requested_time,
+                'status' => $request->status,
+            ];
+
+            $request->repairman->loadPropertyValues();
+            if($request->repairman_id)
+                $temp['repairMan'] = [
+                    'name' => $request->repairman->first_name . ' ' . $request->repairman->last_name,
+                    'avatar' => Yii::app()->getBaseUrl(true) . '/uploads/users/avatar/' . $request->repairman->avatar,
+                ];
+
+            $requests[] = $temp;
+        }
+
+        $this->_sendResponse(200, CJSON::encode([
+            'status' => true,
+            'list' => $requests,
+        ]), 'application/json');
+    }
 }
