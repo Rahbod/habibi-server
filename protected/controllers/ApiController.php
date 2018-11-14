@@ -223,7 +223,7 @@ class ApiController extends ApiBaseController
     {
         $requests = [];
 
-        foreach($this->user->requests as $request) {
+        foreach ($this->user->requests as $request) {
             $temp = [
                 'id' => intval($request->id),
                 'deviceID' => intval($request->category_id),
@@ -232,15 +232,16 @@ class ApiController extends ApiBaseController
                 'description' => $request->description,
                 'requestedDate' => $request->requested_date,
                 'requestedTime' => $request->requested_time,
-                'status' => $request->status,
+                'status' => intval($request->status),
             ];
 
-            $request->repairman->loadPropertyValues();
-            if($request->repairman_id)
+            if ($request->repairman_id) {
+                $request->repairman->loadPropertyValues();
                 $temp['repairMan'] = [
                     'name' => $request->repairman->first_name . ' ' . $request->repairman->last_name,
                     'avatar' => Yii::app()->getBaseUrl(true) . '/uploads/users/avatar/' . $request->repairman->avatar,
                 ];
+            }
 
             $requests[] = $temp;
         }
