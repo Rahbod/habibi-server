@@ -42,7 +42,7 @@ class UserAddresses extends CActiveRecord
         // NOTE: you should only define rules for those attributes that
         // will receive user inputs.
         return array(
-            array('user_id, transferee, landline_tel, town_id, place_id, postal_address', 'required'),
+            array('user_id, town_id, place_id, postal_address', 'required'),
             array('user_id, town_id, place_id, postal_code', 'length', 'max' => 10),
             array('transferee', 'length', 'max' => 255),
             array('emergency_tel', 'length', 'max' => 11),

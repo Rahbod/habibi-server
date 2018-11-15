@@ -35,7 +35,6 @@ class UserDetails extends CActiveRecord
 		// will receive user inputs.
 		return array(
 			array('user_id', 'required'),
-			array('first_name, last_name, mobile', 'required', 'on' => 'update'),
 			array('user_id, zip_code', 'length', 'max'=>10),
 			array('first_name, last_name', 'length', 'max'=>50),
 			array('mobile', 'length', 'is'=>11, 'message'=>'شماره موبایل اشتباه است'),

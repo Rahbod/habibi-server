@@ -24,6 +24,7 @@
  * @property UserTransactions[] $transactions
  * @property UserRoles $role
  * @property UserAddresses[] $addresses
+ * @property Requests[] $requests
  * @property array $dealershipFilters
  */
 class Users extends CActiveRecord
@@ -97,7 +98,6 @@ class Users extends CActiveRecord
             array('username, password', 'required', 'on' => 'insert,create,create-dealership'),
 //            array('verifyCode', 'activeCaptcha', 'on' => 'insert,create'),
             array('phone, mobile', 'numerical', 'integerOnly' => true, 'message' => '{attribute} باید عددی باشد.'),
-            array('email', 'required', 'on' => 'update'),
             array('role_id', 'default', 'value' => 1),
             array('email', 'required', 'on' => 'email, OAuthInsert'),
             array('email', 'unique', 'on' => 'insert, create, create-dealership, OAuthInsert, update'),
@@ -183,6 +183,7 @@ class Users extends CActiveRecord
             'sessions' => array(self::HAS_MANY, 'Sessions', 'user_id', 'on' => 'user_type = "user"'),
             'state' => array(self::BELONGS_TO, 'Towns', 'state_id'),
             'addresses' => array(self::HAS_MANY, 'UserAddresses', 'user_id'),
+            'requests' => array(self::HAS_MANY, 'Requests', 'user_id'),
         );
     }
 

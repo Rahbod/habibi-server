@@ -21,6 +21,8 @@ return array(
 		'application.modules.places.models.*',
 		'application.modules.setting.models.*',
 		'application.modules.requests.models.*',
+		'application.modules.users.models.*',
+		'application.modules.users.components.*'
 	),
 
 	'modules'=>array(
@@ -48,7 +50,8 @@ return array(
 			'class' => 'YMHttpRequest',
 			'enableCsrfValidation'=>true,
 			'noValidationRoutes'=>array(
-				'api/'
+				'api/',
+				'oauth/',
 			),
 		),
 		'JWT' => array(

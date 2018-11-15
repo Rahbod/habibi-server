@@ -84,7 +84,8 @@ class Requests extends CActiveRecord
         // NOTE: you should only define rules for those attributes that
         // will receive user inputs.
         return array(
-            array('request_type,category_id, user_id, user_address_id, operator_id, requested_date', 'required'),
+            array('request_type,category_id, user_id, user_address_id, requested_date', 'required'),
+            array('operator_id', 'required', 'except' => 'request_by_app'),
             array('request_type,requested_date', 'numerical', 'integerOnly' => true),
             array('category_id, brand_id, model_id, user_id, user_address_id, operator_id, repairman_id', 'length', 'max' => 10),
             array('create_date, modified_date, service_date', 'length', 'max' => 12),
