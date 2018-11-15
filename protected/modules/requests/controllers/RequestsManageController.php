@@ -296,16 +296,19 @@ class RequestsManageController extends Controller
     public function actionInvoicing($id)
     {
         $model = $this->loadModel($id);
-        if ($model->status <= Requests::STATUS_AWAITING_PAYMENT) {
-            $model->status = Requests::STATUS_PAID;
-            if ($model->save(false)) {
-                Yii::app()->user->setFlash("success", "فاکتور باموفقیت صادر شد.");
-                $this->redirect(array('view', 'id' => $model->id));
-            } else
-                Yii::app()->user->setFlash("success", "متاسفانه در تغییر وضعیت مشکلی بوجود آمده است.");
-        } else {
-            Yii::app()->user->setFlash("success", "فاکتور قبلا صادر شده است، پس از پرداخت امکان تغییر فاکتور وجود ندارد.");
-            $this->redirect(array('view', 'id' => $model->id));
-        }
+$this->render('create_invoice',compact('model'));
+
+
+//        if ($model->status <= Requests::STATUS_AWAITING_PAYMENT) {
+//            $model->status = Requests::STATUS_PAID;
+//            if ($model->save(false)) {
+//                Yii::app()->user->setFlash("success", "فاکتور باموفقیت صادر شد.");
+//                $this->redirect(array('view', 'id' => $model->id));
+//            } else
+//                Yii::app()->user->setFlash("success", "متاسفانه در تغییر وضعیت مشکلی بوجود آمده است.");
+//        } else {
+//            Yii::app()->user->setFlash("success", "فاکتور قبلا صادر شده است، پس از پرداخت امکان تغییر فاکتور وجود ندارد.");
+//            $this->redirect(array('view', 'id' => $model->id));
+//        }
     }
 }

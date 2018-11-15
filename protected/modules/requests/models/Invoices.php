@@ -16,7 +16,8 @@
  * @property string $status
  *
  * The followings are the available model relations:
- * @property Tariffs[] $ymTariffs
+ * @property InvoiceItems[] $items
+ * @property Tariffs[] $tariffs
  * @property Requests $request
  * @property Users $creator
  */
@@ -24,6 +25,8 @@ class Invoices extends CActiveRecord
 {
     const STATUS_UNPAID = 0;
     const STATUS_PAID = 1;
+
+    public $formItems;
 
 	/**
 	 * @return string the associated database table name
@@ -61,6 +64,7 @@ class Invoices extends CActiveRecord
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
 		return array(
+			'items' => array(self::HAS_MANY, 'InvoiceItems', 'invoice_id'),
 			'tariffs' => array(self::MANY_MANY, 'Tariffs', '{{invoice_items}}(invoice_id, tariff_id)'),
 			'request' => array(self::BELONGS_TO, 'Requests', 'request_id'),
 			'creator' => array(self::BELONGS_TO, 'Users', 'creator_id'),
@@ -129,4 +133,30 @@ class Invoices extends CActiveRecord
 	{
 		return parent::model($className);
 	}
+
+
+	protected function afterSave()
+    {
+        parent::afterSave();
+
+        if ($this->formItems) {
+            if(!$this->isNewRecord) {
+                // delete not in form
+                foreach ($this->items as $item) {
+                    if (!in_array($item->tariff_id, array_keys($this->formItems)))
+                        $item->delete();
+                }
+            }
+
+            foreach ($this->formItems as $tariffID => $value){
+                if($tariff = Tariffs::model()->findByPk($tariffID)) {
+                    $model = new InvoiceItems();
+                    $model->invoice_id = $this->id;
+                    $model->tariff_id = $tariffID;
+                    $model->cost = $tariff->cost;
+                    @$model->save();
+                }
+            }
+        }
+    }
 }

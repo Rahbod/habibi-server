@@ -125,13 +125,8 @@ echo $form->errorSummary($model);
 		<?php echo $form->error($model,'repairman_id'); ?>
 	</div>
 
-	<div class="form-group">
-		<?php echo $form->labelEx($model,'description'); ?>
-		<?php echo $form->textArea($model,'description',array('class' => 'form-control','rows'=>6, 'cols'=>50)); ?>
-		<?php echo $form->error($model,'description'); ?>
-	</div>
 
-	<div class="form-group">
+    <div class="form-group">
         <div class="row">
             <div class="col-lg-3 col-md-3 col-sm-4 col-xs-12">
                 <?php echo $form->labelEx($model,'service_date'); ?>
@@ -154,7 +149,14 @@ echo $form->errorSummary($model);
                 <?php echo $form->error($model,'service_time'); ?>
             </div>
         </div>
+    </div>
+
+	<div class="form-group">
+		<?php echo $form->labelEx($model,'description'); ?>
+		<?php echo $form->textArea($model,'description',array('class' => 'form-control','rows'=>6, 'cols'=>50)); ?>
+		<?php echo $form->error($model,'description'); ?>
 	</div>
+
 
 	<div class="buttons">
 		<?php echo CHtml::submitButton($model->isNewRecord ? 'افزودن' : 'ویرایش',array('class' => 'btn btn-success')); ?>
