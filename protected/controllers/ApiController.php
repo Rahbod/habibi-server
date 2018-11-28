@@ -192,13 +192,17 @@ class ApiController extends ApiBaseController
             and isset($this->request['time'])
         ) {
             Yii::app()->getModule('requests');
+
+            $jDate = explode('/', $this->request['date']);
+            $gDate = JalaliDate::toGregorian($jDate[0], $jDate[1], $jDate[2]);
+
             $request = new Requests();
             $request->setScenario('request_by_app');
             $request->category_id = $this->request['deviceID'];
             $request->user_id = $this->user->id;
             $request->user_address_id = $this->request['addressID'];
             $request->description = $this->request['description'];
-            $request->requested_date = $this->request['date'];
+            $request->requested_date = strtotime($gDate[0] . '/' . $gDate[1] . '/' . $gDate[2]);
             $request->requested_time = $this->request['time'];
             $request->status = Requests::STATUS_PENDING;
             $request->request_type = Requests::REQUEST_FROM_APP_ANDROID;
