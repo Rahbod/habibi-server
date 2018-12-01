@@ -80,7 +80,8 @@ return array(
 			'autoStart' => false,
 			'connectionID' => 'db',
 			'sessionTableName' => 'ym_sessions',
-			'timeout' => 1800
+//			'timeout' => 1800
+			'timeout' => 10
 		),
 		'userCounter' => array(
 			'class' => 'application.components.UserCounter',
