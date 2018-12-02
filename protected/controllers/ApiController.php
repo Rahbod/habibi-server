@@ -255,4 +255,25 @@ class ApiController extends ApiBaseController
             'list' => $requests,
         ]), 'application/json');
     }
+
+    public function actionTransactions()
+    {
+        $transactions = [];
+
+        foreach($this->user->transactions as $transaction){
+            $temp = [
+                'amount' => $transaction->amount,
+                'date' => JalaliDate::date("Y f d - H:i", $transaction->date),
+                'code' => $transaction->token,
+                'status' => $transaction->status,
+            ];
+
+            $transactions[] = $temp;
+        }
+
+        $this->_sendResponse(200, CJSON::encode([
+            'status' => true,
+            'list' => $transactions,
+        ]), 'application/json');
+    }
 }
