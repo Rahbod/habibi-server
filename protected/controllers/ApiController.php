@@ -232,9 +232,9 @@ class ApiController extends ApiBaseController
                 'id' => intval($request->id),
                 'deviceID' => intval($request->category_id),
                 'addressID' => intval($request->user_address_id),
-                'createDate' => $request->create_date,
+                'createDate' => JalaliDate::date("Y F d - H:i", $request->create_date),
                 'description' => $request->description,
-                'requestedDate' => $request->requested_date,
+                'requestedDate' => JalaliDate::date("Y F d - H:i", $request->requested_date),
                 'requestedTime' => $request->requested_time,
                 'status' => intval($request->status),
             ];
