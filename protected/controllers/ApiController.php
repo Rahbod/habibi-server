@@ -263,7 +263,7 @@ class ApiController extends ApiBaseController
         foreach($this->user->transactions as $transaction){
             $temp = [
                 'amount' => $transaction->amount,
-                'date' => JalaliDate::date("Y f d - H:i", $transaction->date),
+                'date' => JalaliDate::date("Y F d - H:i", $transaction->date),
                 'code' => $transaction->token,
                 'status' => $transaction->status,
             ];
