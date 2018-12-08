@@ -192,13 +192,17 @@ class ApiController extends ApiBaseController
             and isset($this->request['time'])
         ) {
             Yii::app()->getModule('requests');
+
+            $jDate = explode('/', $this->request['date']);
+            $gDate = JalaliDate::toGregorian($jDate[0], $jDate[1], $jDate[2]);
+
             $request = new Requests();
             $request->setScenario('request_by_app');
             $request->category_id = $this->request['deviceID'];
             $request->user_id = $this->user->id;
             $request->user_address_id = $this->request['addressID'];
             $request->description = $this->request['description'];
-            $request->requested_date = $this->request['date'];
+            $request->requested_date = strtotime($gDate[0] . '/' . $gDate[1] . '/' . $gDate[2]);
             $request->requested_time = $this->request['time'];
             $request->status = Requests::STATUS_PENDING;
             $request->request_type = Requests::REQUEST_FROM_APP_ANDROID;
@@ -228,9 +232,9 @@ class ApiController extends ApiBaseController
                 'id' => intval($request->id),
                 'deviceID' => intval($request->category_id),
                 'addressID' => intval($request->user_address_id),
-                'createDate' => $request->create_date,
+                'createDate' => JalaliDate::date("Y F d - H:i", $request->create_date),
                 'description' => $request->description,
-                'requestedDate' => $request->requested_date,
+                'requestedDate' => JalaliDate::date("Y F d - H:i", $request->requested_date),
                 'requestedTime' => $request->requested_time,
                 'status' => intval($request->status),
             ];
@@ -249,6 +253,27 @@ class ApiController extends ApiBaseController
         $this->_sendResponse(200, CJSON::encode([
             'status' => true,
             'list' => $requests,
+        ]), 'application/json');
+    }
+
+    public function actionTransactions()
+    {
+        $transactions = [];
+
+        foreach($this->user->transactions as $transaction){
+            $temp = [
+                'amount' => $transaction->amount,
+                'date' => JalaliDate::date("Y F d - H:i", $transaction->date),
+                'code' => $transaction->token,
+                'status' => $transaction->status,
+            ];
+
+            $transactions[] = $temp;
+        }
+
+        $this->_sendResponse(200, CJSON::encode([
+            'status' => true,
+            'list' => $transactions,
         ]), 'application/json');
     }
 }
