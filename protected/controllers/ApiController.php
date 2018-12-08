@@ -234,7 +234,7 @@ class ApiController extends ApiBaseController
                 'addressID' => intval($request->user_address_id),
                 'createDate' => JalaliDate::date("Y F d - H:i", $request->create_date),
                 'description' => $request->description,
-                'requestedDate' => JalaliDate::date("Y F d - H:i", $request->requested_date),
+                'requestedDate' => JalaliDate::date("Y F d", $request->requested_date),
                 'requestedTime' => $request->requested_time,
                 'status' => intval($request->status),
             ];
@@ -260,10 +260,10 @@ class ApiController extends ApiBaseController
     {
         $transactions = [];
 
-        foreach($this->user->transactions as $transaction){
+        foreach($this->user->transactions as $transaction) {
             $temp = [
-                'amount' => $transaction->amount,
-                'date' => JalaliDate::date("Y F d - H:i", $transaction->date),
+                'amount' => number_format($transaction->amount) . ' ريال',
+                'date' => JalaliDate::date("Y F d", $transaction->date),
                 'code' => $transaction->token,
                 'status' => $transaction->status,
             ];
