@@ -1,6 +1,7 @@
 <?php
 /* @var $this RequestsManageController */
 /* @var $model Requests */
+/* @var $form CActiveForm */
 
 $this->breadcrumbs=array(
 	'مدیریت'=>array('admin'),
@@ -16,7 +17,7 @@ if (isset($_GET['pending']))
 <div class="box box-primary">
     <div class="box-header with-border">
         <h3 class="box-title">
-            نمایش درخواست #<?= $model->id ?>
+            نمایش درخواست  <?= $model->user->userDetails->getShowName() ?>
 
             <?php if($model->status): ?>
                 <label class='label label-<?= $model->getStatusLabel(true) ?>'><?= $model->getStatusLabel() ?></label>
@@ -46,6 +47,71 @@ if (isset($_GET['pending']))
                 <?php endif; ?>
             <?php endif; ?>
         </div>
+
+        <?php if($model->status == Requests::STATUS_OPERATOR_CHECKING):?>
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <?php $form=$this->beginWidget('CActiveForm', array(
+                        'id'=>'manage-form',
+                        'enableAjaxValidation'=>false,
+                        'enableClientValidation'=>true,
+                    )); ?>
+
+                    <?php echo $form->errorSummary($model);?>
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-lg-3 col-md-3 col-sm-4 col-xs-12">
+                                <?php echo $form->labelEx($model,'service_date'); ?>
+                                <?php
+                                $serviceDate = $model->service_date;
+                                $serviceTime = $model->service_time;
+                                $model->service_date = $model->requested_date;
+                                $model->service_time = $model->requested_time;
+                                ?>
+                                <?php $this->widget('ext.PDatePicker.PDatePicker', array(
+                                    'id'=>'service_date',
+                                    'model' => $model,
+                                    'attribute' => 'service_date',
+                                    'options'=>array(
+                                        'format'=>'YYYY/MM/DD',
+                                    ),
+                                    'htmlOptions'=>array(
+                                        'class'=>'form-control'
+                                    ),
+                                ));?>
+                                <?php echo $form->error($model,'service_date'); ?>
+                            </div>
+                            <div class="col-lg-3 col-md-3 col-sm-4 col-xs-12">
+                                <?php echo $form->labelEx($model,'service_time'); ?>
+                                <?php echo $form->dropDownList($model,'service_time',Requests::$serviceTimes,array('class'=>'form-control')); ?>
+                                <?php echo $form->error($model,'service_time'); ?>
+                            </div>
+                            <div class="col-lg-3 col-md-3 col-sm-4 col-xs-12">
+                                <?php echo $form->labelEx($model,'repairman_id'); ?>
+                                <?php echo $form->dropDownList($model,'repairman_id',
+                                    Users::getUsersByRole('repairman', true),
+                                    array(
+                                        'class'=>'form-control select-picker',
+                                        'data-live-search' => true,
+                                        'prompt' => 'تعمیرکار را انتخاب کنید...'
+                                    )
+                                ); ?>
+                                <?php echo $form->error($model,'repairman_id'); ?>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="buttons">
+                        <?php echo CHtml::submitButton($model->isNewRecord ? 'صدور فاکتور' : 'ویرایش',array('class' => 'btn btn-success')); ?>
+                    </div>
+                    <?php
+                    $model->service_date = $serviceDate;
+                    $model->service_time = $serviceTime;
+                    ?>
+                    <?php $this->endWidget(); ?>
+                </div>
+            </div>
+        <?php endif;?>
 
         <?php $this->widget('zii.widgets.CDetailView', array(
             'data'=>$model,
@@ -79,7 +145,7 @@ if (isset($_GET['pending']))
 
                 [
                     'label' => $model->getAttributeLabel('requested_date'),
-                    'value' => $model->requested_date?"<span dir='ltr' class='text-right'>".JalaliDate::date('Y/m/d H:i', $model->requested_date)."</span>":null,
+                    'value' => $model->requested_date?"<span dir='ltr' class='text-right'>".JalaliDate::date('Y/m/d', $model->requested_date)."</span>":null,
                     'type' => 'raw'
                 ],
                 [
@@ -89,7 +155,7 @@ if (isset($_GET['pending']))
                 ],
                 [
                     'label' => $model->getAttributeLabel('service_date'),
-                    'value' => $model->service_date?"<span dir='ltr' class='text-right'>".JalaliDate::date('Y/m/d H:i', $model->service_date)."</span>":null,
+                    'value' => $model->service_date?"<span dir='ltr' class='text-right'>".JalaliDate::date('Y/m/d', $model->service_date)."</span>":null,
                     'type' => 'raw'
                 ],
                 [

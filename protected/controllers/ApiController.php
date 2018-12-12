@@ -93,21 +93,39 @@ class ApiController extends ApiBaseController
     }
 
     /**
-     * Set name to user profile
+     * Set name and token to user profile
      */
     public function actionSetName()
     {
-        if (isset($this->request['name'])) {
-            /* @var $detailsModel UserDetails */
+        if (isset($this->request['name']) and isset($this->request['token'])) {
+            /* @var $userDetails UserDetails */
             $userDetails = UserDetails::model()->findByAttributes(['user_id' => $this->user->id]);
             $userDetails->first_name = $this->request['name'];
             $userDetails->mobile = $this->user->username;
+            $userDetails->push_token = $this->request['token'];
             if ($userDetails->save())
                 $this->_sendResponse(200, CJSON::encode(['status' => true, 'message' => 'اطلاعات با موفقیت ثبت شد.']), 'application/json');
             else
                 $this->_sendResponse(400, CJSON::encode(['status' => false, 'message' => 'در ثبت اطلاعات خطایی رخ داده است. لطفا مجددا تلاش کنید.']), 'application/json');
         } else
-            $this->_sendResponse(400, CJSON::encode(['status' => false, 'message' => 'Name variable is required.']), 'application/json');
+            $this->_sendResponse(400, CJSON::encode(['status' => false, 'message' => 'Name and Token variables is required.']), 'application/json');
+    }
+
+    /**
+     * Set token to user profile
+     */
+    public function actionSetToken()
+    {
+        if (isset($this->request['token'])) {
+            /* @var $userDetails UserDetails */
+            $userDetails = UserDetails::model()->findByAttributes(['user_id' => $this->user->id]);
+            $userDetails->push_token = $this->request['token'];
+            if ($userDetails->save())
+                $this->_sendResponse(200, CJSON::encode(['status' => true]), 'application/json');
+            else
+                $this->_sendResponse(400, CJSON::encode(['status' => false]), 'application/json');
+        } else
+            $this->_sendResponse(400, CJSON::encode(['status' => false, 'message' => 'Token variable is required.']), 'application/json');
     }
 
     /**

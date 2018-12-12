@@ -12,6 +12,7 @@
  * @property string $address
  * @property string $avatar
  * @property string $mobile
+ * @property string $push_token
  *
  * The followings are the available model relations:
  * @property Users $user
@@ -41,10 +42,11 @@ class UserDetails extends CActiveRecord
 			array('phone', 'length', 'max'=>11),
 			array('address', 'length', 'max'=>1000),
 			array('avatar', 'length', 'max'=>255),
+			array('push_token', 'safe'),
 			array('phone, mobile', 'numerical', 'integerOnly' => true),
 			// The following rule is used by search().
 			// @todo Please remove those attributes that should not be searched.
-			array('user_id, first_name, last_name, phone, zip_code, address, avatar, mobile', 'safe', 'on'=>'search'),
+			array('user_id, first_name, last_name, phone, zip_code, address, avatar, mobile, push_token', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -74,6 +76,7 @@ class UserDetails extends CActiveRecord
 			'address' => 'آدرس',
 			'avatar' => 'آواتار',
 			'mobile' => 'موبایل',
+			'push_token' => 'Push Token',
 		);
 	}
 
@@ -103,6 +106,7 @@ class UserDetails extends CActiveRecord
 		$criteria->compare('address',$this->address,true);
 		$criteria->compare('avatar',$this->avatar,true);
 		$criteria->compare('mobile',$this->mobile,true);
+		$criteria->compare('push_token',$this->push_token,true);
 
 		return new CActiveDataProvider($this, array(
 			'criteria'=>$criteria,

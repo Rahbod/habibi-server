@@ -51,7 +51,8 @@ class RequestsManageController extends Controller
         $model = $this->loadModel($id);
 
         if ($model->status >= Requests::STATUS_PENDING &&
-            $model->status < Requests::STATUS_OPERATOR_CHECKING) {
+            $model->status < Requests::STATUS_OPERATOR_CHECKING
+        ) {
             $model->status = Requests::STATUS_OPERATOR_CHECKING;
             $model->save(false);
         }
@@ -61,6 +62,23 @@ class RequestsManageController extends Controller
             $model->save(false);
         }
 
+        if (isset($_POST['Requests'])) {
+            $model->status = Requests::STATUS_CONFIRMED;
+            $model->service_date = $_POST['Requests']['service_date'];
+            $model->service_time = $_POST['Requests']['service_time'];
+            $model->repairman_id = $_POST['Requests']['repairman_id'];
+            if ($model->save()) {
+                PushNotification::sendDataToUser($model->user->userDetails->push_token, [
+                    'action' => 'selectRepairMan',
+                    'repairMan' => $model->repairman->userDetails->showName,
+                    'date' => JalaliDate::date('d F Y', $model->service_date),
+                    'time' => $model->service_time,
+                ]);
+
+                Yii::app()->user->setFlash('success', '<span class="icon-check"></span>&nbsp;&nbsp;اطلاعات با موفقیت ذخیره شد.');
+            }else
+                Yii::app()->user->setFlash('failed', 'در ثبت اطلاعات خطایی رخ داده است! لطفا مجددا تلاش کنید.');
+        }
 
         $model->refresh();
         $this->render('view', array(
