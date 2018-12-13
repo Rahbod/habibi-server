@@ -1,18 +1,20 @@
 <?php
+
 /**
  * Class PushNotification
+ * @property resource $_curl
  */
 class PushNotification extends CComponent
 {
-    private $serverKey = 'AAAAepSYZ9c:APA91bEkgncvfrj9K5WCJVm8fXWjRKy3kKWQ5S8VRK4Qhh-wNoQpAH2IWGQ0UchFSOoImwtCikVVcXap8XsxLXWHHByvMjcETTVRs_trlbdhLcgV-Kzpnu4Pyu410KnU8cmvwHEmRMIs';
+    private static $serverKey = 'AAAAepSYZ9c:APA91bEkgncvfrj9K5WCJVm8fXWjRKy3kKWQ5S8VRK4Qhh-wNoQpAH2IWGQ0UchFSOoImwtCikVVcXap8XsxLXWHHByvMjcETTVRs_trlbdhLcgV-Kzpnu4Pyu410KnU8cmvwHEmRMIs';
 
-    private $_curl;
+    private static $curl;
 
-    private function send($data)
+    private static function send($data)
     {
-        $this->_curl = curl_init();
+        self::$curl = curl_init();
 
-        curl_setopt_array($this->_curl, array(
+        curl_setopt_array(self::$curl, array(
             CURLOPT_URL => "https://fcm.googleapis.com/fcm/send",
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => "",
@@ -22,15 +24,15 @@ class PushNotification extends CComponent
             CURLOPT_CUSTOMREQUEST => "POST",
             CURLOPT_POSTFIELDS => json_encode($data),
             CURLOPT_HTTPHEADER => array(
-                "Authorization: key=" . $this->serverKey,
+                "Authorization: key=" . self::$serverKey,
                 "Content-Type: application/json"
             ),
         ));
 
-        $response = curl_exec($this->_curl);
-        $err = curl_error($this->_curl);
+        $response = curl_exec(self::$curl);
+        $err = curl_error(self::$curl);
 
-        curl_close($this->_curl);
+        curl_close(self::$curl);
 
         if ($err)
             return ['status' => false, 'error' => $err];
