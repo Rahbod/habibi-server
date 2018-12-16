@@ -59,9 +59,9 @@ class Tariffs extends CActiveRecord
 	{
 		return array(
 			'id' => 'ID',
-			'title' => 'Title',
-			'description' => 'Description',
-			'cost' => 'Cost',
+			'title' => 'عنوان',
+			'description' => 'توضیحات',
+			'cost' => 'مبلغ',
 		);
 	}
 
@@ -109,4 +109,9 @@ class Tariffs extends CActiveRecord
         $this->cost = $this->cost?str_replace(',', '',$this->cost):0;
         return parent::beforeSave();
     }
+
+	public function getTitleCost()
+	{
+		return $this->title . ' - ' . number_format($this->cost) . ' تومان';
+	}
 }

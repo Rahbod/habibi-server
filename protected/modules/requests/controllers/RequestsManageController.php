@@ -70,9 +70,7 @@ class RequestsManageController extends Controller
             if ($model->save()) {
                 PushNotification::sendDataToUser($model->user->userDetails->push_token, [
                     'action' => 'selectRepairMan',
-                    'repairMan' => $model->repairman->userDetails->showName,
-                    'date' => JalaliDate::date('d F Y', $model->service_date),
-                    'time' => $model->service_time,
+                    'id' => $model->id,
                 ]);
 
                 Yii::app()->user->setFlash('success', '<span class="icon-check"></span>&nbsp;&nbsp;اطلاعات با موفقیت ذخیره شد.');
@@ -309,24 +307,44 @@ class RequestsManageController extends Controller
 
     /**
      * @param $id
-     * @throws CHttpException
      */
     public function actionInvoicing($id)
     {
         $model = $this->loadModel($id);
-$this->render('create_invoice',compact('model'));
 
+        if ($model->status >= Requests::STATUS_PAID){
+            Yii::app()->user->setFlash("failed", "فاکتور این درخواست قبلا صادر شده است، پس از پرداخت امکان تغییر فاکتور وجود ندارد.");
+            $this->redirect(array('admin'));
+        }
 
-//        if ($model->status <= Requests::STATUS_AWAITING_PAYMENT) {
-//            $model->status = Requests::STATUS_PAID;
-//            if ($model->save(false)) {
-//                Yii::app()->user->setFlash("success", "فاکتور باموفقیت صادر شد.");
-//                $this->redirect(array('view', 'id' => $model->id));
-//            } else
-//                Yii::app()->user->setFlash("success", "متاسفانه در تغییر وضعیت مشکلی بوجود آمده است.");
-//        } else {
-//            Yii::app()->user->setFlash("success", "فاکتور قبلا صادر شده است، پس از پرداخت امکان تغییر فاکتور وجود ندارد.");
-//            $this->redirect(array('view', 'id' => $model->id));
-//        }
+        $model->status = Requests::STATUS_INVOICING;
+        $model->save();
+
+        $invoice = $model->getLastInvoice();
+        if(!$invoice)
+            $invoice = new Invoices();
+
+        if(isset($_POST['Invoices'])){
+            $invoice->request_id = $id;
+            $invoice->creator_id = Yii::app()->user->getId();
+            $invoice->additional_cost = $_POST['Invoices']['additional_cost'];
+            $invoice->additional_description = $_POST['Invoices']['additional_description'];
+            $invoice->payment_method = $_POST['Invoices']['payment_method'];
+            $invoice->modified_date = time();
+            $invoice->status = Invoices::STATUS_UNPAID;
+
+            if($invoice->getIsNewRecord())
+                $invoice->create_date = time();
+
+            if($invoice->save())
+                Yii::app()->user->setFlash("success", "فاکتور با موفقیت صادر شد.");
+            else
+                Yii::app()->user->setFlash("failed", "متاسفانه در ثبت اطلاعات مشکلی بوجود آمده است.");
+        }
+
+        $invoiceItems = new InvoiceItems('search');
+        $invoiceItems->unsetAttributes();
+
+        $this->render('create_invoice',compact('model', 'invoice', 'invoiceItems'));
     }
 }

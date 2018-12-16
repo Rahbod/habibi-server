@@ -26,6 +26,14 @@ class Invoices extends CActiveRecord
     const STATUS_UNPAID = 0;
     const STATUS_PAID = 1;
 
+	const PAYMENT_METHOD_CASH = 'cash';
+	const PAYMENT_METHOD_GATEWAY = 'gateway';
+
+    public static $paymentMethodLabels = [
+        self::PAYMENT_METHOD_GATEWAY => 'پرداخت آنلاین',
+        self::PAYMENT_METHOD_CASH => 'پرداخت نقدی',
+    ];
+
     public $formItems;
 
 	/**

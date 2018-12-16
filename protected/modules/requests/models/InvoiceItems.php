@@ -26,7 +26,7 @@ class InvoiceItems extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('invoice_id, tariff_id, cost', 'required'),
+			array('invoice_id, tariff_id', 'required'),
 			array('invoice_id, tariff_id, cost', 'length', 'max'=>10),
 			// The following rule is used by search().
 			// @todo Please remove those attributes that should not be searched.
@@ -52,7 +52,7 @@ class InvoiceItems extends CActiveRecord
 	{
 		return array(
             'invoice_id' => 'شناسه فاکتور',
-            'tariff_id' => 'شناسه تعرفه',
+            'tariff_id' => 'تعرفه',
             'cost' => 'هزینه سرویس',
 		);
 	}

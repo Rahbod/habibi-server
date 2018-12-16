@@ -246,9 +246,37 @@ class ApiController extends ApiBaseController
         $requests = [];
 
         foreach ($this->user->requests as $request) {
+            $date = $request->service_date ?: $request->requested_date;
+
+            $temp = [
+                'id' => intval($request->id),
+                'device' => $request->category->title,
+                'date' => JalaliDate::date("d F Y", $date),
+                'status' => intval($request->status),
+            ];
+
+            $requests[] = $temp;
+        }
+
+        $this->_sendResponse(200, CJSON::encode([
+            'status' => true,
+            'list' => $requests,
+        ]), 'application/json');
+    }
+
+    /**
+     * Get request model
+     */
+    public function actionRequestInfo()
+    {
+        if (isset($this->request['id'])) {
+            /* @var Requests $request */
+            $request = Requests::model()->find('id = :id AND user_id = :userID', [':id' => $this->request['id'], ':userID' => $this->user->id]);
+
             $temp = [
                 'id' => intval($request->id),
                 'deviceID' => intval($request->category_id),
+                'device' => $request->category->title,
                 'addressID' => intval($request->user_address_id),
                 'createDate' => JalaliDate::date("d F Y - H:i", $request->create_date),
                 'description' => $request->description,
@@ -256,6 +284,16 @@ class ApiController extends ApiBaseController
                 'requestedTime' => $request->requested_time,
                 'status' => intval($request->status),
             ];
+
+            if ($request->user_address_id) {
+                $temp['address'] = $request->userAddress->postal_address;
+                $temp['phone'] = $request->userAddress->emergency_tel;
+            }
+
+            if ($request->service_date) {
+                $temp['serviceDate'] = JalaliDate::date("d F Y", $request->service_date);
+                $temp['serviceTime'] = $request->service_time;
+            }
 
             if ($request->repairman_id) {
                 $request->repairman->loadPropertyValues();
@@ -265,13 +303,11 @@ class ApiController extends ApiBaseController
                 ];
             }
 
-            $requests[] = $temp;
-        }
+            $temp['status'] = true;
 
-        $this->_sendResponse(200, CJSON::encode([
-            'status' => true,
-            'list' => $requests,
-        ]), 'application/json');
+            $this->_sendResponse(200, CJSON::encode($temp), 'application/json');
+        } else
+            $this->_sendResponse(400, CJSON::encode(['status' => false, 'message' => 'ID variable is required.']), 'application/json');
     }
 
     public function actionTransactions()

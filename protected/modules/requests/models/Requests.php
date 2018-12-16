@@ -53,7 +53,7 @@ class Requests extends CActiveRecord
         self::STATUS_PENDING => 'در انتظار بررسی',
         self::STATUS_OPERATOR_CHECKING => 'در حال بررسی اپراتور',
         self::STATUS_CONFIRMED => 'تایید شده',
-        self::STATUS_INVOICING => 'صدور فاکتور',
+        self::STATUS_INVOICING => 'در حال صدور فاکتور',
         self::STATUS_AWAITING_PAYMENT => 'در انتظار پرداخت',
         self::STATUS_PAID => 'پرداخت شده',
         self::STATUS_DONE => 'انجام شده',

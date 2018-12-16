@@ -2,15 +2,15 @@
 Navicat MySQL Data Transfer
 
 Source Server         : localhost
-Source Server Version : 50719
+Source Server Version : 50714
 Source Host           : localhost:3306
 Source Database       : habibi
 
 Target Server Type    : MYSQL
-Target Server Version : 50719
+Target Server Version : 50714
 File Encoding         : 65001
 
-Date: 2018-12-08 18:12:26
+Date: 2018-12-15 18:33:30
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -264,8 +264,8 @@ CREATE TABLE `ym_counter_save` (
 -- ----------------------------
 -- Records of ym_counter_save
 -- ----------------------------
-INSERT INTO `ym_counter_save` VALUES ('day_time', '2458455');
-INSERT INTO `ym_counter_save` VALUES ('counter', '31');
+INSERT INTO `ym_counter_save` VALUES ('day_time', '2458468');
+INSERT INTO `ym_counter_save` VALUES ('counter', '32');
 INSERT INTO `ym_counter_save` VALUES ('yesterday', '0');
 INSERT INTO `ym_counter_save` VALUES ('max_count', '2');
 INSERT INTO `ym_counter_save` VALUES ('max_time', '1542789000');
@@ -283,7 +283,7 @@ CREATE TABLE `ym_counter_users` (
 -- ----------------------------
 -- Records of ym_counter_users
 -- ----------------------------
-INSERT INTO `ym_counter_users` VALUES ('837ec5754f503cfaaee0929fd48974e7', '1543766717');
+INSERT INTO `ym_counter_users` VALUES ('837ec5754f503cfaaee0929fd48974e7', '1544886119');
 
 -- ----------------------------
 -- Table structure for ym_countries
@@ -314,6 +314,33 @@ INSERT INTO `ym_countries` VALUES ('11', 'سوئیس', 'switzerland');
 INSERT INTO `ym_countries` VALUES ('12', 'چین', 'china');
 INSERT INTO `ym_countries` VALUES ('13', 'ایران', 'iran');
 INSERT INTO `ym_countries` VALUES ('14', 'مالزی', 'malaysia');
+
+-- ----------------------------
+-- Table structure for ym_dealership_requests
+-- ----------------------------
+DROP TABLE IF EXISTS `ym_dealership_requests`;
+CREATE TABLE `ym_dealership_requests` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `dealership_name` varchar(255) COLLATE utf8_persian_ci NOT NULL,
+  `manager_name` varchar(255) COLLATE utf8_persian_ci DEFAULT NULL,
+  `manager_last_name` varchar(255) COLLATE utf8_persian_ci DEFAULT NULL,
+  `creator_name` varchar(255) COLLATE utf8_persian_ci NOT NULL,
+  `creator_mobile` varchar(11) COLLATE utf8_persian_ci NOT NULL,
+  `address` text COLLATE utf8_persian_ci NOT NULL,
+  `phone` varchar(11) COLLATE utf8_persian_ci NOT NULL,
+  `email` varchar(255) COLLATE utf8_persian_ci NOT NULL,
+  `description` varchar(512) COLLATE utf8_persian_ci DEFAULT NULL,
+  `create_date` varchar(20) COLLATE utf8_persian_ci DEFAULT NULL,
+  `status` decimal(1,0) unsigned DEFAULT '0',
+  `state_id` int(10) unsigned NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COLLATE=utf8_persian_ci;
+
+-- ----------------------------
+-- Records of ym_dealership_requests
+-- ----------------------------
+INSERT INTO `ym_dealership_requests` VALUES ('1', 'امیران', 'فرهاد', 'مقانلو', 'یوسف مبشری', '09358389265', 'قم - بلوار صدوق', '02536574422', 'yusef@gmail.com', '', '1514917153', '1', '0');
+INSERT INTO `ym_dealership_requests` VALUES ('2', 'امیران', 'فرهاد', 'مقانلو', 'یوسف مبشری', '09358389265', 'asgadasdafaf', '02536574422', 'yusef.msdasfabasheri@gmail.com', '', '1515067467', '1', '1');
 
 -- ----------------------------
 -- Table structure for ym_invoices
@@ -916,7 +943,7 @@ CREATE TABLE `ym_requests` (
 -- ----------------------------
 -- Records of ym_requests
 -- ----------------------------
-INSERT INTO `ym_requests` VALUES ('5', '2', null, null, '22', '11', '1', '4', '1542209071', '1542463404', '', '1542295457', null, '1542295457', 'night', '2', '3');
+INSERT INTO `ym_requests` VALUES ('5', '2', null, null, '22', '11', '1', '4', '1542209071', '1544886118', '', '1542295457', null, '1542295457', 'am', '3', '3');
 
 -- ----------------------------
 -- Table structure for ym_sessions
@@ -939,7 +966,7 @@ CREATE TABLE `ym_sessions` (
 -- ----------------------------
 -- Records of ym_sessions
 -- ----------------------------
-INSERT INTO `ym_sessions` VALUES ('mlkt15rmrvm3q617uo5qmne4o6', '1543768519', '', null, null, 'web', '::1', 'computer', null, null);
+INSERT INTO `ym_sessions` VALUES ('k36g1co4md7a6heuk6asmipdv6', '1544887919', 0x39356238333261346636626364656634373639386663613636633234326636305F5F69647C733A313A2231223B39356238333261346636626364656634373639386663613636633234326636305F5F6E616D657C733A363A22726168626F64223B3935623833326134663662636465663437363938666361363663323432663630726F6C65737C733A353A2261646D696E223B3935623833326134663662636465663437363938666361363663323432663630747970657C733A353A2261646D696E223B3935623833326134663662636465663437363938666361363663323432663630757365726E616D657C733A363A22726168626F64223B3935623833326134663662636465663437363938666361363663323432663630656D61696C7C733A32373A226768617261676F7A6C752E6D61736F756440676D69616C2E636F6D223B39356238333261346636626364656634373639386663613636633234326636305F5F7374617465737C613A353A7B733A353A22726F6C6573223B623A313B733A343A2274797065223B623A313B733A383A22757365726E616D65223B623A313B733A353A22656D61696C223B623A313B733A353A224F41757468223B623A313B7D3935623833326134663662636465663437363938666361363663323432663630617474656D7074732D6C6F67696E7C693A303B, '1', 'admin', 'web', '::1', 'computer', null, 'pHKYr78gks5vSFcqsdzdT4NDxIXRf6FElHZbGuydBWqWX0d55a');
 
 -- ----------------------------
 -- Table structure for ym_site_setting
@@ -1127,6 +1154,7 @@ CREATE TABLE `ym_user_details` (
   `address` varchar(1000) COLLATE utf8_persian_ci DEFAULT NULL COMMENT 'نشانی دقیق پستی',
   `avatar` varchar(255) CHARACTER SET utf8 DEFAULT NULL COMMENT 'آواتار',
   `mobile` varchar(11) COLLATE utf8_persian_ci DEFAULT NULL COMMENT 'موبایل',
+  `push_token` text COLLATE utf8_persian_ci,
   PRIMARY KEY (`user_id`),
   KEY `user_id` (`user_id`) USING BTREE,
   CONSTRAINT `ym_user_details_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `ym_users` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
@@ -1135,8 +1163,8 @@ CREATE TABLE `ym_user_details` (
 -- ----------------------------
 -- Records of ym_user_details
 -- ----------------------------
-INSERT INTO `ym_user_details` VALUES ('4', 'تعمیرکار', 'تعمیرکار', null, null, null, null, '09358389264');
-INSERT INTO `ym_user_details` VALUES ('22', 'یوسف', 'مبشری', null, null, null, null, '09358389265');
+INSERT INTO `ym_user_details` VALUES ('4', 'تعمیرکار', 'تعمیرکار', null, null, null, null, '09358389264', null);
+INSERT INTO `ym_user_details` VALUES ('22', 'یوسف', 'مبشری', null, null, null, null, '09358389265', null);
 
 -- ----------------------------
 -- Table structure for ym_user_notifications
