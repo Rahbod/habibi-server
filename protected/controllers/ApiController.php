@@ -303,7 +303,7 @@ class ApiController extends ApiBaseController
                 ];
             }
 
-            $temp['status'] = true;
+//            $temp['status'] = true;
 
             $this->_sendResponse(200, CJSON::encode($temp), 'application/json');
         } else
