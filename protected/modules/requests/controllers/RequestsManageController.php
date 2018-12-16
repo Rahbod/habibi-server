@@ -319,15 +319,15 @@ class RequestsManageController extends Controller
             $this->redirect(array('admin'));
         }
 
-        $model->status = Requests::STATUS_INVOICING;
-        $model->save();
-
         $invoice = $model->getLastInvoice();
         if (!$invoice)
             $invoice = new Invoices();
 
         // Save invoice
         if (isset($_POST['Invoices'])) {
+            $model->status = Requests::STATUS_INVOICING;
+            $model->save();
+
             $invoice->request_id = $id;
             $invoice->creator_id = Yii::app()->user->getId();
             $invoice->additional_cost = $_POST['Invoices']['additional_cost'];
@@ -366,6 +366,9 @@ class RequestsManageController extends Controller
 
         // Confirm invoice
         if (isset($_POST['confirm'])) {
+            $model->status = Requests::STATUS_AWAITING_PAYMENT;
+            $model->save();
+
             PushNotification::sendDataToUser($model->user->userDetails->push_token, [
                 'action' => 'invoicing',
                 'invoiceID' => $invoice->id,

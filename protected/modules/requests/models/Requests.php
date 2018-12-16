@@ -185,7 +185,7 @@ class Requests extends CActiveRecord
             $criteria->addCondition('status > 0');
         }
 
-        $criteria->order = 'id';
+        $criteria->order = 'id DESC';
 
         if (isset($_GET['pendingAjax'])) {
             if (isset($_GET['last']))

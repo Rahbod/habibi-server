@@ -273,6 +273,12 @@ class ApiController extends ApiBaseController
             /* @var Requests $request */
             $request = Requests::model()->find('id = :id AND user_id = :userID', [':id' => $this->request['id'], ':userID' => $this->user->id]);
 
+            if(!$request)
+                $this->_sendResponse(404, CJSON::encode([
+                    'status' => false,
+                    'message' => 'Request not found.'
+                ]), 'application/json');
+
             $temp = [
                 'id' => intval($request->id),
                 'deviceID' => intval($request->category_id),

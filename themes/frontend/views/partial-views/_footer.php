@@ -14,7 +14,7 @@
                     <span>کلیه حقوق مادی و معنوی این سایت متعلق به <span class="text-danger">شرکت آراخودرو</span> می‌باشد.</span>
                     <br>
                     <div class="ltr">
-                        <b>Copyright &copy; 2017 CarCadeh Co.</b>
+                        <b>Copyright &copy; 2017 Achare Co.</b>
                     </div>
                 </div>
             </div>
