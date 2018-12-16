@@ -167,4 +167,13 @@ class Invoices extends CActiveRecord
             }
         }
     }
+
+	public function totalCost()
+	{
+		$tariffsCost = 0;
+		foreach($this->tariffs as $tariff)
+			$tariffsCost += $tariff->cost;
+
+		return $tariffsCost + $this->additional_cost;
+	}
 }

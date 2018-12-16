@@ -42,6 +42,7 @@ class InvoiceItems extends CActiveRecord
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
 		return array(
+			'tariff' => array(self::BELONGS_TO, 'Tariffs', 'tariff_id'),
 		);
 	}
 
@@ -78,7 +79,7 @@ class InvoiceItems extends CActiveRecord
 		$criteria->compare('invoice_id',$this->invoice_id,true);
 		$criteria->compare('tariff_id',$this->tariff_id,true);
 		$criteria->compare('cost',$this->cost,true);
-		$criteria->order = 'id DESC';
+
 		return new CActiveDataProvider($this, array(
 			'criteria'=>$criteria,
 		));

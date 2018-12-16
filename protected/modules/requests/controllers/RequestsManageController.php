@@ -37,6 +37,7 @@ class RequestsManageController extends Controller
                 'invoicing',
                 'approvePayment',
                 'my',
+                'deleteInvoiceItem',
             )
         );
     }
@@ -71,6 +72,7 @@ class RequestsManageController extends Controller
                 PushNotification::sendDataToUser($model->user->userDetails->push_token, [
                     'action' => 'selectRepairMan',
                     'id' => $model->id,
+                    'message' => 'درخواست شما در آچاره تایید شد.'
                 ]);
 
                 Yii::app()->user->setFlash('success', '<span class="icon-check"></span>&nbsp;&nbsp;اطلاعات با موفقیت ذخیره شد.');
@@ -312,7 +314,7 @@ class RequestsManageController extends Controller
     {
         $model = $this->loadModel($id);
 
-        if ($model->status >= Requests::STATUS_PAID){
+        if ($model->status >= Requests::STATUS_PAID) {
             Yii::app()->user->setFlash("failed", "فاکتور این درخواست قبلا صادر شده است، پس از پرداخت امکان تغییر فاکتور وجود ندارد.");
             $this->redirect(array('admin'));
         }
@@ -321,10 +323,11 @@ class RequestsManageController extends Controller
         $model->save();
 
         $invoice = $model->getLastInvoice();
-        if(!$invoice)
+        if (!$invoice)
             $invoice = new Invoices();
 
-        if(isset($_POST['Invoices'])){
+        // Save invoice
+        if (isset($_POST['Invoices'])) {
             $invoice->request_id = $id;
             $invoice->creator_id = Yii::app()->user->getId();
             $invoice->additional_cost = $_POST['Invoices']['additional_cost'];
@@ -333,18 +336,58 @@ class RequestsManageController extends Controller
             $invoice->modified_date = time();
             $invoice->status = Invoices::STATUS_UNPAID;
 
-            if($invoice->getIsNewRecord())
+            if ($invoice->getIsNewRecord())
                 $invoice->create_date = time();
 
-            if($invoice->save())
+            if ($invoice->save())
                 Yii::app()->user->setFlash("success", "فاکتور با موفقیت صادر شد.");
             else
                 Yii::app()->user->setFlash("failed", "متاسفانه در ثبت اطلاعات مشکلی بوجود آمده است.");
         }
 
+        // Save invoice items
+        if (isset($_POST['InvoiceItems'])) {
+            if (!InvoiceItems::model()->find('invoice_id = :inID AND tariff_id = :tID', [':inID' => $invoice->id, ':tID' => $_POST['InvoiceItems']['tariff_id']])) {
+                $invoiceItem = new InvoiceItems();
+                $invoiceItem->attributes = $_POST['InvoiceItems'];
+                if (!$invoiceItem->cost) {
+                    $tariff = Tariffs::model()->findByPk($invoiceItem->tariff_id);
+                    $invoiceItem->cost = $tariff->cost;
+                }
+                $invoiceItem->invoice_id = $invoice->id;
+
+                if ($invoiceItem->save())
+                    Yii::app()->user->setFlash("success", "تعرفه با موفقیت ثبت شد.");
+                else
+                    Yii::app()->user->setFlash("failed", "متاسفانه در ثبت اطلاعات مشکلی بوجود آمده است.");
+            } else
+                Yii::app()->user->setFlash("failed", "این تعرفه قبلا در فاکتور ثبت شده!");
+        }
+
+        // Confirm invoice
+        if (isset($_POST['confirm'])) {
+            PushNotification::sendDataToUser($model->user->userDetails->push_token, [
+                'action' => 'invoicing',
+                'invoiceID' => $invoice->id,
+                'requestID' => $id,
+                'message' => 'فاکتور درخواست شما در آچاره صادر شد.'
+            ]);
+        }
+
         $invoiceItems = new InvoiceItems('search');
         $invoiceItems->unsetAttributes();
 
-        $this->render('create_invoice',compact('model', 'invoice', 'invoiceItems'));
+        $this->render('create_invoice', compact('model', 'invoice', 'invoiceItems'));
+    }
+
+    public function actionDeleteInvoiceItem()
+    {
+        $tariffID = Yii::app()->request->getParam('tariff_id');
+        $invoiceID = Yii::app()->request->getParam('invoice_id');
+
+        /* @var InvoiceItems $model */
+        $model = InvoiceItems::model()->find('invoice_id = :inID AND tariff_id = :tID', [':inID' =>$invoiceID, ':tID' => $tariffID]);
+        if($model->delete())
+            $this->redirect(array('/requests/manage/invoicing/5'));
     }
 }

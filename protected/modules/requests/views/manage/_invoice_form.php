@@ -53,144 +53,101 @@ $itemModel = new InvoiceItems();
     </div>
 </div>
 
-<div class="panel panel-default">
-    <div class="panel-heading">تعرفه ها</div>
-    <div class="panel-body">
-        <?php $form=$this->beginWidget('CActiveForm', array(
-            'id'=>'invoice-items-form',
-            'enableAjaxValidation'=>false,
-            'enableClientValidation'=>true,
-            'clientOptions' => [
-                'validateOnSubmit' => true,
-            ]
-        )); ?>
+<?php if(!$invoice->getIsNewRecord()):?>
+    <div class="panel panel-default">
+        <div class="panel-heading">تعرفه ها</div>
+        <div class="panel-body">
+            <?php $form=$this->beginWidget('CActiveForm', array(
+                'id'=>'invoice-items-form',
+                'enableAjaxValidation'=>false,
+                'enableClientValidation'=>true,
+                'clientOptions' => [
+                    'validateOnSubmit' => true,
+                ]
+            )); ?>
 
-            <div class="form-group">
-                <div class="row">
-                    <div class="col-lg-3 col-md-3 col-sm-4 col-xs-12">
-                        <?php echo $form->labelEx($itemModel,'tariff_id'); ?>
-                        <?php echo $form->dropDownList($itemModel,'tariff_id',CHtml::listData(Tariffs::model()->findAll(), 'id', 'titleCost'),array('class'=>'form-control')); ?>
-                        <?php echo $form->error($itemModel,'tariff_id'); ?>
-                    </div>
-                    <div class="col-lg-3 col-md-3 col-sm-4 col-xs-12">
-                        <?php echo $form->labelEx($itemModel,'cost'); ?>
-                        <div class="input-group">
-                            <?php echo $form->textField($itemModel,'cost',array('class'=>'form-control')); ?>
-                            <span class="input-group-addon">تومان</span>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-lg-3 col-md-3 col-sm-4 col-xs-12">
+                            <?php echo $form->labelEx($itemModel,'tariff_id'); ?>
+                            <?php echo $form->dropDownList($itemModel,'tariff_id',CHtml::listData(Tariffs::model()->findAll(), 'id', 'titleCost'),array('class'=>'form-control')); ?>
+                            <?php echo $form->error($itemModel,'tariff_id'); ?>
                         </div>
-                        <?php echo $form->error($itemModel,'cost'); ?>
+                        <div class="col-lg-3 col-md-3 col-sm-4 col-xs-12">
+                            <?php echo $form->labelEx($itemModel,'cost'); ?>
+                            <div class="input-group">
+                                <?php echo $form->textField($itemModel,'cost',array('class'=>'form-control')); ?>
+                                <span class="input-group-addon">تومان</span>
+                            </div>
+                            <?php echo $form->error($itemModel,'cost'); ?>
+                        </div>
                     </div>
                 </div>
+
+                <div class="buttons">
+                    <?php echo CHtml::submitButton('افزودن',array('class' => 'btn btn-success')); ?>
+                </div>
+
+            <?php $this->endWidget(); ?>
+
+            <hr>
+
+            <?php $this->widget('zii.widgets.grid.CGridView', array(
+                'id'=>'items-grid',
+                'dataProvider'=>$invoiceItems->search(),
+                'itemsCssClass'=>'table table-striped',
+                'template' => '{summary} {pager} {items} {pager}',
+                'pager' => array(
+                    'header' => '',
+                    'firstPageLabel' => '<<',
+                    'lastPageLabel' => '>>',
+                    'prevPageLabel' => '<',
+                    'nextPageLabel' => '>',
+                    'cssFile' => false,
+                    'htmlOptions' => array(
+                        'class' => 'pagination pagination-sm',
+                    ),
+                ),
+                'pagerCssClass' => 'blank',
+                'columns'=>array(
+                    [
+                        'name' => 'tariff_id',
+                        'value' => '$data->tariff?$data->tariff->title:"-"',
+                    ],
+                    [
+                        'name' => 'cost',
+                        'value' => 'number_format($data->cost) . " تومان"',
+                    ],
+                    array(
+                        'class'=>'CButtonColumn',
+                        'template' => '{delete}',
+                        'deleteButtonUrl' => 'Yii::app()->createUrl("/requests/manage/deleteInvoiceItem", array("invoice_id" => $data->invoice_id, "tariff_id" => $data->tariff_id))',
+                    ),
+                ),
+            )); ?>
+        </div>
+    </div>
+
+    <div class="panel panel-danger">
+        <div class="panel-heading">تایید نهایی فاکتور</div>
+        <div class="panel-body">
+            <div class="alert alert-danger"><b>توجه:</b> در صورتی که دکمه "تایید نهایی" را بزنید برای کاربر پیامی مبنی بر صادر شدن فاکتور ارسال میگردد.</div>
+            <?php $form=$this->beginWidget('CActiveForm', array(
+                'id'=>'invoice-form',
+            )); ?>
+
+            <div class="text-center">
+                <h3 style="padding: 50px 0 20px;">جمع کل: <?php echo number_format($invoice->totalCost())?> <small>تومان</small></h3>
             </div>
 
             <div class="buttons">
-                <?php echo CHtml::submitButton('افزودن',array('class' => 'btn btn-success')); ?>
+                <?php echo CHtml::submitButton('تایید نهایی',array('class' => 'btn btn-danger btn-lg center-block', 'name' => 'confirm')); ?>
             </div>
 
-        <?php $this->endWidget(); ?>
-
-        <hr>
-
-        <?php $this->widget('zii.widgets.grid.CGridView', array(
-            'id'=>'items-grid',
-            'dataProvider'=>$invoiceItems->search(),
-            'filter'=>$invoiceItems,
-            'itemsCssClass'=>'table table-striped',
-            'template' => '{summary} {pager} {items} {pager}',
-            'ajaxUpdate' => true,
-            'afterAjaxUpdate' => "function(id, data){
-                    $('html, body').animate({
-                    scrollTop: ($('#'+id).offset().top-130)
-                    },1000,'easeOutCubic');
-                }",
-            'pager' => array(
-                'header' => '',
-                'firstPageLabel' => '<<',
-                'lastPageLabel' => '>>',
-                'prevPageLabel' => '<',
-                'nextPageLabel' => '>',
-                'cssFile' => false,
-                'htmlOptions' => array(
-                    'class' => 'pagination pagination-sm',
-                ),
-            ),
-            'pagerCssClass' => 'blank',
-            'columns'=>array(
-                [
-                    'name' => 'category_id',
-                    'value' => '$data->category?$data->category->title:"-"',
-                    'filter' => Categories::getList()
-                ],
-                [
-                    'name' => 'user_id',
-                    'value' => '$data->user && $data->user->userDetails?$data->user->userDetails->getShowName():"-"',
-                    'filter' => Users::getUsersByRole('user',true)
-                ],
-                [
-                    'name' => 'operator_id',
-                    'value' => '$data->operator?$data->operator->name_family:"-"',
-                    'filter' => Admins::getByRole('operator',true)
-                ],
-                [
-                    'name' => 'repairman_id',
-                    'value' => '$data->repairman && $data->repairman->userDetails?$data->repairman->userDetails->getShowName(false):"-"',
-                    'filter' => Users::getUsersByRole('repairman',true)
-                ],
-                [
-                    'name' => 'modified_date',
-                    'value' => function($data){
-                        return "<b dir='ltr'>".JalaliDate::date("Y/m/d H:i", $data->modified_date)."</b>";
-                    },
-                    'type' => 'raw',
-                    'filter' => false
-                ],
-                [
-                    'name' => 'request_type',
-                    'header' => '',
-                    'value' => function($data){
-                        /** @var $data Requests */
-                        return $data->getRequestTypeLabel(true);
-                    },
-                    'htmlOptions' => ['class' => 'text-center'],
-                    'type' => 'raw',
-                    'filter' => $model->requestTypeLabels
-                ],
-                [
-                    'name' => 'status',
-                    'value' => function($data){
-                        /** @var $data Requests */
-                        return "<span class='label label-{$data->getStatusLabel(true)}'>{$data->getStatusLabel()}</span>";
-                    },
-                    'type' => 'raw',
-                    'filter' => $recycleBin?false:$model->statusLabels
-                ],
-                [
-                    'header' => '',
-                    'value' => function($data) use ($pending){
-                        /** @var $data Requests */
-                        if($data->status >= Requests::STATUS_PENDING &&
-                            $data->status <= Requests::STATUS_AWAITING_PAYMENT)
-                            return CHtml::link('صدور فاکتور', array('/requests/manage/invoicing/'.$data->id), array('class' => 'btn btn-xs btn-info'));
-                        else if($data->status == Requests::STATUS_DELETED)
-                            return CHtml::link('بازیابی درخواست', array('/requests/manage/restore/'.$data->id.($pending?'?pending':'')), array('class' => 'btn btn-xs btn-warning'));
-                        return '';
-                    },
-                    'type' => 'raw',
-                    'filter' => false
-                ],
-                array(
-                    'class'=>'CButtonColumn',
-                    'buttons' =>array(
-                        'delete' => array(
-                            'visible' => '$data->status < Requests::STATUS_PAID'
-                        )
-                    )
-                ),
-            ),
-        )); ?>
+            <?php $this->endWidget(); ?>
+        </div>
     </div>
-</div>
-
+<?php endif;?>
 
 <div class="modal fade" id="add-category">
     <div class="modal-dialog">
