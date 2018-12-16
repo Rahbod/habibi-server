@@ -309,7 +309,14 @@ class ApiController extends ApiBaseController
                 ];
             }
 
-//            $temp['status'] = true;
+            if($invoice = $request->getLastInvoice()){
+                $temp['invoice'] = [
+                    'cost' => number_format($invoice->final_cost) . ' تومان',
+                    'description' => $invoice->additional_description,
+                    'paymentMethod' => $invoice->payment_method,
+                    'status' => $invoice->status,
+                ];
+            }
 
             $this->_sendResponse(200, CJSON::encode($temp), 'application/json');
         } else

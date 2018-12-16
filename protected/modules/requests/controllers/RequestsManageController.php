@@ -369,6 +369,9 @@ class RequestsManageController extends Controller
             $model->status = Requests::STATUS_AWAITING_PAYMENT;
             $model->save();
 
+            $invoice->final_cost = $invoice->totalCost();
+            $invoice->save();
+
             PushNotification::sendDataToUser($model->user->userDetails->push_token, [
                 'action' => 'invoicing',
                 'invoiceID' => $invoice->id,

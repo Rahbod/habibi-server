@@ -294,6 +294,9 @@ class Requests extends CActiveRecord
         return $this->requestTypeLabels[$this->request_type];
     }
 
+    /**
+     * @return Invoices
+     */
     public function getLastInvoice()
     {
         return Invoices::model()->findByAttributes(['request_id' => $this->id, 'status' => Invoices::STATUS_UNPAID]);
