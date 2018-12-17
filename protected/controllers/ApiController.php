@@ -315,11 +315,17 @@ class ApiController extends ApiBaseController
             }
 
             if($invoice = $request->getLastInvoice()){
+                $tariffs = [];
+
+                foreach($invoice->tariffs as $tariff)
+                    $tariffs[$tariff->title] = number_format($tariff->cost).' تومان';
+
                 $temp['invoice'] = [
                     'cost' => number_format($invoice->final_cost) . ' تومان',
                     'description' => $invoice->additional_description,
                     'paymentMethod' => $invoice->payment_method,
                     'status' => $invoice->status,
+                    'tariffs' => $tariffs,
                 ];
             }
 
