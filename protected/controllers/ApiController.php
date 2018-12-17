@@ -283,12 +283,17 @@ class ApiController extends ApiBaseController
                 'id' => intval($request->id),
                 'deviceID' => intval($request->category_id),
                 'device' => $request->category->title,
-                'addressID' => intval($request->user_address_id),
+                'address' => null,
+                'phone' => null,
+                'serviceDate' => null,
+                'serviceTime' => null,
                 'createDate' => JalaliDate::date("d F Y - H:i", $request->create_date),
                 'description' => $request->description,
                 'requestedDate' => JalaliDate::date("d F Y", $request->requested_date),
                 'requestedTime' => $request->requested_time,
                 'status' => intval($request->status),
+                'repairMan' => null,
+                'invoice' => null,
             ];
 
             if ($request->user_address_id) {
