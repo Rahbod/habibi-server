@@ -318,7 +318,10 @@ class ApiController extends ApiBaseController
                 $tariffs = [];
 
                 foreach($invoice->tariffs as $tariff)
-                    $tariffs[$tariff->title] = number_format($tariff->cost).' تومان';
+                    $tariffs[] = [
+                        'title' => $tariff->title,
+                        'cost' => number_format($tariff->cost).' تومان',
+                    ];
 
                 $temp['invoice'] = [
                     'cost' => number_format($invoice->final_cost) . ' تومان',
