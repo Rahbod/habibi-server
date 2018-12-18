@@ -325,7 +325,7 @@ class ApiController extends ApiBaseController
 
                 $temp['invoice'] = [
                     'cost' => number_format($invoice->final_cost) . ' تومان',
-                    'additionalCost' => number_format($invoice->additional_cost) . ' تومان',
+                    'additionalCost' => $invoice->additional_cost ? number_format($invoice->additional_cost) . ' تومان' : 0,
                     'description' => $invoice->additional_description,
                     'paymentMethod' => $invoice->payment_method,
                     'status' => $invoice->status,
