@@ -273,7 +273,7 @@ class ApiController extends ApiBaseController
             /* @var Requests $request */
             $request = Requests::model()->find('id = :id AND user_id = :userID', [':id' => $this->request['id'], ':userID' => $this->user->id]);
 
-            if(!$request)
+            if (!$request)
                 $this->_sendResponse(404, CJSON::encode([
                     'status' => false,
                     'message' => 'Request not found.'
@@ -314,13 +314,13 @@ class ApiController extends ApiBaseController
                 ];
             }
 
-            if($invoice = $request->getLastInvoice()){
+            if ($invoice = $request->getLastInvoice()) {
                 $tariffs = [];
 
-                foreach($invoice->tariffs as $tariff)
+                foreach ($invoice->tariffs as $tariff)
                     $tariffs[] = [
                         'title' => $tariff->title,
-                        'cost' => number_format($tariff->cost).' تومان',
+                        'cost' => number_format($tariff->cost) . ' تومان',
                     ];
 
                 $temp['invoice'] = [
@@ -342,7 +342,7 @@ class ApiController extends ApiBaseController
     {
         $transactions = [];
 
-        foreach($this->user->transactions as $transaction) {
+        foreach ($this->user->transactions as $transaction) {
             $temp = [
                 'amount' => number_format($transaction->amount) . ' ريال',
                 'date' => JalaliDate::date("d F Y", $transaction->date),
@@ -357,5 +357,23 @@ class ApiController extends ApiBaseController
             'status' => true,
             'list' => $transactions,
         ]), 'application/json');
+    }
+
+    public function actionCooperation()
+    {
+        if (isset($this->request['name']) and isset($this->request['phone']) and isset($this->request['expertise']) and isset($this->request['experience'])) {
+            $model = new CooperationRequests();
+            $model->name = $this->request['name'];
+            $model->mobile = $this->request['phone'];
+            $model->expertise = $this->request['expertise'];
+            $model->experience_level = $this->request['experience'];
+            $model->status = CooperationRequests::STATUS_PENDING;
+
+            if ($model->save())
+                $this->_sendResponse(200, CJSON::encode(['status' => true, 'message' => 'درخواست شما با موفقیت ثبت شد. این درخواست به زودی توسط کارشناسان ما رسیدگی خواهد شد.']), 'application/json');
+            else
+                $this->_sendResponse(400, CJSON::encode(['status' => false, 'message' => 'در ثبت اطلاعات خطایی رخ داده است. لطفا مجددا تلاش کنید.']), 'application/json');
+        } else
+            $this->_sendResponse(400, CJSON::encode(['status' => false, 'message' => 'Name and Phone and Expertise and Experience variables is required.']), 'application/json');
     }
 }

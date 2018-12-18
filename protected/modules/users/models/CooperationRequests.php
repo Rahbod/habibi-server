@@ -5,8 +5,7 @@
  *
  * The followings are the available columns in table '{{cooperation_requests}}':
  * @property string $id
- * @property string $first_name
- * @property string $last_name
+ * @property string $name
  * @property string $mobile
  * @property string $expertise
  * @property string $experience_level
@@ -47,15 +46,15 @@ class CooperationRequests extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('first_name, last_name, mobile', 'required'),
-			array('first_name, last_name, expertise, experience_level', 'length', 'max'=>255),
+			array('name, mobile', 'required'),
+			array('name, expertise, experience_level', 'length', 'max'=>255),
 			array('mobile', 'length', 'max'=>11),
 			array('create_date', 'length', 'max'=>20),
 			array('create_date', 'default', 'value'=>time()),
 			array('status', 'length', 'max'=>1),
 			// The following rule is used by search().
 			// @todo Please remove those attributes that should not be searched.
-			array('id, first_name, last_name, mobile, expertise, experience_level, create_date, status', 'safe', 'on'=>'search'),
+			array('id, first_name, mobile, expertise, experience_level, create_date, status', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -77,12 +76,11 @@ class CooperationRequests extends CActiveRecord
 	{
 		return array(
 			'id' => 'ID',
-			'first_name' => 'نام',
-			'last_name' => 'نام خانوادگی',
+			'name' => 'نام و نام خانوادگی',
 			'mobile' => 'شماره موبایل',
 			'expertise' => 'تخصص',
 			'experience_level' => 'میزان تجربه',
-			'create_date' => 'تاریخ ثیت درخواست',
+			'create_date' => 'تاریخ ثبت درخواست',
 			'status' => 'وضعیت',
 		);
 	}
@@ -105,8 +103,7 @@ class CooperationRequests extends CActiveRecord
 
 		$criteria=new CDbCriteria;
 		$criteria->compare('id',$this->id,true);
-		$criteria->compare('first_name',$this->first_name,true);
-		$criteria->compare('last_name',$this->last_name,true);
+		$criteria->compare('first_name',$this->name,true);
 		$criteria->compare('mobile',$this->mobile,true);
 		$criteria->compare('expertise',$this->expertise,true);
 		$criteria->compare('experience_level',$this->experience_level,true);
