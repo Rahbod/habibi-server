@@ -374,8 +374,7 @@ class RequestsManageController extends Controller
 
             PushNotification::sendDataToUser($model->user->userDetails->push_token, [
                 'action' => 'invoicing',
-                'invoiceID' => $invoice->id,
-                'requestID' => $id,
+                'id' => $id,
                 'message' => 'فاکتور درخواست شما در آچاره صادر شد.'
             ]);
         }
