@@ -11,7 +11,7 @@ $this->breadcrumbs=array(
 <div class="box box-primary">
     <div class="box-header with-border">
         <h3 class="box-title">
-            نمایش درخواست همکاری #<?= $model->id ?>
+            نمایش درخواست همکاری <?= $model->name ?>
         </h3>
         <a href="<?= $this->createUrl('cooperationRequests') ?>" class="btn btn-primary btn-sm pull-left">
             بازگشت
@@ -25,6 +25,7 @@ $this->breadcrumbs=array(
             'itemCssClass'=>array('',''),
             'htmlOptions' => array('class'=>'detail-view table table-striped'),
             'attributes'=>array(
+                'name',
                 [
                     'name' => 'mobile',
                     'value' => function($data){
@@ -32,13 +33,13 @@ $this->breadcrumbs=array(
                     },
                     'type' => 'raw'
                 ],
+                'expertise',
+                'experience_level',
                 [
                     'label' => $model->getAttributeLabel('create_date'),
                     'value' => "<b><span dir='ltr' class='text-right'>".JalaliDate::date('Y/m/d H:i', $model->create_date)."</span></b>",
                     'type' => 'raw'
                 ],
-                'first_name',
-                'last_name',
             ),
         )); ?>
     </div>
