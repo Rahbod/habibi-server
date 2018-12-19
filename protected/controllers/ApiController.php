@@ -314,7 +314,7 @@ class ApiController extends ApiBaseController
                 ];
             }
 
-            if ($invoice = $request->getLastInvoice()) {
+            if ($invoice = $request->getLastInvoice() and $request->status != Requests::STATUS_DELETED) {
                 $tariffs = [];
 
                 foreach ($invoice->tariffs as $tariff)
@@ -344,7 +344,7 @@ class ApiController extends ApiBaseController
 
         foreach ($this->user->transactions as $transaction) {
             $temp = [
-                'amount' => number_format($transaction->amount) . ' ريال',
+                'amount' => number_format($transaction->amount) . ' تومان',
                 'date' => JalaliDate::date("d F Y", $transaction->date),
                 'code' => $transaction->token,
                 'status' => $transaction->status,
