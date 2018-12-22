@@ -323,6 +323,12 @@ class ApiController extends ApiBaseController
                         'cost' => number_format($item->cost) . ' تومان',
                     ];
 
+                if($invoice->additional_cost)
+                    $tariffs[] = [
+                        'title' => 'هزینه اضافی',
+                        'cost' => number_format($invoice->additional_cost) . ' تومان',
+                    ];
+
                 $temp['invoice'] = [
                     'cost' => number_format($invoice->final_cost) . ' تومان',
                     'additionalCost' => $invoice->additional_cost ? number_format($invoice->additional_cost) . ' تومان' : 0,

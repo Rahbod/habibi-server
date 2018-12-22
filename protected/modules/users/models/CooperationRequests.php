@@ -109,7 +109,7 @@ class CooperationRequests extends CActiveRecord
 		$criteria->compare('experience_level',$this->experience_level,true);
 		$criteria->compare('create_date',$this->create_date,true);
 		$criteria->compare('status',$this->status,true);
-		$criteria->order = 'status, create_date';
+		$criteria->order = 'status ASC, create_date DESC';
 		return new CActiveDataProvider($this, array(
 			'criteria'=>$criteria,
 		));
