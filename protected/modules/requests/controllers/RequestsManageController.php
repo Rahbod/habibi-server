@@ -366,7 +366,7 @@ class RequestsManageController extends Controller
 
         // Confirm invoice
         if (isset($_POST['confirm'])) {
-            $model->status = Requests::STATUS_AWAITING_PAYMENT;
+            $model->status = Requests::STATUS_PAID;
             $model->save();
 
             $invoice->final_cost = $invoice->totalCost();
@@ -381,6 +381,7 @@ class RequestsManageController extends Controller
 
         $invoiceItems = new InvoiceItems('search');
         $invoiceItems->unsetAttributes();
+        $invoiceItems->invoice_id = $invoice->id;
 
         $this->render('create_invoice', compact('model', 'invoice', 'invoiceItems'));
     }

@@ -171,10 +171,10 @@ class Invoices extends CActiveRecord
 
 	public function totalCost()
 	{
-		$tariffsCost = 0;
-		foreach($this->tariffs as $tariff)
-			$tariffsCost += $tariff->cost;
+		$itemsCost = 0;
+		foreach($this->items as $item)
+			$itemsCost += $item->cost;
 
-		return $tariffsCost + $this->additional_cost;
+		return $itemsCost + $this->additional_cost;
 	}
 }

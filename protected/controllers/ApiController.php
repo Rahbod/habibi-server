@@ -317,10 +317,10 @@ class ApiController extends ApiBaseController
             if ($invoice = $request->getLastInvoice() and $request->status != Requests::STATUS_DELETED) {
                 $tariffs = [];
 
-                foreach ($invoice->tariffs as $tariff)
+                foreach ($invoice->items as $item)
                     $tariffs[] = [
-                        'title' => $tariff->title,
-                        'cost' => number_format($tariff->cost) . ' تومان',
+                        'title' => $item->tariff->title,
+                        'cost' => number_format($item->cost) . ' تومان',
                     ];
 
                 $temp['invoice'] = [

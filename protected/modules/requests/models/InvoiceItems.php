@@ -7,6 +7,8 @@
  * @property string $invoice_id
  * @property string $tariff_id
  * @property string $cost
+ *
+ * @property Tariffs $tariff
  */
 class InvoiceItems extends CActiveRecord
 {
