@@ -189,12 +189,12 @@ class Requests extends CActiveRecord
 
         if (isset($_GET['pendingAjax'])) {
             if (isset($_GET['last']))
-                $criteria->compare('id', ' >'.(int)$_GET['last']);
+                $criteria->compare('id', ' >' . (int)$_GET['last']);
 
             $result = [];
             $result['count'] = self::model()->countByAttributes(['status' => Requests::STATUS_PENDING]);
 
-            if(isset($_GET['table'])) {
+            if (isset($_GET['table'])) {
                 Yii::app()->controller->beginClip('table');
                 foreach (self::model()->findAll($criteria) as $data) {
                     Yii::app()->controller->renderPartial('_item_view', array('data' => $data));
@@ -203,7 +203,7 @@ class Requests extends CActiveRecord
                 $result['table'] = Yii::app()->controller->clips['table'];
             }
 
-            if(isset($_GET['push'])) {
+            if (isset($_GET['push'])) {
                 Yii::app()->controller->beginClip('push');
                 foreach (self::model()->findAll($criteria) as $data) {
                     Yii::app()->controller->renderPartial('_push_view', array('data' => $data));
@@ -220,7 +220,7 @@ class Requests extends CActiveRecord
             'criteria' => $criteria
         ];
 
-        if(Yii::app()->controller->route === 'requests/manage/pending')
+        if (Yii::app()->controller->route === 'requests/manage/pending')
             $config['pagination'] = false;
 
         return new CActiveDataProvider($this, $config);
@@ -297,8 +297,10 @@ class Requests extends CActiveRecord
     /**
      * @return Invoices
      */
-    public function getLastInvoice()
+    public function getLastInvoice($any = false)
     {
+        if ($any)
+            return Invoices::model()->findByAttributes(['request_id' => $this->id]);
         return Invoices::model()->findByAttributes(['request_id' => $this->id, 'status' => Invoices::STATUS_UNPAID]);
     }
 

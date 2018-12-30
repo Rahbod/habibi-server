@@ -14,7 +14,7 @@ class RequestsManageController extends Controller
     public function filters()
     {
         return array(
-            'checkAccess', // perform access control for CRUD operations
+            'checkAccess - print', // perform access control for CRUD operations
         );
     }
 
@@ -38,6 +38,7 @@ class RequestsManageController extends Controller
                 'approvePayment',
                 'my',
                 'deleteInvoiceItem',
+                'print',
             )
         );
     }
@@ -76,7 +77,7 @@ class RequestsManageController extends Controller
                 ]);
 
                 Yii::app()->user->setFlash('success', '<span class="icon-check"></span>&nbsp;&nbsp;اطلاعات با موفقیت ذخیره شد.');
-            }else
+            } else
                 Yii::app()->user->setFlash('failed', 'در ثبت اطلاعات خطایی رخ داده است! لطفا مجددا تلاش کنید.');
         }
 
@@ -146,17 +147,17 @@ class RequestsManageController extends Controller
     public function actionDelete($id)
     {
         $model = $this->loadModel($id);
-        if ($model->status < Requests::STATUS_PAID) {
-            if ($model->status < Requests::STATUS_DELETED)
-                $model->delete();
-            else {
-                $model->status = Requests::STATUS_DELETED;
-                if ($model->save(false))
-                    Yii::app()->user->setFlash("success", "درخواست به زباله دان منتقل شد.");
-                else
-                    Yii::app()->user->setFlash("success", "متاسفانه در حذف درخواست مشکلی بوجود آمده است.");
-            }
-        }
+        $model->delete();
+//        if ($model->status == Requests::STATUS_DELETED)
+//            $model->delete();
+//        else {
+//            $model->status = Requests::STATUS_DELETED;
+//            if ($model->save(false))
+//                Yii::app()->user->setFlash("success", "درخواست به زباله دان منتقل شد.");
+//            else
+//                Yii::app()->user->setFlash("success", "متاسفانه در حذف درخواست مشکلی بوجود آمده است.");
+//        }
+
         // if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
         if (isset($_GET['pending']))
             $this->redirect(array('pending'));
@@ -182,7 +183,7 @@ class RequestsManageController extends Controller
         $model->unsetAttributes();  // clear any default values
         if (isset($_GET['Requests']))
             $model->attributes = $_GET['Requests'];
-        $model->operator_id = Yii::app()->user->roles == 'operator'?Yii::app()->user->getId():null;
+        $model->operator_id = Yii::app()->user->roles == 'operator' ? Yii::app()->user->getId() : null;
 
         $this->render('admin', array(
             'model' => $model,
@@ -216,7 +217,7 @@ class RequestsManageController extends Controller
             $model->attributes = $_GET['Requests'];
         $model->status = Requests::STATUS_PENDING;
 
-        if (isset($_GET['pendingAjax'])){
+        if (isset($_GET['pendingAjax'])) {
             echo CJSON::encode($model->search());
             Yii::app()->end();
         }
@@ -277,7 +278,7 @@ class RequestsManageController extends Controller
     {
         $model = $this->loadModel($id);
         if ($model->status == Requests::STATUS_DELETED) {
-            if(!$model->getLastInvoice())
+            if (!$model->getLastInvoice())
                 $model->status = Requests::STATUS_OPERATOR_CHECKING;
             else
                 $model->status = Requests::STATUS_AWAITING_PAYMENT;
@@ -354,8 +355,7 @@ class RequestsManageController extends Controller
                 $tariff = Tariffs::model()->findByPk($invoiceItem->tariff_id);
                 if (!$invoiceItem->cost)
                     $invoiceItem->cost = $tariff->cost;
-                else if($invoiceItem->cost < $tariff->cost)
-                {
+                else if ($invoiceItem->cost < $tariff->cost) {
                     $invoice->total_discount += intval($tariff->cost - $invoiceItem->cost);
                     $invoice->save(false);
                 }
@@ -364,8 +364,7 @@ class RequestsManageController extends Controller
                 if ($invoiceItem->save()) {
                     Yii::app()->user->setFlash("success", "اجرت با موفقیت ثبت شد.");
                     $this->refresh();
-                }
-                else
+                } else
                     Yii::app()->user->setFlash("failed", "متاسفانه در ثبت اطلاعات مشکلی بوجود آمده است.");
             } else
                 Yii::app()->user->setFlash("failed", "این اجرت قبلا در فاکتور ثبت شده!");
@@ -385,7 +384,7 @@ class RequestsManageController extends Controller
                 'message' => 'فاکتور درخواست شما در آچاره صادر شد.'
             ]);
             Yii::app()->user->setFlash('invoice-success', 'فاکتور با موفقیت تایید نهایی و برای کاربر ارسال گردید.');
-            $this->redirect(array('/requests/'.$model->id.'#invoice-panel'));
+            $this->redirect(array('/requests/' . $model->id . '#invoice-panel'));
         }
 
         $invoiceItems = new InvoiceItems('search');
@@ -400,14 +399,22 @@ class RequestsManageController extends Controller
         $tariffID = Yii::app()->request->getParam('tariff_id');
         $invoiceID = Yii::app()->request->getParam('invoice_id');
         /* @var InvoiceItems $model */
-        $model = InvoiceItems::model()->find('invoice_id = :inID AND tariff_id = :tID', [':inID' =>$invoiceID, ':tID' => $tariffID]);
+        $model = InvoiceItems::model()->find('invoice_id = :inID AND tariff_id = :tID', [':inID' => $invoiceID, ':tID' => $tariffID]);
 
-        if($model->cost < $model->tariff->cost) {
+        if ($model->cost < $model->tariff->cost) {
             $model->invoice->total_discount -= intval($model->tariff->cost - $model->cost);
             $model->invoice->save(false);
         }
 
-        if($model->delete() && !Yii::app()->request->isAjaxRequest)
+        if ($model->delete() && !Yii::app()->request->isAjaxRequest)
             $this->redirect(array('/requests/manage/invoicing/5'));
+    }
+
+    public function actionPrint($id)
+    {
+        $this->layout = '//layouts/print';
+        $model = $this->loadModel($id);
+        $invoice = $model->getLastInvoice();
+        $this->render('print', compact('model', 'invoice'));
     }
 }

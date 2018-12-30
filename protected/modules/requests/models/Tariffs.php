@@ -87,6 +87,7 @@ class Tariffs extends CActiveRecord
 		$criteria->compare('title',$this->title,true);
 		$criteria->compare('description',$this->description,true);
 		$criteria->compare('cost',$this->cost,true);
+		$criteria->addCondition('id <> 1');
 		$criteria->order = 'id DESC';
 		return new CActiveDataProvider($this, array(
 			'criteria'=>$criteria,
@@ -112,6 +113,6 @@ class Tariffs extends CActiveRecord
 
 	public function getTitleCost()
 	{
-		return $this->title . ' - ' . number_format($this->cost) . ' تومان';
+		return $this->title . ($this->id != 1?' - ' . number_format($this->cost) . ' تومان':'');
 	}
 }

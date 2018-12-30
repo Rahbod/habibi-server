@@ -14,10 +14,10 @@ $this->menu=array(
     <div class="box-header with-border">
         <h3 class="box-title">مدیریت درخواست های جدید</h3>
         <a href="<?= $this->createUrl('create?pending') ?>" class="btn btn-default btn-sm">افزودن درخواست</a>
-        <a href="<?= $this->createUrl('recycleBin?pending') ?>" class="btn btn-warning btn-sm pull-left">
-            <i class="fa fa-trash-o"></i>
-            زباله دان
-        </a>
+<!--        <a href="--><?//= $this->createUrl('recycleBin?pending') ?><!--" class="btn btn-warning btn-sm pull-left">-->
+<!--            <i class="fa fa-trash-o"></i>-->
+<!--            زباله دان-->
+<!--        </a>-->
         <a href="<?= $this->createUrl('admin') ?>" style="margin-left: 5px" class="btn btn-primary btn-sm pull-left">
             <i class="fa fa-list"></i>
             مدیریت همه درخواست ها
@@ -95,8 +95,9 @@ $this->menu=array(
                         'header' => '',
                         'value' => function($data){
                             /** @var $data Requests */
-                            return CHtml::link('انتقال به زباله دان', Yii::app()->createUrl('/requests/manage/delete/'.$data->id.'/?pending'),[
-                                    'class' => 'btn btn-xs btn-danger'
+                            return CHtml::link('حذف درخواست', Yii::app()->createUrl('/requests/manage/delete/'.$data->id.'/?pending'),[
+                                'class' => 'btn btn-xs btn-danger',
+                                'onclick' => 'if(!confirm("آیا از حذف درخواست اطمینان دارید؟")) return false;'
                             ]);
                         },
                         'htmlOptions' => ['class' => 'text-center'],

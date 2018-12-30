@@ -13,7 +13,7 @@ if (isset($_GET['pending']))
     $query = '?pending';
 
 
-$invoice = $model->getLastInvoice();
+$invoice = $model->getLastInvoice(true);
 ?>
 
 <div class="box box-primary">

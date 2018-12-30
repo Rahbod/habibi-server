@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<meta charset="utf-8">
+    <meta charset="utf-8">
+    <title><?= $this->siteName . (!empty($this->pageTitle)?' - ' . $this->pageTitle:'') ?></title>
 	<?php
 	$baseUrl = Yii::app()->theme->baseUrl;
 	$cs = Yii::app()->getClientScript();
@@ -9,19 +10,20 @@
 	?>
 	<link rel="stylesheet" href="<?php echo $baseUrl;?>/css/fontiran.css">
 	<?php
-	$cs->registerCssFile($baseUrl.'/css/bootstrap.min.css');
-	$cs->registerCssFile($baseUrl.'/css/bootstrap-reset.css');
-	$cs->registerCssFile($baseUrl.'/css/bootstrap-select.min.css');
-	$cs->registerCssFile($baseUrl.'/css/bootstrap-responsive.min.css');
-	$cs->registerCssFile($baseUrl.'/css/font-awesome.css');
-	$cs->registerCssFile($baseUrl.'/css/abound.css?2');
-	$cs->registerCssFile($baseUrl.'/css/rtl.css?2');
-	$cs->registerCssFile($baseUrl.'/css/style-blue.css?2');
-	$cs->registerCoreScript('jquery.ui');
-	$cs->registerScriptFile($baseUrl.'/js/bootstrap.min.js');
-	$cs->registerScriptFile($baseUrl.'/js/bootstrap-select.min.js', CClientScript::POS_END);
-	$cs->registerScriptFile($baseUrl.'/js/defaults-fa_IR.min.js', CClientScript::POS_END);
-	$cs->registerScriptFile($baseUrl.'/js/scripts.js?2');
+    $cs->registerCssFile($baseUrl . '/css/bootstrap.min.css');
+    $cs->registerCssFile($baseUrl . '/css/font-awesome.css');
+    $cs->registerCssFile($baseUrl . '/css/AdminLTE.css');
+    $cs->registerCssFile($baseUrl . '/css/skins/skin-blue.min.css');
+    $cs->registerCssFile($baseUrl . '/css/bootstrap-rtl.min.css');
+    $cs->registerCssFile($baseUrl . '/css/bootstrap-select.min.css');
+    $cs->registerCssFile($baseUrl . '/css/rtl.css');
+
+    $cs->registerCoreScript('jquery');
+    $cs->registerCoreScript('jquery.ui');
+    $cs->registerScriptFile($baseUrl . '/js/bootstrap.min.js');
+    $cs->registerScriptFile($baseUrl . '/js/bootstrap-select.min.js');
+    $cs->registerScriptFile($baseUrl . '/js/app.min.js', CClientScript::POS_END);
+    $cs->registerScriptFile($baseUrl . '/js/script.js');
 	?>
 </head>
 

@@ -116,7 +116,7 @@ $itemModel = new InvoiceItems();
                     ],
                     [
                         'header' => 'هزینه اجرت',
-                        'value' => 'number_format($data->tariff->cost) . " تومان"',
+                        'value' => '$data->tariff->id == 1?"--":number_format($data->tariff->cost) . " تومان"',
                     ],
                     [
                         'header' => 'تخفیف',
@@ -165,8 +165,8 @@ $itemModel = new InvoiceItems();
                 </div>
             </div>
 
-            <div class="buttons">
-                <?php echo CHtml::link('مشاهده درخواست', array('/requests/'.$model->id.'#invoice-panel'), array('style' => 'display:inline-block','class' => 'btn btn-primary btn-lg center-block')); ?>
+            <div class="buttons text-center">
+                <?php echo CHtml::link('مشاهده درخواست', array('/requests/'.$model->id.'#invoice-panel'), array('style' => 'display:inline-block;margin:0 auto','class' => 'btn btn-primary btn-lg center-block')); ?>
             </div>
         </div>
     </div>

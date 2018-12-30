@@ -26,10 +26,10 @@ $pending = isset($_GET['pending']);
         <?php else: ?>
             <h3 class="box-title">مدیریت درخواست</h3>
             <a href="<?= $this->createUrl('create') ?>" class="btn btn-default btn-sm">افزودن درخواست</a>
-            <a href="<?= $this->createUrl('recycleBin') ?>" class="btn btn-warning btn-sm pull-left">
-                <i class="fa fa-trash-o"></i>
-                زباله دان
-            </a>
+<!--            <a href="--><?//= $this->createUrl('recycleBin') ?><!--" class="btn btn-warning btn-sm pull-left">-->
+<!--                <i class="fa fa-trash-o"></i>-->
+<!--                زباله دان-->
+<!--            </a>-->
             <a href="<?= $this->createUrl('pending') ?>" style="margin-left: 5px" class="btn btn-success btn-sm pull-left">
                 <i class="fa fa-flash"></i>
                 درخواست های جدید
@@ -128,11 +128,6 @@ $pending = isset($_GET['pending']);
                     ],
                     array(
                         'class'=>'CButtonColumn',
-                        'buttons' =>array(
-                            'delete' => array(
-                                'visible' => '$data->status < Requests::STATUS_PAID'
-                            )
-                        )
                     ),
                 ),
             )); ?>
