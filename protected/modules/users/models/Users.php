@@ -11,6 +11,7 @@
  * @property string $role_id
  * @property string $create_date
  * @property string $status
+ * @property string $avatar
  * @property string $verification_token
  * @property integer $change_password_request_count
  * @property integer $auth_mode
@@ -330,5 +331,11 @@ class Users extends CActiveRecord
             return CHtml::listData(Users::model()->findAll($criteria), 'id', function ($model){
                 return $model->userDetails->showName;
             });
+    }
+
+    protected function afterFind()
+    {
+        parent::afterFind();
+        $this->loadPropertyValues();
     }
 }

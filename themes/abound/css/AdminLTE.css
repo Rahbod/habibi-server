@@ -4727,3 +4727,7 @@ ul.wysihtml5-toolbar > li {
   margin-top: 5px;
   line-height: 15px;
 }
+
+td{
+  vertical-align: middle !important;
+}

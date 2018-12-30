@@ -339,9 +339,10 @@ class RequestsManageController extends Controller
             if ($invoice->getIsNewRecord())
                 $invoice->create_date = time();
 
-            if ($invoice->save())
+            if ($invoice->save()) {
                 Yii::app()->user->setFlash("success", "فاکتور با موفقیت صادر شد.");
-            else
+                $this->refresh();
+            } else
                 Yii::app()->user->setFlash("failed", "متاسفانه در ثبت اطلاعات مشکلی بوجود آمده است.");
         }
 
@@ -350,18 +351,24 @@ class RequestsManageController extends Controller
             if (!InvoiceItems::model()->find('invoice_id = :inID AND tariff_id = :tID', [':inID' => $invoice->id, ':tID' => $_POST['InvoiceItems']['tariff_id']])) {
                 $invoiceItem = new InvoiceItems();
                 $invoiceItem->attributes = $_POST['InvoiceItems'];
-                if (!$invoiceItem->cost) {
-                    $tariff = Tariffs::model()->findByPk($invoiceItem->tariff_id);
+                $tariff = Tariffs::model()->findByPk($invoiceItem->tariff_id);
+                if (!$invoiceItem->cost)
                     $invoiceItem->cost = $tariff->cost;
+                else if($invoiceItem->cost < $tariff->cost)
+                {
+                    $invoice->total_discount += intval($tariff->cost - $invoiceItem->cost);
+                    $invoice->save(false);
                 }
                 $invoiceItem->invoice_id = $invoice->id;
 
-                if ($invoiceItem->save())
-                    Yii::app()->user->setFlash("success", "تعرفه با موفقیت ثبت شد.");
+                if ($invoiceItem->save()) {
+                    Yii::app()->user->setFlash("success", "اجرت با موفقیت ثبت شد.");
+                    $this->refresh();
+                }
                 else
                     Yii::app()->user->setFlash("failed", "متاسفانه در ثبت اطلاعات مشکلی بوجود آمده است.");
             } else
-                Yii::app()->user->setFlash("failed", "این تعرفه قبلا در فاکتور ثبت شده!");
+                Yii::app()->user->setFlash("failed", "این اجرت قبلا در فاکتور ثبت شده!");
         }
 
         // Confirm invoice
@@ -377,6 +384,8 @@ class RequestsManageController extends Controller
                 'id' => $id,
                 'message' => 'فاکتور درخواست شما در آچاره صادر شد.'
             ]);
+            Yii::app()->user->setFlash('invoice-success', 'فاکتور با موفقیت تایید نهایی و برای کاربر ارسال گردید.');
+            $this->redirect(array('/requests/'.$model->id.'#invoice-panel'));
         }
 
         $invoiceItems = new InvoiceItems('search');
@@ -390,10 +399,15 @@ class RequestsManageController extends Controller
     {
         $tariffID = Yii::app()->request->getParam('tariff_id');
         $invoiceID = Yii::app()->request->getParam('invoice_id');
-
         /* @var InvoiceItems $model */
         $model = InvoiceItems::model()->find('invoice_id = :inID AND tariff_id = :tID', [':inID' =>$invoiceID, ':tID' => $tariffID]);
-        if($model->delete())
+
+        if($model->cost < $model->tariff->cost) {
+            $model->invoice->total_discount -= intval($model->tariff->cost - $model->cost);
+            $model->invoice->save(false);
+        }
+
+        if($model->delete() && !Yii::app()->request->isAjaxRequest)
             $this->redirect(array('/requests/manage/invoicing/5'));
     }
 }

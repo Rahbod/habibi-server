@@ -13,8 +13,8 @@ $this->menu=array(
 
 <div class="box box-primary">
     <div class="box-header with-border">
-        <h3 class="box-title">مدیریت تعرفه ها</h3>
-        <a href="<?= $this->createUrl('create') ?>" class="btn btn-default btn-sm">افزودن تعرفه جدید</a>
+        <h3 class="box-title">مدیریت اجرت ها</h3>
+        <a href="<?= $this->createUrl('create') ?>" class="btn btn-default btn-sm">افزودن اجرت جدید</a>
     </div>
     <div class="box-body">
         <?php $this->renderPartial("//partial-views/_flashMessage"); ?>        <div class="table-responsive">

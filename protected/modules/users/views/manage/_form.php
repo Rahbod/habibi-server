@@ -1,7 +1,9 @@
 <?php
 /* @var $this UsersManageController */
 /* @var $model Users */
+/* @var $avatar UploadedFiles */
 /* @var $form CActiveForm */
+
 ?>
 
 <div class="form">
@@ -17,6 +19,43 @@
     <?php
     echo $form->errorSummary($model)
     ?>
+
+    <?php if(!$model->isNewRecord):?>
+        <div class="form-group">
+            <?php echo $form->labelEx($model,'status'); ?>
+            <?php echo $form->dropDownList($model,'status',$model->statusLabels); ?>
+            <?php echo $form->error($model,'status'); ?>
+        </div>
+    <?php endif; ?>
+
+    <div class="form-group">
+        <?php echo $form->labelEx($model,'avatar'); ?>
+        <?php $this->widget('ext.dropZoneUploader.dropZoneUploader', array(
+            'id' => 'uploaderAvatar',
+            'model' => $model,
+            'name' => 'avatar',
+            'maxFiles' => 1,
+            'maxFileSize' => 0.5, //MB
+            'url' => Yii::app()->createUrl('/users/manage/upload'),
+            'deleteUrl' => Yii::app()->createUrl('/users/manage/deleteUpload'),
+            'acceptedFiles' => '.jpg, .jpeg, .png',
+            'serverFiles' => isset($avatar)?$avatar:[],
+            'onSuccess' => '
+				var responseObj = JSON.parse(res);
+				if(responseObj.status){
+					{serverName} = responseObj.fileName;
+					$(".uploader-message").html("");
+				}
+				else{
+					$(".uploader-message").html(responseObj.message);
+                    this.removeFile(file);
+                }
+            ',
+        )); ?>
+        <?php echo $form->error($model,'avatar'); ?>
+        <div class="uploader-message error"></div>
+    </div>
+
 	<div class="form-group">
 		<?php echo $form->labelEx($model,'username'); ?>
 		<?php echo $form->textField($model,'username',array('class'=>"form-control",'size'=>60,'maxlength'=>100)); ?>
@@ -62,7 +101,7 @@
 <!--	</div>-->
 
 	<div class="form-group">
-		<?php echo CHtml::submitButton($model->isNewRecord ? 'Create' : 'Save'); ?>
+        <?php echo CHtml::submitButton($model->isNewRecord ? 'ثبت' : 'ذخیره', array('class' => 'btn btn-success')); ?>
 	</div>
 
 <?php $this->endWidget(); ?>

@@ -54,8 +54,8 @@ $itemModel = new InvoiceItems();
 </div>
 
 <?php if(!$invoice->getIsNewRecord()):?>
-    <div class="panel panel-default">
-        <div class="panel-heading">تعرفه ها</div>
+    <div class="panel panel-warning">
+        <div class="panel-heading">اجرت ها</div>
         <div class="panel-body">
             <?php $form=$this->beginWidget('CActiveForm', array(
                 'id'=>'invoice-items-form',
@@ -115,6 +115,19 @@ $itemModel = new InvoiceItems();
                         'value' => '$data->tariff?$data->tariff->title:"-"',
                     ],
                     [
+                        'header' => 'هزینه اجرت',
+                        'value' => 'number_format($data->tariff->cost) . " تومان"',
+                    ],
+                    [
+                        'header' => 'تخفیف',
+                        'value' => function($data) {
+                            if($data->cost < $data->tariff->cost)
+                                return number_format(intval($data->tariff->cost - $data->cost)) . " تومان";
+                            return '--';
+                        },
+                    ],
+                    [
+                        'header' => 'هزینه نهایی سرویس',
                         'name' => 'cost',
                         'value' => 'number_format($data->cost) . " تومان"',
                     ],
@@ -128,94 +141,33 @@ $itemModel = new InvoiceItems();
         </div>
     </div>
 
-    <div class="panel panel-danger">
-        <div class="panel-heading">تایید نهایی فاکتور</div>
+    <div class="panel panel-primary">
+        <div class="panel-heading">اطلاعات نهایی فاکتور</div>
         <div class="panel-body">
-            <div class="alert alert-danger"><b>توجه:</b> در صورتی که دکمه "تایید نهایی" را بزنید برای کاربر پیامی مبنی بر صادر شدن فاکتور ارسال میگردد.</div>
-            <?php $form=$this->beginWidget('CActiveForm', array(
-                'id'=>'invoice-form',
-            )); ?>
-
-            <div class="text-center">
-                <h3 style="padding: 50px 0 20px;">جمع کل: <?php echo number_format($invoice->totalCost())?> <small>تومان</small></h3>
+            <div class="row">
+                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 col-lg-push-3 col-md-push-3 col-sm-push-3">
+                    <table class="table table-bordered table-striped">
+                        <tbody>
+                        <tr>
+                            <th width="50%" class="text-left">جمع کل</th>
+                            <td width="50%"><?php echo number_format($invoice->totalCost() + $invoice->total_discount)?> <small>تومان</small></td>
+                        </tr>
+                        <tr>
+                            <th width="50%" class="text-left">جمع تخفیفات</th>
+                            <td width="50%"><?php echo number_format($invoice->total_discount)?> <small>تومان</small></td>
+                        </tr>
+                        <tr style="font-size: 24px;font-weight: bold">
+                            <th width="50%" class="text-left">مبلغ نهایی پرداخت</th>
+                            <td width="50%"><?php echo number_format($invoice->totalCost())?> <small>تومان</small></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
             <div class="buttons">
-                <?php echo CHtml::submitButton('تایید نهایی',array('class' => 'btn btn-danger btn-lg center-block', 'name' => 'confirm')); ?>
+                <?php echo CHtml::link('مشاهده درخواست', array('/requests/'.$model->id.'#invoice-panel'), array('style' => 'display:inline-block','class' => 'btn btn-primary btn-lg center-block')); ?>
             </div>
-
-            <?php $this->endWidget(); ?>
         </div>
     </div>
 <?php endif;?>
-
-<div class="modal fade" id="add-category">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title">
-                    افزودن نوع لوازم
-                    <button type="button" data-dismiss="modal" class="close">&times;</button>
-                </h3>
-            </div>
-            <div class="modal-body">
-                <?php $this->renderPartial('requests.views.categories._form',array('popup' => true,'model' => new Categories(), 'logo' => [])) ?>
-            </div>
-        </div>
-    </div>
-</div>
-
-
-<?php
-Yii::app()->clientScript->registerScript('model-load', '
-    $("body").on("change", ".brand-change-trigger, select.user-change-trigger", function(){
-        var el = $(this);
-        fetch(el);
-    }).on("change", "select.user-change-trigger", function(){
-        var el = $(this),
-            val = el.val();
-        if(val === ""){
-            $("#add-address-btn").data("foreign-id", val).attr("disabled", true);
-        }else{
-            $("#add-address-btn").data("foreign-id", val).attr("disabled", false);
-        }
-    }).on("click", "#add-address-btn", function(e){
-        e.preventDefault();
-        var el = $(this),
-            url = el.attr("href");
-        if(el.data("foreign-id") === ""){
-            alert("لطفا یک کاربر انتخاب کنید.");
-        }else{
-            window.location = url+"&user="+el.data("foreign-id");
-        }
-    });
-    
-//    fetch($(".brand-change-trigger"));
-    fetch($("select.user-change-trigger"), $("#Requests_user_address_id").data("id"));
-    
-    function fetch(el, id = false){
-        var url = el.data("fetch-url"),
-            target = el.data("target"),
-            val = el.val();
-        if(val !== ""){
-            url = url + "/" + val; 
-            $.ajax({
-                url: url,
-                type: "GET",
-                dataType: "html",
-                success: function(html){
-                    $(target).html(html);
-                    if(id)
-                        $(target).find("[value=\""+id+"\"]").attr("selected", true);
-                }
-            });
-            
-            $(target).attr("disabled", false);
-            $("#add-address-btn").data("foreign-id", val).attr("disabled", false);
-        }else{  
-            $(target).attr("disabled", true);
-            $("#add-address-btn").data("foreign-id", val).attr("disabled", true);
-        }
-    }
-', CClientScript::POS_READY);
-?>

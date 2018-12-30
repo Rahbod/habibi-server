@@ -12,6 +12,8 @@ $query = '';
 if (isset($_GET['pending']))
     $query = '?pending';
 
+
+$invoice = $model->getLastInvoice();
 ?>
 
 <div class="box box-primary">
@@ -177,3 +179,93 @@ if (isset($_GET['pending']))
         )); ?>
     </div>
 </div>
+
+<?php if($invoice): ?>
+<div class="panel panel-info" id="invoice-panel">
+    <div class="panel-heading">
+        اطلاعات فاکتور
+        <span class="btn btn-sm btn-<?= $invoice->status == Invoices::STATUS_PAID?"success":"warning" ?>"><?= $invoice->status == Invoices::STATUS_PAID?"پرداخت شده":"پرداخت نشده" ?></span>
+        <a href="<?= $this->createUrl("print", array("id" => $model->id)) ?>" class="pull-left btn btn-sm btn-default">
+            <i class="fa fa-print"></i>
+            چاپ فاکتور
+        </a>
+    </div>
+    <div class="panel-body">
+        <?php $this->renderPartial('//partial-views/_flashMessage', array('prefix' => 'invoice-')) ?>
+        <div>
+            <table class="table table-bordered table-striped">
+                <thead>
+                <tr>
+                    <th width="5%">ردیف</th>
+                    <th>نام سرویس</th>
+                    <th width="15%">هزینه سرویس</th>
+                    <th width="15%">تخفیف</th>
+                    <th width="15%">هزینه با تخفیف</th>
+                </tr>
+                </thead>
+                <tbody>
+                <?php foreach ($invoice->items as $key => $item):?>
+                    <tr>
+                        <td><?= $key+1 ?></td>
+                        <td><?= $item->tariff->title ?></td>
+                        <td><?= Controller::parseNumbers(number_format($item->tariff->cost)) ?> <small>تومان</small></td>
+                        <td><?= ($item->cost < $item->tariff->cost)?Controller::parseNumbers(number_format(intval($item->tariff->cost - $item->cost))) . " <small>تومان</small>":'--'; ?></td>
+                        <td><?= Controller::parseNumbers(number_format($item->cost)) ?> <small>تومان</small></td>
+                    </tr>
+                <?php endforeach;?>
+                <tr class="warning">
+                    <td><?= $key+2 ?></td>
+                    <td><b>هزینه اضافی</b><p style="margin: 0"><small><?= $invoice->additional_description ?></small></p></td>
+                    <td><?= Controller::parseNumbers(number_format($invoice->additional_cost)) ?> <small>تومان</small></td>
+                    <td>--</td>
+                    <td><?= Controller::parseNumbers(number_format($invoice->additional_cost)) ?> <small>تومان</small></td>
+                </tr>
+<!--                <tr class="warning text-warning">-->
+<!--                    <td colspan="3" style="background-color: #FFF; border: 0px;">&nbsp;</td>-->
+<!--                    <th class="text-left">هزینه اضافی</th>-->
+<!--                    <td >--><?php //echo number_format($invoice->additional_cost)?><!-- <small>تومان</small></td>-->
+<!--                </tr>-->
+                <tr class="info text-info">
+                    <td colspan="3" style="background-color: #FFF; border: 0px;">&nbsp;</td>
+                    <th class="text-left">مجموع</th>
+                    <td ><?php echo Controller::parseNumbers(number_format($invoice->totalCost() + $invoice->total_discount))?> <small>تومان</small></td>
+                </tr>
+                <tr class="success text-success">
+                    <td colspan="3" style="background-color: #FFF; border: 0px;">&nbsp;</td>
+                    <th class="text-left">جمع تخفیفات</th>
+                    <td ><?php echo Controller::parseNumbers(number_format($invoice->total_discount))?> <small>تومان</small></td>
+                </tr>
+                <tr class="danger text-danger" style="font-size: 20px;font-weight: bold">
+                    <td colspan="3" style="background-color: #FFF; border: 0px;">&nbsp;</td>
+                    <th class="text-left">قیمت کل</th>
+                    <td><?php echo Controller::parseNumbers(number_format($invoice->totalCost()))?> <small>تومان</small></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+<!--        <div class="row">-->
+<!--            <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 col-lg-push-3 col-md-push-3 col-sm-push-3">-->
+<!--                -->
+<!--            </div>-->
+<!--        </div>-->
+
+        <?php
+        if(empty($invoice->final_cost)):
+            $form=$this->beginWidget('CActiveForm', array(
+                'action' => array('/requests/manage/invoicing/'.$model->id),
+                'id'=>'invoice-form',
+            ));
+        ?>
+            <div class="alert alert-danger"><b>توجه:</b> در صورتی که دکمه "تایید نهایی" را بزنید برای کاربر پیامی مبنی بر صادر شدن فاکتور ارسال میگردد.</div>
+            <div class="buttons">
+                <?php echo CHtml::submitButton('تایید نهایی',array('class' => 'btn btn-danger btn-lg center-block', 'name' => 'confirm')); ?>
+            </div>
+
+        <?php
+            $this->endWidget();
+        endif;
+        ?>
+    </div>
+</div>
+<?php endif; ?>

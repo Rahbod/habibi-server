@@ -8,6 +8,8 @@
  * @property string $tariff_id
  * @property string $cost
  *
+ * The followings are the available model relations:
+ * @property Invoices $invoice
  * @property Tariffs $tariff
  */
 class InvoiceItems extends CActiveRecord
@@ -45,6 +47,7 @@ class InvoiceItems extends CActiveRecord
 		// class name for the relations automatically generated below.
 		return array(
 			'tariff' => array(self::BELONGS_TO, 'Tariffs', 'tariff_id'),
+			'invoice' => array(self::BELONGS_TO, 'Invoices', 'invoice_id'),
 		);
 	}
 
@@ -55,7 +58,7 @@ class InvoiceItems extends CActiveRecord
 	{
 		return array(
             'invoice_id' => 'شناسه فاکتور',
-            'tariff_id' => 'تعرفه',
+            'tariff_id' => 'اجرت',
             'cost' => 'هزینه سرویس',
 		);
 	}

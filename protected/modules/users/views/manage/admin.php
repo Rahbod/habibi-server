@@ -66,6 +66,7 @@ elseif($role->role == 'operator') {
                     ),
                     array(
                         'class'=>'CButtonColumn',
+                        'template' => '{update} {delete}',
                         'buttons' => array(
                             'view' => array(
                                 'url' => 'Yii::app()->createUrl("/users/manage/view",array("id" => $data->id))'

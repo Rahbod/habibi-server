@@ -8,7 +8,7 @@ class RequestsTariffsController extends Controller
 	 */
 	public $layout='//layouts/column2';
 
-    public $pageTitle = 'مدیریت تعرفه های خدمات';
+    public $pageTitle = 'مدیریت اجرت های خدمات';
 	/**
 	 * @return array action filters
 	 */

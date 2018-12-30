@@ -9,6 +9,7 @@ class UsersManageController extends Controller
     public $layout = '//layouts/column2';
     public $defaultAction = 'admin';
     public $avatarPath = 'uploads/users/avatar';
+    public $avatarOptions = ['thumbnail' => ['width' => 100, 'height' => 100], 'resize' => ['width' => 250, 'height' => 250]];
 
     /**
      * @return array actions type list
@@ -97,8 +98,13 @@ class UsersManageController extends Controller
             $model->password = $model->generatePassword();
             $model->repeatPassword = $model->generatePassword();
             $model->role_id = isset($_GET['role']) ? $_GET['role'] : 1;
-            if ($model->save())
-                $this->redirect(array('views', 'id' => $model->id));
+            if ($model->avatar)
+                $avatar = new UploadedFiles($this->tempPath, $model->avatar, $this->avatarOptions);
+            if ($model->save()) {
+                if($model->avatar)
+                    $avatar->move($this->avatarPath);
+                $this->redirect(array('admin', 'role' => isset($_GET['role']) && !empty($_GET['role'])?$_GET['role']:1));
+            }
         }
 
         $this->render('create', array(
@@ -116,15 +122,20 @@ class UsersManageController extends Controller
     {
         $model = $this->loadModel($id);
         $model->scenario = 'changeStatus';
+
+        $avatar = new UploadedFiles($this->avatarPath, $model->avatar, $this->avatarOptions);
         if (isset($_POST['Users'])) {
+            $oldAvatar = $model->avatar;
             $model->attributes = $_POST['Users'];
             if ($model->save()) {
+                if ($model->avatar)
+                    $avatar->update($oldAvatar, $model->avatar, $this->tempPath);
                 Yii::app()->user->setFlash('success', '<span class="icon-check"></span>&nbsp;&nbsp;اطلاعات با موفقیت ذخیره شد.');
                 if (isset($_POST['ajax'])) {
                     echo CJSON::encode(['status' => 'ok']);
                     Yii::app()->end();
                 } else
-                    $this->redirect(array('admin'));
+                    $this->redirect(array('admin', 'role' => $model->role_id));
             } else {
                 Yii::app()->user->setFlash('failed', 'در ثبت اطلاعات خطایی رخ داده است! لطفا مجددا تلاش کنید.');
                 if (isset($_POST['ajax'])) {
@@ -136,6 +147,7 @@ class UsersManageController extends Controller
 
         $this->render('update', array(
             'model' => $model,
+            'avatar' => $avatar,
         ));
     }
 
@@ -149,9 +161,6 @@ class UsersManageController extends Controller
     public function actionDelete($id)
     {
         $model = $this->loadModel($id);
-//        if($model->status == 'deleted')
-//            $model->delete();
-//        $model->updateByPk($model->id, array('status' => 'deleted'));
         if ($model->userDetails && $model->userDetails->avatar && is_file($this->avatarPath . $model->userDetails->avatar)) {
             $avatar = new UploadedFiles($this->avatarPath, $model->userDetails->avatar);
             $avatar->removeAll(true);
