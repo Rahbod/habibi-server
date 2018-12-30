@@ -136,7 +136,12 @@ class ApiController extends ApiBaseController
         Yii::import('application.modules.requests.models.*');
         $devices = [];
 
-        foreach (Categories::model()->findAll() as $category)
+        if (isset($this->request['parent']))
+            $models = Categories::model()->findAll('parent_id = :pid', array(':pid' => $this->request['parent']));
+        else
+            $models = Categories::Parents();
+
+        foreach ($models as $category)
             $devices[] = [
                 'id' => intval($category->id),
                 'title' => $category->title,
