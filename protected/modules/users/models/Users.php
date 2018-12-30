@@ -19,6 +19,7 @@
  * @property string $oldPassword
  * @property string $newPassword
  * @property string $state_id
+ * @property string $additional_details
  *
  * The followings are the available model relations:
  * @property UserDetails $userDetails
@@ -63,6 +64,7 @@ class Users extends CActiveRecord
     public $newPassword;
     public $roleId;
     public $type;
+    public $additional_details;
     public $verifyCode;
 
     /**
@@ -77,6 +79,7 @@ class Users extends CActiveRecord
             $this->mobile = isset($values['mobile']) && !empty($values['mobile']) ? $values['mobile'] : null;
             $this->address = isset($values['address']) && !empty($values['address']) ? $values['address'] : null;
             $this->avatar = isset($values['avatar']) && !empty($values['avatar']) ? $values['avatar'] : null;
+            $this->additional_details = isset($values['additional_details']) ? $values['additional_details'] : null;
         } elseif ($this) {
             $this->first_name = $this->userDetails->first_name;
             $this->last_name = $this->userDetails->last_name;
@@ -84,6 +87,7 @@ class Users extends CActiveRecord
             $this->mobile = $this->userDetails->mobile;
             $this->address = $this->userDetails->address;
             $this->avatar = $this->userDetails->avatar;
+            $this->additional_details = $this->userDetails->additional_details;
         }
     }
 
@@ -116,7 +120,7 @@ class Users extends CActiveRecord
             array('mobile', 'length', 'is' => 11, 'message' => 'شماره موبایل اشتباه است'),
             array('address', 'length', 'max' => 1000),
             array('avatar', 'length', 'max' => 255),
-            array('type, first_name, last_name, phone, mobile, address, avatar', 'safe'),
+            array('type, first_name, last_name, phone, mobile, address, avatar, additional_details', 'safe'),
 
             // Register rules
             array('mobile, first_name, last_name, repeatPassword', 'required', 'on' => 'create, create-dealership'),
@@ -140,7 +144,7 @@ class Users extends CActiveRecord
 
     public function activeCaptcha()
     {
-        if(Yii::app()->controller->createAction('captcha')) {
+        if (Yii::app()->controller->createAction('captcha')) {
             $code = Yii::app()->controller->createAction('captcha')->verifyCode;
             if (empty($code))
                 $this->addError('verifyCode', 'کد امنیتی نمی تواند خالی باشد.');
@@ -215,6 +219,7 @@ class Users extends CActiveRecord
             'avatar' => 'تصویر',
             'verifyCode' => 'کد امنیتی',
             'state_id' => 'استان',
+            'additional_details' => 'اطلاعات اضافی',
         );
     }
 
@@ -283,6 +288,7 @@ class Users extends CActiveRecord
             $model->mobile = $this->mobile;
             $model->address = $this->address;
             $model->avatar = $this->avatar;
+            $model->additional_details = $this->additional_details;
             if (!$model->save())
                 $this->addErrors($model->errors);
         } elseif ($this->scenario == 'update') {
@@ -293,6 +299,7 @@ class Users extends CActiveRecord
             $model->mobile = $this->mobile;
             $model->address = $this->address;
             $model->avatar = $this->avatar;
+            $model->additional_details = $this->additional_details;
             if (!@$model->save())
                 $this->addErrors($model->errors);
         }
@@ -325,10 +332,10 @@ class Users extends CActiveRecord
             $criteria->with[] = "role";
             $criteria->compare('role.role', $role);
         }
-        if(!$toList)
+        if (!$toList)
             return Users::model()->findAll($criteria);
         else
-            return CHtml::listData(Users::model()->findAll($criteria), 'id', function ($model){
+            return CHtml::listData(Users::model()->findAll($criteria), 'id', function ($model) {
                 return $model->userDetails->showName;
             });
     }
@@ -337,5 +344,10 @@ class Users extends CActiveRecord
     {
         parent::afterFind();
         $this->loadPropertyValues();
+    }
+
+    public function getAdditionalDetails($name)
+    {
+        return $this->additional_details && isset($this->additional_details[$name]) ? $this->additional_details[$name] : null;
     }
 }

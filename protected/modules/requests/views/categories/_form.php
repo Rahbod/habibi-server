@@ -76,6 +76,12 @@ else $popup = false;
 		<?php echo $form->error($model,'title'); ?>
 	</div>
 
+	<div class="form-group">
+		<?php echo $form->labelEx($model,'parent_id'); ?>
+		<?php echo $form->dropDownList($model,'parent_id', Categories::Parents(true),array('class'=>'form-control', 'prompt' => 'بدون والد')); ?>
+		<?php echo $form->error($model,'parent_id'); ?>
+	</div>
+
 	<div class="buttons">
 		<?php echo CHtml::submitButton($model->isNewRecord ? 'افزودن' : 'ویرایش',array('class' => 'btn btn-success')); ?>
 	</div>

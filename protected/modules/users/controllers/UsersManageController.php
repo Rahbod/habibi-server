@@ -88,7 +88,7 @@ class UsersManageController extends Controller
     public function actionCreate()
     {
         $model = new Users('create');
-
+        $model->role_id = isset($_GET['role']) ? $_GET['role'] : 1;
         // Uncomment the following line if AJAX validation is needed
         // $this->performAjaxValidation($model);
 
@@ -121,7 +121,6 @@ class UsersManageController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->loadModel($id);
-        $model->scenario = 'changeStatus';
 
         $avatar = new UploadedFiles($this->avatarPath, $model->avatar, $this->avatarOptions);
         if (isset($_POST['Users'])) {

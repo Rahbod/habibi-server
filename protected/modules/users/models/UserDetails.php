@@ -13,121 +13,124 @@
  * @property string $avatar
  * @property string $mobile
  * @property string $push_token
+ * @property string $additional_details
  *
  * The followings are the available model relations:
  * @property Users $user
  */
 class UserDetails extends CActiveRecord
 {
-	/**
-	 * @return string the associated database table name
-	 */
-	public function tableName()
-	{
-		return '{{user_details}}';
-	}
+    /**
+     * @return string the associated database table name
+     */
+    public function tableName()
+    {
+        return '{{user_details}}';
+    }
 
-	/**
-	 * @return array validation rules for model attributes.
-	 */
-	public function rules()
-	{
-		// NOTE: you should only define rules for those attributes that
-		// will receive user inputs.
-		return array(
-			array('user_id', 'required'),
-			array('user_id, zip_code', 'length', 'max'=>10),
-			array('first_name, last_name', 'length', 'max'=>50),
-			array('mobile', 'length', 'is'=>11, 'message'=>'شماره موبایل اشتباه است'),
-			array('phone', 'length', 'max'=>11),
-			array('address', 'length', 'max'=>1000),
-			array('avatar', 'length', 'max'=>255),
-			array('push_token', 'safe'),
-			array('phone, mobile', 'numerical', 'integerOnly' => true),
-			// The following rule is used by search().
-			// @todo Please remove those attributes that should not be searched.
-			array('user_id, first_name, last_name, phone, zip_code, address, avatar, mobile, push_token', 'safe', 'on'=>'search'),
-		);
-	}
+    /**
+     * @return array validation rules for model attributes.
+     */
+    public function rules()
+    {
+        // NOTE: you should only define rules for those attributes that
+        // will receive user inputs.
+        return array(
+            array('user_id', 'required'),
+            array('user_id, zip_code', 'length', 'max' => 10),
+            array('first_name, last_name', 'length', 'max' => 50),
+            array('mobile', 'length', 'is' => 11, 'message' => 'شماره موبایل اشتباه است'),
+            array('phone', 'length', 'max' => 11),
+            array('address', 'length', 'max' => 1000),
+            array('avatar', 'length', 'max' => 255),
+            array('push_token, additional_details', 'safe'),
+            array('phone, mobile', 'numerical', 'integerOnly' => true),
+            // The following rule is used by search().
+            // @todo Please remove those attributes that should not be searched.
+            array('user_id, first_name, last_name, phone, zip_code, address, avatar, mobile, push_token', 'safe', 'on' => 'search'),
+        );
+    }
 
-	/**
-	 * @return array relational rules.
-	 */
-	public function relations()
-	{
-		// NOTE: you may need to adjust the relation name and the related
-		// class name for the relations automatically generated below.
-		return array(
-			'user' => array(self::BELONGS_TO, 'Users', 'user_id'),
-		);
-	}
+    /**
+     * @return array relational rules.
+     */
+    public function relations()
+    {
+        // NOTE: you may need to adjust the relation name and the related
+        // class name for the relations automatically generated below.
+        return array(
+            'user' => array(self::BELONGS_TO, 'Users', 'user_id'),
+        );
+    }
 
-	/**
-	 * @return array customized attribute labels (name=>label)
-	 */
-	public function attributeLabels()
-	{
-		return array(
-			'user_id' => 'کاربر',
-			'first_name' => 'نام',
-			'last_name' => 'نام خانوادگی',
-			'phone' => 'تلفن',
-			'zip_code' => 'کد پستی',
-			'address' => 'آدرس',
-			'avatar' => 'آواتار',
-			'mobile' => 'موبایل',
-			'push_token' => 'Push Token',
-		);
-	}
+    /**
+     * @return array customized attribute labels (name=>label)
+     */
+    public function attributeLabels()
+    {
+        return array(
+            'user_id' => 'کاربر',
+            'first_name' => 'نام',
+            'last_name' => 'نام خانوادگی',
+            'phone' => 'تلفن',
+            'zip_code' => 'کد پستی',
+            'address' => 'آدرس',
+            'avatar' => 'آواتار',
+            'mobile' => 'موبایل',
+            'push_token' => 'Push Token',
+            'additional_details' => 'اطلاعات اضافی',
+        );
+    }
 
-	/**
-	 * Retrieves a list of models based on the current search/filter conditions.
-	 *
-	 * Typical usecase:
-	 * - Initialize the model fields with values from filter form.
-	 * - Execute this method to get CActiveDataProvider instance which will filter
-	 * models according to data in model fields.
-	 * - Pass data provider to CGridView, CListView or any similar widget.
-	 *
-	 * @return CActiveDataProvider the data provider that can return the models
-	 * based on the search/filter conditions.
-	 */
-	public function search()
-	{
-		// @todo Please modify the following code to remove attributes that should not be searched.
+    /**
+     * Retrieves a list of models based on the current search/filter conditions.
+     *
+     * Typical usecase:
+     * - Initialize the model fields with values from filter form.
+     * - Execute this method to get CActiveDataProvider instance which will filter
+     * models according to data in model fields.
+     * - Pass data provider to CGridView, CListView or any similar widget.
+     *
+     * @return CActiveDataProvider the data provider that can return the models
+     * based on the search/filter conditions.
+     */
+    public function search()
+    {
+        // @todo Please modify the following code to remove attributes that should not be searched.
 
-		$criteria=new CDbCriteria;
+        $criteria = new CDbCriteria;
 
-		$criteria->compare('user_id',$this->user_id,true);
-		$criteria->compare('first_name',$this->first_name,true);
-		$criteria->compare('last_name',$this->last_name,true);
-		$criteria->compare('phone',$this->phone,true);
-		$criteria->compare('zip_code',$this->zip_code,true);
-		$criteria->compare('address',$this->address,true);
-		$criteria->compare('avatar',$this->avatar,true);
-		$criteria->compare('mobile',$this->mobile,true);
-		$criteria->compare('push_token',$this->push_token,true);
+        $criteria->compare('user_id', $this->user_id, true);
+        $criteria->compare('first_name', $this->first_name, true);
+        $criteria->compare('last_name', $this->last_name, true);
+        $criteria->compare('phone', $this->phone, true);
+        $criteria->compare('zip_code', $this->zip_code, true);
+        $criteria->compare('address', $this->address, true);
+        $criteria->compare('avatar', $this->avatar, true);
+        $criteria->compare('mobile', $this->mobile, true);
+        $criteria->compare('push_token', $this->push_token, true);
 
-		return new CActiveDataProvider($this, array(
-			'criteria'=>$criteria,
-		));
-	}
+        return new CActiveDataProvider($this, array(
+            'criteria' => $criteria,
+        ));
+    }
 
-	/**
-	 * Returns the static model of the specified AR class.
-	 * Please note that you should have this exact method in all your CActiveRecord descendants!
-	 * @param string $className active record class name.
-	 * @return UserDetails the static model class
-	 */
-	public static function model($className=__CLASS__)
-	{
-		return parent::model($className);
-	}
+    /**
+     * Returns the static model of the specified AR class.
+     * Please note that you should have this exact method in all your CActiveRecord descendants!
+     * @param string $className active record class name.
+     * @return UserDetails the static model class
+     */
+    public static function model($className = __CLASS__)
+    {
+        return parent::model($className);
+    }
 
     /**
      * @return array
      */
-    public function getRoleLabels(){
+    public function getRoleLabels()
+    {
         return CHtml::listData(UserRoles::model()->findAll(), 'role', 'name');
     }
 
@@ -137,18 +140,30 @@ class UserDetails extends CActiveRecord
      */
     public function getShowName($phone = true)
     {
-		$postfix = '';
+        $postfix = '';
         if ($this->first_name or $this->last_name)
-            return $phone?"{$this->first_name} {$this->last_name} ({$this->mobile})".$postfix:"{$this->first_name} {$this->last_name}".$postfix;
+            return $phone ? "{$this->first_name} {$this->last_name} ({$this->mobile})" . $postfix : "{$this->first_name} {$this->last_name}" . $postfix;
         else
-            return $this->user->email.$postfix;
+            return $this->user->email . $postfix;
     }
 
-	public function getAvatar()
-	{
-		if($this->avatar)
-            return Yii::app()->baseUrl.'/uploads/users/'.$this->avatar;
+    public function getAvatar()
+    {
+        if ($this->avatar)
+            return Yii::app()->baseUrl . '/uploads/users/' . $this->avatar;
         else
-            return Yii::app()->theme->baseUrl.'/svg/default-user.svg';
-	}
+            return Yii::app()->theme->baseUrl . '/svg/default-user.svg';
+    }
+
+    protected function afterFind()
+    {
+        parent::afterFind();
+        $this->additional_details = $this->additional_details ? CJSON::decode($this->additional_details) : null;
+    }
+
+    protected function beforeSave()
+    {
+        $this->additional_details = $this->additional_details && is_array($this->additional_details) ? CJSON::encode($this->additional_details) : null;
+        return parent::beforeSave();
+    }
 }

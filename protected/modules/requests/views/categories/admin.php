@@ -13,11 +13,12 @@ $this->menu=array(
 
 <div class="box box-primary">
     <div class="box-header with-border">
-        <h3 class="box-title">مدیریت Categories</h3>
-        <a href="<?= $this->createUrl('create') ?>" class="btn btn-default btn-sm">افزودن Categories</a>
+        <h3 class="box-title">مدیریت لوازم</h3>
+        <a href="<?= $this->createUrl('create') ?>" class="btn btn-default btn-sm">افزودن لوازم</a>
     </div>
     <div class="box-body">
-        <?php $this->renderPartial("//partial-views/_flashMessage"); ?>        <div class="table-responsive">
+        <?php $this->renderPartial("//partial-views/_flashMessage"); ?>
+        <div class="table-responsive">
             <?php $this->widget('zii.widgets.grid.CGridView', array(
                 'id'=>'categories-grid',
                 'dataProvider'=>$model->search(),
@@ -44,8 +45,14 @@ $this->menu=array(
                 'pagerCssClass' => 'blank',
                 'columns'=>array(
 		            'title',
+		            [
+                        'name' => 'parent_id',
+                        'value' => '$data->showParent()',
+                        'filter' => Categories::Parents()
+                    ],
                     array(
                         'class'=>'CButtonColumn',
+                        'template' => '{update} {delete}'
                     ),
                 ),
             )); ?>

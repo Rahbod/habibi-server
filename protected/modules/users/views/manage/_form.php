@@ -28,6 +28,7 @@
         </div>
     <?php endif; ?>
 
+    <?php if($model->role_id == 2): ?>
     <div class="form-group">
         <?php echo $form->labelEx($model,'avatar'); ?>
         <?php $this->widget('ext.dropZoneUploader.dropZoneUploader', array(
@@ -55,6 +56,7 @@
         <?php echo $form->error($model,'avatar'); ?>
         <div class="uploader-message error"></div>
     </div>
+    <?php endif; ?>
 
 	<div class="form-group">
 		<?php echo $form->labelEx($model,'username'); ?>
@@ -82,23 +84,23 @@
         <?php echo $form->emailField($model,'email',array('class'=>"form-control ltr text-right"));?>
         <?php echo $form->error($model,'email'); ?>
     </div>
-<!--    <div class="form-group">-->
-<!--        --><?php //echo $form->labelEx($model,'password'); ?>
-<!--        --><?php //echo $form->passwordField($model,'password',array('class'=>"form-control"));?>
-<!--        --><?php //echo $form->error($model,'password'); ?>
-<!--    </div>-->
-<!---->
-<!--    <div class="form-group">-->
-<!--        --><?php //echo $form->labelEx($model,'repeatPassword'); ?>
-<!--        --><?php //echo $form->passwordField($model,'repeatPassword',array('class'=>"form-control"));?>
-<!--        --><?php //echo $form->error($model,'repeatPassword'); ?>
-<!--    </div>-->
-    
-<!--	<div class="form-group">-->
-<!--		--><?php //echo $form->labelEx($model,'roles'); ?>
-<!--		--><?php //echo $form->textField($model,'roles',array('size'=>60,'maxlength'=>100)); ?>
-<!--		--><?php //echo $form->error($model,'roles'); ?>
-<!--	</div>-->
+
+    <?php if($model->role_id == 2): ?>
+        <hr>
+        <h4>اطلاعات کاری</h4>
+        <div class="form-group">
+            <?php echo CHtml::label('تخصص','expertise'); ?>
+            <?php echo CHtml::textField('Users[additional_details][expertise]', $model->getAdditionalDetails('expertise'), array('class' => 'form-control')) ?>
+        </div>
+        <div class="form-group">
+            <?php echo CHtml::label('تجربه','experience'); ?>
+            <?php echo CHtml::textField('Users[additional_details][experience]', $model->getAdditionalDetails('experience'), array('class' => 'form-control')) ?>
+        </div>
+        <div class="form-group">
+            <?php echo CHtml::label('توضیحات','description'); ?>
+            <?php echo CHtml::textField('Users[additional_details][description]', $model->getAdditionalDetails('description'), array('class' => 'form-control')) ?>
+        </div>
+    <?php endif; ?>
 
 	<div class="form-group">
         <?php echo CHtml::submitButton($model->isNewRecord ? 'ثبت' : 'ذخیره', array('class' => 'btn btn-success')); ?>
