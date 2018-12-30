@@ -109,7 +109,12 @@ class Categories extends CActiveRecord
     public static function getList()
     {
         $data = Categories::model()->findAll();
-        return $data ? CHtml::listData($data, 'id', 'title') : [];
+        return $data ? CHtml::listData($data, 'id', function ($data){ return $data->getShowTitle(); }) : [];
+    }
+
+    public function getShowTitle()
+    {
+        return $this->parent_id ? "{$this->parent->title} / {$this->title}" : $this->title;
     }
 
     public function showParent()

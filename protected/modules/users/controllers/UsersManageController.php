@@ -107,9 +107,10 @@ class UsersManageController extends Controller
             }
         }
 
-        $this->render('create', array(
-            'model' => $model,
-        ));
+        if ($model->avatar)
+            $avatar = new UploadedFiles($this->tempPath, $model->avatar, $this->avatarOptions);
+
+        $this->render('create', compact('model', 'avatar'));
     }
 
     /**

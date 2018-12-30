@@ -40,6 +40,6 @@ elseif($role->role == 'operator') {
         <h3 class="box-title">افزودن <?= $role->name ?> جدید</h3>
     </div>
     <div class="box-body">
-        <?php $this->renderPartial('_form', array('model'=>$model)); ?>
+        <?php $this->renderPartial('_form', compact('model', 'avatar')); ?>
     </div>
 </div>
