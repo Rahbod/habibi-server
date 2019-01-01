@@ -22,7 +22,8 @@ return array(
 		'application.modules.setting.models.*',
 		'application.modules.requests.models.*',
 		'application.modules.users.models.*',
-		'application.modules.users.components.*'
+		'application.modules.users.components.*',
+		'application.modules.admins.models.*'
 	),
 
 	'modules'=>array(
