@@ -139,13 +139,14 @@ class ApiController extends ApiBaseController
         if (isset($this->request['parent']))
             $models = Categories::model()->findAll('parent_id = :pid', array(':pid' => $this->request['parent']));
         else
-            $models = Categories::Parents();
+            $models = Categories::Parents(false);
 
         foreach ($models as $category)
             $devices[] = [
                 'id' => intval($category->id),
                 'title' => $category->title,
                 'icon' => Yii::app()->getBaseUrl(true) . '/uploads/categories/' . $category->logo,
+                'hasChild' => $category->childes ? true : false,
             ];
 
         $this->_sendResponse(200, CJSON::encode([
@@ -315,7 +316,7 @@ class ApiController extends ApiBaseController
                 $request->repairman->loadPropertyValues();
                 $temp['repairMan'] = [
                     'name' => $request->repairman->first_name . ' ' . $request->repairman->last_name,
-                    'avatar' => Yii::app()->getBaseUrl(true) . '/uploads/users/avatar/' . $request->repairman->avatar,
+                    'avatar' => $request->repairman->avatar ? Yii::app()->getBaseUrl(true) . '/uploads/users/avatar/' . $request->repairman->avatar : '',
                 ];
             }
 
@@ -328,15 +329,15 @@ class ApiController extends ApiBaseController
                         'cost' => number_format($item->cost) . ' تومان',
                     ];
 
-                if($invoice->additional_cost)
+                /*if($invoice->additional_cost)
                     $tariffs[] = [
                         'title' => 'هزینه اضافی',
                         'cost' => number_format($invoice->additional_cost) . ' تومان',
-                    ];
+                    ];*/
 
                 $temp['invoice'] = [
                     'cost' => number_format($invoice->final_cost) . ' تومان',
-                    'totalDiscount' => number_format($invoice->total_discount) . ' تومان',
+                    'totalDiscount' => $invoice->total_discount ? number_format($invoice->total_discount) . ' تومان' : 0,
                     'additionalCost' => $invoice->additional_cost ? number_format($invoice->additional_cost) . ' تومان' : 0,
                     'description' => $invoice->additional_description,
                     'paymentMethod' => $invoice->payment_method,

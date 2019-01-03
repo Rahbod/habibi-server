@@ -38,7 +38,7 @@ $itemModel = new InvoiceItems();
                         <?php echo $form->error($invoice,'additional_cost'); ?>
                     </div>
                     <div class="col-lg-3 col-md-3 col-sm-4 col-xs-12">
-                        <?php echo $form->labelEx($invoice,'additional_description'); ?>
+                        <?php echo $form->labelEx($invoice,'additional_description'); ?> <small>(مربوط به هزینه اضافی)</small>
                         <?php echo $form->textField($invoice,'additional_description',array('class'=>'form-control')); ?>
                         <?php echo $form->error($invoice,'additional_description'); ?>
                     </div>
