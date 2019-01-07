@@ -40,7 +40,7 @@ class ApiController extends ApiBaseController
             $user->verification_token = $code;
             $user->save();
 
-            Notify::SendSms("کد فعال سازی شما در آچاره:\n" . $code, $mobile);
+            Notify::SendSms("کد فعال سازی شما در آچارچی:\n" . $code, $mobile);
 
             $this->_sendResponse(200, CJSON::encode(['status' => true]), 'application/json');
         } else
