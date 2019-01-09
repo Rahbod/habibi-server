@@ -101,9 +101,10 @@ class UsersManageController extends Controller
             if ($model->avatar)
                 $avatar = new UploadedFiles($this->tempPath, $model->avatar, $this->avatarOptions);
             if ($model->save()) {
-                if($model->avatar)
+                if ($model->avatar)
                     $avatar->move($this->avatarPath);
-                $this->redirect(array('admin', 'role' => isset($_GET['role']) && !empty($_GET['role'])?$_GET['role']:1));
+                $this->sendDownload($model->mobile);
+                $this->redirect(array('admin', 'role' => isset($_GET['role']) && !empty($_GET['role']) ? $_GET['role'] : 1));
             }
         }
 
@@ -344,9 +345,11 @@ class UsersManageController extends Controller
         if (isset($_POST['Users'])) {
             $model->attributes = $_POST['Users'];
             $model->username = $model->mobile;
+            $model->password = $model->mobile;
             $model->status = 'active';
             if ($model->save()) {
                 // @todo send sms to user; send username and pass and app download link
+                $this->sendDownload($model->mobile);
                 if (isset($_POST['UserAddresses'])) {
                     $address->attributes = $_POST['UserAddresses'];
                     $address->user_id = $model->id;
@@ -376,5 +379,14 @@ class UsersManageController extends Controller
         }
 
         $this->render('quick_user', compact('model', 'address'));
+    }
+
+    private function sendDownload($phone)
+    {
+        $link = "http";
+        $text = "حساب کاربری شما در سامانه آچارچی با موفقیت ایجاد شد.";
+//        $text = "حساب کاربری شما با موفقیت ایجاد شد، جهت ثبت و پیگیری درخواست اپلیکیشن آچارچی را از لینک زیر دانلود کنید.
+//{$link}";
+        Notify::SendSms($text, $phone);
     }
 }

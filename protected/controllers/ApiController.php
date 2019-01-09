@@ -35,6 +35,7 @@ class ApiController extends ApiBaseController
                 $user->username = $mobile;
                 $user->password = $mobile;
                 $user->status = Users::STATUS_PENDING;
+                $user->mobile = $mobile;
             }
 
             $user->verification_token = $code;
@@ -313,9 +314,9 @@ class ApiController extends ApiBaseController
             }
 
             if ($request->repairman_id) {
-                $request->repairman->loadPropertyValues();
                 $temp['repairMan'] = [
-                    'name' => $request->repairman->first_name . ' ' . $request->repairman->last_name,
+                    'name' => $request->repairman->userDetails->getShowName(false),
+                    'code' => $request->repairman->id,
                     'avatar' => $request->repairman->avatar ? Yii::app()->getBaseUrl(true) . '/uploads/users/avatar/' . $request->repairman->avatar : '',
                 ];
             }
@@ -328,12 +329,6 @@ class ApiController extends ApiBaseController
                         'title' => $item->tariff->title,
                         'cost' => number_format($item->cost) . ' تومان',
                     ];
-
-                /*if($invoice->additional_cost)
-                    $tariffs[] = [
-                        'title' => 'هزینه اضافی',
-                        'cost' => number_format($invoice->additional_cost) . ' تومان',
-                    ];*/
 
                 $temp['invoice'] = [
                     'cost' => number_format($invoice->final_cost) . ' تومان',
@@ -388,5 +383,21 @@ class ApiController extends ApiBaseController
                 $this->_sendResponse(400, CJSON::encode(['status' => false, 'message' => 'در ثبت اطلاعات خطایی رخ داده است. لطفا مجددا تلاش کنید.']), 'application/json');
         } else
             $this->_sendResponse(400, CJSON::encode(['status' => false, 'message' => 'Name and Phone and Expertise and Experience variables is required.']), 'application/json');
+    }
+
+    public function actionRepairman($id)
+    {
+        $user = Users::model()->findByPk($id);
+        if ($user)
+            $this->_sendResponse(200, CJSON::encode([
+                'code' => $user->id,
+                'name' => $user->userDetails->getShowName(false),
+                'mobile' => $user->mobile,
+                'avatar' => $user->avatar ? Yii::app()->getBaseUrl(true) . '/uploads/users/avatar/' . $user->avatar : '',
+                'expertise' => $user->getAdditionalDetails('expertise'),
+                'experience' => $user->getAdditionalDetails('experience'),
+                'description' => $user->getAdditionalDetails('description')
+            ]), 'application/json');
+        $this->_sendResponse(400, CJSON::encode(['status' => false, 'message' => 'Repairman not found.']), 'application/json');
     }
 }
