@@ -127,4 +127,10 @@ class Categories extends CActiveRecord
         $models = self::model()->findAll('parent_id IS NULL');
         return $array ? CHtml::listData($models, 'id', 'title') : $models;
     }
+
+    protected function beforeSave(){
+        if(!$this->parent_id)
+            $this->parent_id = null;
+        return parent::beforeSave();
+    }
 }

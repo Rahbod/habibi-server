@@ -73,7 +73,7 @@ class RequestsManageController extends Controller
                 PushNotification::sendDataToUser($model->user->userDetails->push_token, [
                     'action' => 'selectRepairMan',
                     'id' => $model->id,
-                    'message' => 'درخواست شما در آچاره تایید شد.'
+                    'message' => 'درخواست شما در آچارچی تایید شد.'
                 ]);
 
                 Yii::app()->user->setFlash('success', '<span class="icon-check"></span>&nbsp;&nbsp;اطلاعات با موفقیت ذخیره شد.');
@@ -381,7 +381,7 @@ class RequestsManageController extends Controller
             PushNotification::sendDataToUser($model->user->userDetails->push_token, [
                 'action' => 'invoicing',
                 'id' => $id,
-                'message' => 'فاکتور درخواست شما در آچاره صادر شد.'
+                'message' => 'فاکتور درخواست شما در آچارچی صادر شد.'
             ]);
             Yii::app()->user->setFlash('invoice-success', 'فاکتور با موفقیت تایید نهایی و برای کاربر ارسال گردید.');
             $this->redirect(array('/requests/' . $model->id . '#invoice-panel'));
