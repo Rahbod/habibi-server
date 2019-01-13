@@ -128,6 +128,10 @@ class Controller extends AuthController
                     'url' => array('/requests/offline/admin')
                 ),
                 array(
+                    'label' => '<i class="fa fa-paperclip text-info"></i><span class="text-info">صدور فاکتور</span>',
+                    'url' => array('/requests/manage/admin')
+                ),
+                array(
                     'label' => '<i class="fa fa-ticket"></i><span>درخواست ها</span> <i class="fa fa-angle-left pull-left"></i>',
                     'url' => '#',
                     'itemOptions' => array('class' => 'treeview', 'tabindex' => "-1"),
