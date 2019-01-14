@@ -25,6 +25,9 @@ class UserTransactions extends CActiveRecord
 	const TRANSACTION_STATUS_PAID = 'paid';
 	const TRANSACTION_STATUS_UNPAID = 'unpaid';
 
+	const GATEWAY_ZARINPAL = 'zarinpal';
+	const GATEWAY_MELLAT = 'mellat';
+
 	public $statusLabels = array(
 		'paid' => 'پرداخت موفق',
 		'unpaid' => 'پرداخت ناموفق',
@@ -37,8 +40,8 @@ class UserTransactions extends CActiveRecord
 	];
 
 	public $gateways = [
-		'mellat' => 'بانک ملت',
-		'zarinpal' => 'زرین پال'
+        self::GATEWAY_MELLAT => 'بانک ملت',
+		self::GATEWAY_ZARINPAL => 'زرین پال'
 	];
 	public $year_altField;
 	public $month_altField;
@@ -218,4 +221,8 @@ class UserTransactions extends CActiveRecord
 		$model = call_user_func(array($this->model_name, 'model'));
 		return $model->findByPk($this->model_id);
 	}
+
+    public function newOrderId()
+    {
+    }
 }

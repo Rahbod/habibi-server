@@ -14,6 +14,9 @@
  * @property string $district
  * @property string $postal_address
  * @property string $postal_code
+ * @property string $map_lat
+ * @property string $map_lng
+ * @property string $map_zoom
  *
  * The followings are the available model relations:
  * @property Users $user
@@ -47,6 +50,8 @@ class UserAddresses extends CActiveRecord
             array('transferee', 'length', 'max' => 255),
             array('emergency_tel', 'length', 'max' => 11),
             array('landline_tel', 'length', 'max' => 15),
+            array('map_lat, map_lng', 'length', 'max'=>30),
+            array('map_zoom', 'length', 'max'=>5),
             array('district', 'length', 'max' => 50),
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
@@ -84,6 +89,9 @@ class UserAddresses extends CActiveRecord
             'district' => 'محله',
             'postal_address' => 'آدرس پستی',
             'postal_code' => 'کد پستی',
+            'map_lat' => 'طول',
+            'map_lng' => 'عرض',
+            'map_zoom' => 'بزرگنمایی',
         );
     }
 

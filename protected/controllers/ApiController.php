@@ -43,9 +43,9 @@ class ApiController extends ApiBaseController
 
             Notify::SendSms("کد فعال سازی شما در آچارچی:\n" . $code, $mobile);
 
-            $this->_sendResponse(200, CJSON::encode(['status' => true]), 'application/json');
+            $this->_sendResponse(200, CJSON::encode(['status' => true]));
         } else
-            $this->_sendResponse(400, CJSON::encode(['status' => false, 'message' => 'Mobile variable is required.']), 'application/json');
+            $this->_sendResponse(400, CJSON::encode(['status' => false, 'message' => 'Mobile variable is required.']));
     }
 
     /**
@@ -62,7 +62,7 @@ class ApiController extends ApiBaseController
                 $this->_sendResponse(404, CJSON::encode([
                     'status' => false,
                     'message' => 'User not found.'
-                ]), 'application/json');
+                ]));
 
             if ($user->verification_token == $code) {
                 // Change user status
@@ -78,19 +78,19 @@ class ApiController extends ApiBaseController
                     $this->_sendResponse(200, CJSON::encode([
                         'status' => true,
                         'authorization_code' => session_id()
-                    ]), 'application/json');
+                    ]));
                 } else
                     $this->_sendResponse(400, CJSON::encode([
                         'status' => false,
                         'message' => $login->getError('authenticate_field')
-                    ]), 'application/json');
+                    ]));
             } else
                 $this->_sendResponse(400, CJSON::encode([
                     'status' => false,
                     'message' => 'کد وارد شده اشتباه است.'
-                ]), 'application/json');
+                ]));
         } else
-            $this->_sendResponse(400, CJSON::encode(['status' => false, 'message' => 'Mobile and Code variables is required.']), 'application/json');
+            $this->_sendResponse(400, CJSON::encode(['status' => false, 'message' => 'Mobile and Code variables is required.']));
     }
 
     /**
@@ -105,11 +105,11 @@ class ApiController extends ApiBaseController
             $userDetails->mobile = $this->user->username;
             $userDetails->push_token = $this->request['token'];
             if ($userDetails->save())
-                $this->_sendResponse(200, CJSON::encode(['status' => true, 'message' => 'اطلاعات با موفقیت ثبت شد.']), 'application/json');
+                $this->_sendResponse(200, CJSON::encode(['status' => true, 'message' => 'اطلاعات با موفقیت ثبت شد.']));
             else
-                $this->_sendResponse(400, CJSON::encode(['status' => false, 'message' => 'در ثبت اطلاعات خطایی رخ داده است. لطفا مجددا تلاش کنید.']), 'application/json');
+                $this->_sendResponse(400, CJSON::encode(['status' => false, 'message' => 'در ثبت اطلاعات خطایی رخ داده است. لطفا مجددا تلاش کنید.']));
         } else
-            $this->_sendResponse(400, CJSON::encode(['status' => false, 'message' => 'Name and Token variables is required.']), 'application/json');
+            $this->_sendResponse(400, CJSON::encode(['status' => false, 'message' => 'Name and Token variables is required.']));
     }
 
     /**
@@ -122,11 +122,11 @@ class ApiController extends ApiBaseController
             $userDetails = UserDetails::model()->findByAttributes(['user_id' => $this->user->id]);
             $userDetails->push_token = $this->request['token'];
             if ($userDetails->save())
-                $this->_sendResponse(200, CJSON::encode(['status' => true]), 'application/json');
+                $this->_sendResponse(200, CJSON::encode(['status' => true]));
             else
-                $this->_sendResponse(400, CJSON::encode(['status' => false]), 'application/json');
+                $this->_sendResponse(400, CJSON::encode(['status' => false]));
         } else
-            $this->_sendResponse(400, CJSON::encode(['status' => false, 'message' => 'Token variable is required.']), 'application/json');
+            $this->_sendResponse(400, CJSON::encode(['status' => false, 'message' => 'Token variable is required.']));
     }
 
     /**
@@ -153,7 +153,7 @@ class ApiController extends ApiBaseController
         $this->_sendResponse(200, CJSON::encode([
             'status' => true,
             'list' => $devices
-        ]), 'application/json');
+        ]));
     }
 
     /**
@@ -173,7 +173,7 @@ class ApiController extends ApiBaseController
         $this->_sendResponse(200, CJSON::encode([
             'status' => true,
             'list' => $addresses
-        ]), 'application/json');
+        ]));
     }
 
     /**
@@ -189,6 +189,10 @@ class ApiController extends ApiBaseController
             $address->place_id = 274;
             $address->emergency_tel = $this->request['telephone'];
             $address->postal_address = $this->request['address'];
+            $address->map_lat = isset($this->request['map_lat'])?$this->request['map_lat']:"";
+            $address->map_lng = isset($this->request['map_lng'])?$this->request['map_lng']:"";
+            $address->map_zoom = isset($this->request['map_zoom'])?$this->request['map_zoom']:15;
+
             if ($address->save())
                 $this->_sendResponse(200, CJSON::encode([
                     'status' => true,
@@ -198,11 +202,11 @@ class ApiController extends ApiBaseController
                         'telephone' => $address->emergency_tel,
                         'address' => $address->postal_address,
                     ]
-                ]), 'application/json');
+                ]));
             else
-                $this->_sendResponse(400, CJSON::encode(['status' => false, 'message' => 'در ثبت اطلاعات خطایی رخ داده است. لطفا مجددا تلاش کنید.']), 'application/json');
+                $this->_sendResponse(400, CJSON::encode(['status' => false, 'message' => 'در ثبت اطلاعات خطایی رخ داده است. لطفا مجددا تلاش کنید.']));
         } else
-            $this->_sendResponse(400, CJSON::encode(['status' => false, 'message' => 'Telephone and Address variables is required.']), 'application/json');
+            $this->_sendResponse(400, CJSON::encode(['status' => false, 'message' => 'Telephone and Address variables is required.']));
     }
 
     /**
@@ -236,13 +240,13 @@ class ApiController extends ApiBaseController
                 $this->_sendResponse(200, CJSON::encode([
                     'status' => true,
                     'message' => 'اطلاعات با موفقیت ثبت شد.',
-                ]), 'application/json');
+                ]));
             else
-                $this->_sendResponse(400, CJSON::encode(['status' => false, 'message' => 'در ثبت اطلاعات خطایی رخ داده است. لطفا مجددا تلاش کنید.']), 'application/json');
+                $this->_sendResponse(400, CJSON::encode(['status' => false, 'message' => 'در ثبت اطلاعات خطایی رخ داده است. لطفا مجددا تلاش کنید.']));
         } else
             $this->_sendResponse(400, CJSON::encode([
                 'status' => false,
-                'message' => 'Device ID, Address ID, Description, Date and Time variables is required.']), 'application/json');
+                'message' => 'Device ID, Address ID, Description, Date and Time variables is required.']));
     }
 
     /**
@@ -268,7 +272,7 @@ class ApiController extends ApiBaseController
         $this->_sendResponse(200, CJSON::encode([
             'status' => true,
             'list' => $requests,
-        ]), 'application/json');
+        ]));
     }
 
     /**
@@ -284,7 +288,7 @@ class ApiController extends ApiBaseController
                 $this->_sendResponse(404, CJSON::encode([
                     'status' => false,
                     'message' => 'Request not found.'
-                ]), 'application/json');
+                ]));
 
             $temp = [
                 'id' => intval($request->id),
@@ -349,9 +353,9 @@ class ApiController extends ApiBaseController
                 ];
             }
 
-            $this->_sendResponse(200, CJSON::encode($temp), 'application/json');
+            $this->_sendResponse(200, CJSON::encode($temp));
         } else
-            $this->_sendResponse(400, CJSON::encode(['status' => false, 'message' => 'ID variable is required.']), 'application/json');
+            $this->_sendResponse(400, CJSON::encode(['status' => false, 'message' => 'ID variable is required.']));
     }
 
     public function actionTransactions()
@@ -372,7 +376,7 @@ class ApiController extends ApiBaseController
         $this->_sendResponse(200, CJSON::encode([
             'status' => true,
             'list' => $transactions,
-        ]), 'application/json');
+        ]));
     }
 
     public function actionCooperation()
@@ -386,11 +390,11 @@ class ApiController extends ApiBaseController
             $model->status = CooperationRequests::STATUS_PENDING;
 
             if ($model->save())
-                $this->_sendResponse(200, CJSON::encode(['status' => true, 'message' => 'درخواست شما با موفقیت ثبت شد. این درخواست به زودی توسط کارشناسان ما رسیدگی خواهد شد.']), 'application/json');
+                $this->_sendResponse(200, CJSON::encode(['status' => true, 'message' => 'درخواست شما با موفقیت ثبت شد. این درخواست به زودی توسط کارشناسان ما رسیدگی خواهد شد.']));
             else
-                $this->_sendResponse(400, CJSON::encode(['status' => false, 'message' => 'در ثبت اطلاعات خطایی رخ داده است. لطفا مجددا تلاش کنید.']), 'application/json');
+                $this->_sendResponse(400, CJSON::encode(['status' => false, 'message' => 'در ثبت اطلاعات خطایی رخ داده است. لطفا مجددا تلاش کنید.']));
         } else
-            $this->_sendResponse(400, CJSON::encode(['status' => false, 'message' => 'Name and Phone and Expertise and Experience variables is required.']), 'application/json');
+            $this->_sendResponse(400, CJSON::encode(['status' => false, 'message' => 'Name and Phone and Expertise and Experience variables is required.']));
     }
 
     public function actionRepairman($id)
@@ -405,8 +409,8 @@ class ApiController extends ApiBaseController
                 'expertise' => $user->getAdditionalDetails('expertise'),
                 'experience' => $user->getAdditionalDetails('experience'),
                 'description' => $user->getAdditionalDetails('description')
-            ]), 'application/json');
-        $this->_sendResponse(400, CJSON::encode(['status' => false, 'message' => 'Repairman not found.']), 'application/json');
+            ]));
+        $this->_sendResponse(400, CJSON::encode(['status' => false, 'message' => 'Repairman not found.']));
     }
 
     public function actionRate()
@@ -426,48 +430,57 @@ class ApiController extends ApiBaseController
                 $this->_sendResponse(200, CJSON::encode([
                     'status' => true,
                     'message' => 'نظر شما با موفقیت ثبت شد.',
-                ]), 'application/json');
+                ]));
             else
                 $this->_sendResponse(200, CJSON::encode([
                     'status' => false,
                     'message' => 'ثبت نظر با مشکل مواجه شد، لطفا بعدا تلاش فرمایید.',
-                ]), 'application/json');
+                ]));
         }
         $this->_sendResponse(200, CJSON::encode([
             'status' => true
-        ]), 'application/json');
+        ]));
     }
 
     // Payment
-    public function actionActivate()
+    public function actionPayment()
     {
         if (isset($this->request['id'])) {
-            /* @var $model User */
-            $model = User::model()->find('device_id = :id', [':id' => $this->request['id']]);
-            if(!$model)
-                $model = User::model()->find('imei = :imei', [':imei' => $this->request['imei']]);
-
+            /* @var $model Requests */
+            $model = Requests::model()->findByPk($this->request['id']);
             if ($model) {
                 $transaction = new UserTransactions();
-                $transaction->user_id = $model->id;
-                $transaction->amount = 10000;
-                $transaction->description = "فعال سازی فارماسینا";
+                $transaction->user_id = $model->user_id;
+                $transaction->amount = $model->getLastInvoice()->totalCost();
+                $transaction->description = "پرداخت فاکتور آچارچی";
                 $transaction->date = time();
-                $transaction->newOrderId();
-                $transaction->gateway = UserTransactions::GATEWAY_MELLAT;
-                $transaction->save();
+                $transaction->gateway_name = UserTransactions::GATEWAY_ZARINPAL;
+                $transaction->model_name = Requests::class;
+                $transaction->model_id = $model->id;
+                if($transaction->save()) {
+                    $CallbackURL = Yii::app()->getBaseUrl(true) . '/verifyPlan/' . $id;
+                    $result = Yii::app()->zarinpal->PayRequest(
+                        doubleval($transaction->amount),
+                        $transaction->description,
+                        $CallbackURL
+                    );
+                    $transaction->authority = Yii::app()->zarinpal->getAuthority();
+                    $transaction->save(false);
+                    if ($result->getStatus() == 100)
+                        $this->redirect(Yii::app()->zarinpal->getRedirectUrl());
+                    else
+                        Yii::app()->user->setFlash('failed', Yii::app()->zarinpal->getError());
+                }
 
                 $this->_sendResponse(200, CJSON::encode([
                     'status' => true,
                     'id' => intval($transaction->id),
                     'url' => $this->createAbsoluteUrl('bill', ['id' => $transaction->id]),
-                ]), 'application/json');
-            } else {
-                Log::create(111, "DeviceID = " . $this->request['id'] . " - IMEI = " . $this->request['imei']);
-                $this->_sendResponse(200, CJSON::encode(['status' => false, 'message' => 'اپلیکیشن شما نامعتبر است!']), 'application/json');
-            }
+                ]));
+            } else
+                $this->_sendResponse(200, CJSON::encode(['status' => false, 'message' => 'درخواست وجود ندارد.']));
         } else
-            $this->_sendResponse(200, CJSON::encode(['status' => false, 'message' => 'ID variable is required.']), 'application/json');
+            $this->_sendResponse(200, CJSON::encode(['status' => false, 'message' => 'ID variable is required.']));
     }
 
     public function actionBill($id)
@@ -476,7 +489,7 @@ class ApiController extends ApiBaseController
         /* @var $transaction UserTransactions */
         $transaction = UserTransactions::model()->findByPk($id);
         if ($transaction and $transaction->status == 'unpaid') {
-            $Amount = doubleval($transaction->amount) * 10; //Amount will be based on Toman  - Required
+            $Amount = doubleval($transaction->amount);
             if($transaction->user_id == 150)
                 $Amount = 100 * 10; //Amount will be based on Toman  - Required
             $CallbackURL = Yii::app()->getBaseUrl(true) . '/api/verifyTransaction';  // Required
@@ -547,16 +560,16 @@ class ApiController extends ApiBaseController
                     $output['userID'] = $transaction->user_id;
                 }
 
-                $this->_sendResponse(200, CJSON::encode($output), 'application/json');
+                $this->_sendResponse(200, CJSON::encode($output));
             } else
                 $this->_sendResponse(200, CJSON::encode([
                     'status' => false,
                     'message' => 'تراکنش یافت نشد!'
-                ]), 'application/json');
+                ]));
         } else
             $this->_sendResponse(200, CJSON::encode([
                 'status' => false,
                 'message' => 'ID variable is required.'
-            ]), 'application/json');
+            ]));
     }
 }

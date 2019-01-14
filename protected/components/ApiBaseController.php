@@ -13,7 +13,7 @@ class ApiBaseController extends CController
     private $_client_id = '78750f0bea1bd9acd7ff1b07bc21c066';
     private $_client_secret = 'a74b4aa72bdfc21ec893fa86edd13384';
 
-    protected function _sendResponse($status = 200, $body = '', $content_type = 'text/html')
+    protected function _sendResponse($status = 200, $body = '', $content_type = 'application/json')
     {
         // set the status
         $status_header = 'HTTP/1.1 ' . $status . ' ' . $this->_getStatusCodeMessage($status);
