@@ -400,4 +400,126 @@ class ApiController extends ApiBaseController
             ]), 'application/json');
         $this->_sendResponse(400, CJSON::encode(['status' => false, 'message' => 'Repairman not found.']), 'application/json');
     }
+
+    // Payment
+    public function actionActivate()
+    {
+        if (isset($this->request['id'])) {
+            /* @var $model User */
+            $model = User::model()->find('device_id = :id', [':id' => $this->request['id']]);
+            if(!$model)
+                $model = User::model()->find('imei = :imei', [':imei' => $this->request['imei']]);
+
+            if ($model) {
+                $transaction = new UserTransactions();
+                $transaction->user_id = $model->id;
+                $transaction->amount = 10000;
+                $transaction->description = "فعال سازی فارماسینا";
+                $transaction->date = time();
+                $transaction->newOrderId();
+                $transaction->gateway = UserTransactions::GATEWAY_MELLAT;
+                $transaction->save();
+
+                $this->_sendResponse(200, CJSON::encode([
+                    'status' => true,
+                    'id' => intval($transaction->id),
+                    'url' => $this->createAbsoluteUrl('bill', ['id' => $transaction->id]),
+                ]), 'application/json');
+            } else {
+                Log::create(111, "DeviceID = " . $this->request['id'] . " - IMEI = " . $this->request['imei']);
+                $this->_sendResponse(200, CJSON::encode(['status' => false, 'message' => 'اپلیکیشن شما نامعتبر است!']), 'application/json');
+            }
+        } else
+            $this->_sendResponse(200, CJSON::encode(['status' => false, 'message' => 'ID variable is required.']), 'application/json');
+    }
+
+    public function actionBill($id)
+    {
+        $this->layout = 'payment';
+        /* @var $transaction UserTransactions */
+        $transaction = UserTransactions::model()->findByPk($id);
+        if ($transaction and $transaction->status == 'unpaid') {
+            $Amount = doubleval($transaction->amount) * 10; //Amount will be based on Toman  - Required
+            if($transaction->user_id == 150)
+                $Amount = 100 * 10; //Amount will be based on Toman  - Required
+            $CallbackURL = Yii::app()->getBaseUrl(true) . '/api/verifyTransaction';  // Required
+            if ($transaction->gateway == UserTransactions::GATEWAY_MELLAT) {
+                $result = Yii::app()->MellatPayment->PayRequest($Amount, $transaction->id, $CallbackURL);
+                if (!$result['error']) {
+                    $transaction->ref_id = $result['responseCode'];
+                    $transaction->update();
+                    $this->render('ext.mellatPayment.views._redirect', array('ReferenceId' => $result['responseCode']));
+                } else {
+                    echo '<meta charset="utf-8">';
+                    echo 'ERR: ' . Yii::app()->MellatPayment->getResponseText($result['responseCode']);
+                }
+            }
+        }
+    }
+
+    public function actionVerifyTransaction()
+    {
+        $this->layout = 'payment';
+        $result = NULL;
+        if (isset($_POST['RefId'])) {
+            $orderId = $_POST['RefId'];
+            /* @var $model UserTransactions */
+            $model = UserTransactions::model()->findByAttributes(array('ref_id' => $orderId));
+            if ($_POST['ResCode'] == 0) {
+                $result = Yii::app()->MellatPayment->VerifyRequest($model->id, $_POST['SaleOrderId'], $_POST['SaleReferenceId']);
+            }
+            if ($result != NULL) {
+                $RecourceCode = (!is_array($result) ? $result : $result['responseCode']);
+                if ($RecourceCode == 0) {
+                    $model->status = 'paid';
+                    // Settle Payment
+                    $settle = Yii::app()->MellatPayment->SettleRequest($model->order_id, $_POST['SaleOrderId'], $_POST['SaleReferenceId']);
+                    if ($settle) {
+                        $model->settle = 1;
+
+                        $user = $user = User::model()->findByPk($model->user_id);
+                        $user->activated = 1;
+                        $user->update();
+                    }
+                }
+            } else {
+                $RecourceCode = $_POST['ResCode'];
+            }
+            $model->res_code = $RecourceCode;
+            $model->sale_reference_id = $_POST['SaleReferenceId'];
+            $model->update();
+        } else
+            throw new CHttpException(404, 'تراکنش پرداختی شما یافت نشد، در صورتی که مبلغی از حساب شما کسر شده طی 72 ساعت آینده به حساب شما برگردانده خواهد شد.');
+    }
+
+    public function actionCheckTransaction()
+    {
+        if (isset($this->request['id'])) {
+            $transaction = UserTransactions::model()->findByPk($this->request['id']);
+
+            if ($transaction) {
+                $output = [
+                    'status' => ($transaction->res_code == 0),
+                    'message' => Yii::t('rezvan', $transaction->res_code)
+                ];
+
+                if ($transaction->res_code == 0) {
+                    $output['amount'] = intval($transaction->amount);
+                    $output['orderID'] = intval($transaction->order_id);
+                    $output['code'] = $transaction->sale_reference_id;
+                    $output['userID'] = $transaction->user_id;
+                }
+
+                $this->_sendResponse(200, CJSON::encode($output), 'application/json');
+            } else
+                $this->_sendResponse(200, CJSON::encode([
+                    'status' => false,
+                    'message' => 'تراکنش یافت نشد!'
+                ]), 'application/json');
+        } else
+            $this->_sendResponse(200, CJSON::encode([
+                'status' => false,
+                'message' => 'ID variable is required.'
+            ]), 'application/json');
+    }
 }
