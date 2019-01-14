@@ -204,7 +204,7 @@ $invoice = $model->getLastInvoice(true);
                 </tr>
                 </thead>
                 <tbody>
-                <?php foreach ($invoice->items as $key => $item):?>
+                <?php $key = 0; foreach ($invoice->items as $key => $item):?>
                     <tr>
                         <td><?= $key+1 ?></td>
                         <td><?= $item->tariff->title ?></td>
