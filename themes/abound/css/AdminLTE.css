@@ -4731,3 +4731,9 @@ ul.wysihtml5-toolbar > li {
 td{
   vertical-align: middle !important;
 }
+
+.sortable-handle {
+  text-indent: -9999px;
+  background: url("../svg/move.svg") no-repeat scroll center transparent;
+  background-size: 16px;
+}

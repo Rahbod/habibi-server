@@ -80,7 +80,7 @@ class UserAddresses extends CActiveRecord
     {
         return array(
             'id' => 'ID',
-            'user_id' => 'کاربر',
+            'user_id' => 'مشتری',
             'transferee' => 'نام کامل میزبان',
             'emergency_tel' => 'شماره تماس اضطراری',
             'landline_tel' => 'تلفن ثابت',

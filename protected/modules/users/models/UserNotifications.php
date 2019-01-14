@@ -61,7 +61,7 @@ class UserNotifications extends CActiveRecord
 	{
 		return array(
 			'id' => 'شناسه',
-			'user_id' => 'کاربر',
+			'user_id' => 'مشتری',
 			'message' => 'متن پیام',
 			'seen' => 'مشاهده شده',
 			'date' => 'زمان',

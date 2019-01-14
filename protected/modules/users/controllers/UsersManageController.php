@@ -289,7 +289,7 @@ class UsersManageController extends Controller
     public function actionFetchAddresses($id)
     {
         $output = "<option value=''>آدرس موردنظر را انتخاب کنید...</option>";
-        $empty = "<option value=''>برای این کاربر آدرسی ثبت نشده است...</option>";
+        $empty = "<option value=''>برای این مشتری آدرسی ثبت نشده است...</option>";
         if ($addresses = UserAddresses::getList($id))
             foreach ($addresses as $address)
                 $output .= "<option value='{$address->id}'>
@@ -307,7 +307,7 @@ class UsersManageController extends Controller
         if (isset($_POST['UserAddresses'])) {
             $model->attributes = $_POST['UserAddresses'];
             if ($model->save()) {
-                Yii::app()->user->setFlash('success', 'آدرس برای کاربر با موفقیت ثبت شد.');
+                Yii::app()->user->setFlash('success', 'آدرس برای مشتری با موفقیت ثبت شد.');
 
                 $return = $_GET['return'];
                 if (strpos($return, '?', 0) !== false) {
@@ -376,14 +376,14 @@ class UsersManageController extends Controller
                     $address->attributes = $_POST['UserAddresses'];
                     $address->user_id = $model->id;
                     if ($address->save()) {
-                        Yii::app()->user->setFlash('success', 'کاربر با موفقیت ثبت شد.');
+                        Yii::app()->user->setFlash('success', 'مشتری با موفقیت ثبت شد.');
 
                         $params['address_id'] = $address->id;
                         $return = $uri . "?" . http_build_query($params);
 
                         $this->redirect(array($return));
                     } else
-                        Yii::app()->user->setFlash('failed', 'کاربر با موفقیت ثبت شد. در ثبت آدرس خطایی رخ داده است! لطفا مجددا تلاش کنید.');
+                        Yii::app()->user->setFlash('failed', 'مشتری با موفقیت ثبت شد. در ثبت آدرس خطایی رخ داده است! لطفا مجددا تلاش کنید.');
                 }
             } else
                 Yii::app()->user->setFlash('failed', 'در ثبت اطلاعات خطایی رخ داده است! لطفا مجددا تلاش کنید.');

@@ -389,7 +389,7 @@ class RequestsManageController extends Controller
                 'id' => $id,
                 'message' => 'فاکتور درخواست شما در آچارچی صادر شد.'
             ]);
-            Yii::app()->user->setFlash('invoice-success', 'فاکتور با موفقیت تایید نهایی و برای کاربر ارسال گردید.');
+            Yii::app()->user->setFlash('invoice-success', 'فاکتور با موفقیت تایید نهایی و برای مشتری ارسال گردید.');
             $this->redirect(array('/requests/' . $model->id . '#invoice-panel'));
         }
 

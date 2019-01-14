@@ -207,7 +207,7 @@ class Users extends CActiveRecord
             'oldPassword' => 'کلمه عبور فعلی',
             'newPassword' => 'کلمه عبور جدید',
             'create_date' => 'تاریخ ثبت نام',
-            'status' => 'وضعیت کاربر',
+            'status' => 'وضعیت مشتری',
             'verification_token' => 'Verification Token',
             'change_password_request_count' => 'تعداد درخواست تغییر کلمه عبور',
             'type' => 'نوع کاربری',

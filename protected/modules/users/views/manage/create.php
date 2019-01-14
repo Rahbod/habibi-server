@@ -5,12 +5,12 @@
 $role = UserRoles::model()->findByPk(isset($_GET['role'])?$_GET['role']:1);
 if($role->role == 'user') {
     $this->breadcrumbs = array(
-        'کاربران' => array("admin?role=$role->id"),
-        'افزودن کاربر جدید',
+        'مشتریان' => array("admin?role=$role->id"),
+        'افزودن مشتری جدید',
     );
     $labels = [
-        'کاربران',
-        'کاربر'
+        'مشتریان',
+        'مشتری'
     ];
 }
 elseif($role->role == 'repairman') {

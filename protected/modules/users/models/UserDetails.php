@@ -69,7 +69,7 @@ class UserDetails extends CActiveRecord
     public function attributeLabels()
     {
         return array(
-            'user_id' => 'کاربر',
+            'user_id' => 'مشتری',
             'first_name' => 'نام',
             'last_name' => 'نام خانوادگی',
             'phone' => 'تلفن',

@@ -3,13 +3,13 @@
 /* @var $model Sessions */
 
 $this->breadcrumbs=array(
-    'کاربران'=>array('index'),
+    'مشتریان'=>array('index'),
     'دستگاه های متصل',
 );
 
 $this->menu = array(
-    array('label' => 'مدیرت کاربران', 'url' => array($model->user->role_id == 2?'adminPublishers':'admin')),
-    array('label' => 'نمایش اطلاعات کاربر', 'url' => array("view", 'id' => $model->user->id)),
+    array('label' => 'مدیرت مشتریان', 'url' => array($model->user->role_id == 2?'adminPublishers':'admin')),
+    array('label' => 'نمایش اطلاعات مشتری', 'url' => array("view", 'id' => $model->user->id)),
 );
 ?>
 

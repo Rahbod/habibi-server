@@ -5,13 +5,13 @@
 
 $this->breadcrumbs=array(
     'پیشخوان'=> array('/admins'),
-    'کاربران'=> array('/admins/manage'),
-    'نقش کاربران'=>array('admin'),
+    'مشتریان'=> array('/admins/manage'),
+    'نقش مشتریان'=>array('admin'),
     'ویرایش',
 );
 
 $this->menu=array(
-    array('label'=>'مدیریت نقش کاربران', 'url'=>array('admin')),
+    array('label'=>'مدیریت نقش مشتریان', 'url'=>array('admin')),
     array('label'=>'افزودن نقش', 'url'=>array('create')),
 );
 ?>

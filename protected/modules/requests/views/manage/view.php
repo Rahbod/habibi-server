@@ -257,7 +257,7 @@ $invoice = $model->getLastInvoice(true);
                 'id'=>'invoice-form',
             ));
         ?>
-            <div class="alert alert-danger"><b>توجه:</b> در صورتی که دکمه "تایید نهایی" را بزنید برای کاربر پیامی مبنی بر صادر شدن فاکتور ارسال میگردد.</div>
+            <div class="alert alert-danger"><b>توجه:</b> در صورتی که دکمه "تایید نهایی" را بزنید برای مشتری پیامی مبنی بر صادر شدن فاکتور ارسال میگردد.</div>
             <div class="buttons">
                 <?php echo CHtml::submitButton('تایید نهایی',array('class' => 'btn btn-danger btn-lg center-block', 'name' => 'confirm')); ?>
             </div>

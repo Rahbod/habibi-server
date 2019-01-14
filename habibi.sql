@@ -902,13 +902,13 @@ CREATE TABLE `ym_requests` (
   `category_id` int(10) unsigned DEFAULT NULL COMMENT 'خدمات',
   `brand_id` int(10) unsigned DEFAULT NULL COMMENT 'برند دستگاه',
   `model_id` int(10) unsigned DEFAULT NULL COMMENT 'مدل دستگاه',
-  `user_id` int(10) unsigned DEFAULT NULL COMMENT 'کاربر',
+  `user_id` int(10) unsigned DEFAULT NULL COMMENT 'مشتری',
   `user_address_id` int(10) unsigned DEFAULT NULL,
   `operator_id` int(10) unsigned DEFAULT NULL COMMENT 'اپراتور',
   `repairman_id` int(10) unsigned DEFAULT NULL COMMENT 'تعمیرکار',
   `create_date` int(12) unsigned NOT NULL COMMENT 'تاریخ ثبت',
   `modified_date` int(12) unsigned NOT NULL COMMENT 'تاریخ تغییرات',
-  `description` text COMMENT 'توضیحات کاربر',
+  `description` text COMMENT 'توضیحات مشتری',
   `requested_date` int(12) DEFAULT NULL COMMENT 'تاریخ حضور درخواستی',
   `requested_time` varchar(255) DEFAULT NULL COMMENT 'زمان حضور درخواستی',
   `service_date` int(12) unsigned DEFAULT NULL COMMENT 'تاریخ سرویس',
@@ -947,8 +947,8 @@ CREATE TABLE `ym_sessions` (
   `id` char(32) NOT NULL,
   `expire` int(11) DEFAULT NULL COMMENT 'تاریخ انقضا',
   `data` longblob COMMENT 'اطلاعات',
-  `user_id` int(10) unsigned DEFAULT NULL COMMENT 'شناسه کاربر',
-  `user_type` varchar(20) DEFAULT NULL COMMENT 'نوع کاربر',
+  `user_id` int(10) unsigned DEFAULT NULL COMMENT 'شناسه مشتری',
+  `user_type` varchar(20) DEFAULT NULL COMMENT 'نوع مشتری',
   `device_platform` varchar(20) DEFAULT NULL COMMENT 'پلتفرم دستگاه',
   `device_ip` varchar(15) DEFAULT NULL COMMENT 'آی پی دستگاه',
   `device_type` varchar(255) DEFAULT NULL COMMENT 'نوع دستگاه',
@@ -2611,7 +2611,7 @@ INSERT INTO `ym_user_addresses` VALUES ('29', '31', '', '0', '', '19', '274', nu
 -- ----------------------------
 DROP TABLE IF EXISTS `ym_user_details`;
 CREATE TABLE `ym_user_details` (
-  `user_id` int(10) unsigned NOT NULL COMMENT 'کاربر',
+  `user_id` int(10) unsigned NOT NULL COMMENT 'مشتری',
   `first_name` varchar(50) COLLATE utf8_persian_ci DEFAULT NULL COMMENT 'نام',
   `last_name` varchar(50) COLLATE utf8_persian_ci DEFAULT NULL COMMENT 'نام خانوادگی',
   `phone` varchar(11) COLLATE utf8_persian_ci DEFAULT NULL COMMENT 'تلفن',
@@ -2647,7 +2647,7 @@ INSERT INTO `ym_user_details` VALUES ('33', 'یوسف', 'مبشری', null, null
 DROP TABLE IF EXISTS `ym_user_notifications`;
 CREATE TABLE `ym_user_notifications` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'شناسه',
-  `user_id` int(10) unsigned DEFAULT NULL COMMENT 'کاربر',
+  `user_id` int(10) unsigned DEFAULT NULL COMMENT 'مشتری',
   `message` varchar(500) CHARACTER SET utf8 COLLATE utf8_persian_ci DEFAULT NULL COMMENT 'متن پیام',
   `seen` tinyint(4) NOT NULL COMMENT 'مشاهده شده',
   `date` varchar(30) NOT NULL COMMENT 'زمان',

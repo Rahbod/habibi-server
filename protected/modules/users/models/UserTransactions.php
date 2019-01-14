@@ -101,7 +101,7 @@ class UserTransactions extends CActiveRecord
 	{
 		return array(
 			'id' => 'شناسه',
-			'user_id' => 'کاربر',
+			'user_id' => 'مشتری',
 			'amount' => 'مقدار',
 			'date' => 'تاریخ',
 			'status' => 'وضعیت',
@@ -221,8 +221,4 @@ class UserTransactions extends CActiveRecord
 		$model = call_user_func(array($this->model_name, 'model'));
 		return $model->findByPk($this->model_id);
 	}
-
-    public function newOrderId()
-    {
-    }
 }

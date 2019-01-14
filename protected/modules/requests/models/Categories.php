@@ -8,12 +8,13 @@
  * @property string $title
  * @property string $logo
  * @property string $parent_id
+ * @property string $order
  *
  * The followings are the available model relations:
  * @property Requests[] $requests
  * @property Categories $parent
  */
-class Categories extends CActiveRecord
+class Categories extends SortableCActiveRecord
 {
     /**
      * @return string the associated database table name
@@ -34,9 +35,10 @@ class Categories extends CActiveRecord
             array('title', 'required'),
             array('title, logo', 'length', 'max' => 255),
             array('parent_id', 'length', 'max' => 10),
+            array('order', 'length', 'max' => 10),
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
-            array('id, title, logo', 'safe', 'on' => 'search'),
+            array('id, title, logo, order', 'safe', 'on' => 'search'),
         );
     }
 
@@ -64,6 +66,7 @@ class Categories extends CActiveRecord
             'title' => 'عنوان',
             'logo' => 'تصویر',
             'parent_id' => 'والد',
+            'order' => 'ترتیب',
         );
     }
 
@@ -89,9 +92,11 @@ class Categories extends CActiveRecord
         $criteria->compare('title', $this->title, true);
         $criteria->compare('logo', $this->logo, true);
         $criteria->compare('parent_id', $this->parent_id);
-        $criteria->order = 'id DESC';
+        $criteria->compare('order', $this->order, true);
+        $criteria->order = 't.order';
         return new CActiveDataProvider($this, array(
             'criteria' => $criteria,
+            'pagination' => false
         ));
     }
 
@@ -124,7 +129,10 @@ class Categories extends CActiveRecord
 
     public static function Parents($array = true)
     {
-        $models = self::model()->findAll('parent_id IS NULL');
+        $cr = new CDbCriteria();
+        $cr->addCondition('parent_id IS NULL');
+        $cr->order = 't.order';
+        $models = self::model()->findAll($cr);
         return $array ? CHtml::listData($models, 'id', 'title') : $models;
     }
 

@@ -177,7 +177,7 @@ return array(
     'Order Priority'=> 'الویت',
     'Create Date'=> 'تاریخ ثبت',
     'Update Date'=> 'تاریخ آخرین تغییرات',
-    'user_id'=> 'کاربر',
+    'user_id'=> 'مشتری',
     'files'=> 'فایل های ضمیمه',
     'title'=> 'عنوان',
     'For add new order should be signed up.'=> 'جهت ایجاد سفارش، ابتدا باید عضو شوید.',

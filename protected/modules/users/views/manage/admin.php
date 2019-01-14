@@ -4,12 +4,12 @@
 /* @var $role UserRoles */
 if($role->role == 'user') {
     $this->breadcrumbs = array(
-        'کاربران' => array("admin?role=$role->id"),
-        'مدیریت کاربران',
+        'مشتریان' => array("admin?role=$role->id"),
+        'مدیریت مشتریان',
     );
     $labels = [
-        'کاربران',
-        'کاربر'
+        'مشتریان',
+        'مشتری'
     ];
 }
 elseif($role->role == 'repairman') {

@@ -3,7 +3,7 @@
 /* @var $model AdminRoles */
 
 $this->breadcrumbs=array(
-	'نقش کاربران'=>array('index'),
+	'نقش مشتریان'=>array('index'),
 	'مدیریت',
 );
 
@@ -12,7 +12,7 @@ $this->menu=array(
 );
 ?>
 
-<h1>مدیریت نقش کاربران</h1>
+<h1>مدیریت نقش مشتریان</h1>
 
 <?php $this->widget('zii.widgets.grid.CGridView', array(
 	'id'=>'admin-roles-grid',

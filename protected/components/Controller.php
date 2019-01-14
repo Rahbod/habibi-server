@@ -187,13 +187,13 @@ class Controller extends AuthController
                     )
                 ),
                 array(
-                    'label' => '<i class="fa fa-users"></i><span>کاربران</span> <i class="fa fa-angle-left pull-left"></i>',
+                    'label' => '<i class="fa fa-users"></i><span>مشتریان</span> <i class="fa fa-angle-left pull-left"></i>',
                     'url' => '#',
                     'itemOptions' => array('class' => 'treeview', 'tabindex' => "-1"),
                     'submenuOptions' => array('class' => 'treeview-menu'),
                     'items' => array(
                         array('label' => '<i class="fa fa-circle-o"></i>مدیریت تعیرکاران', 'url' => Yii::app()->createUrl('/users/manage/admin?role=2')),
-                        array('label' => '<i class="fa fa-circle-o"></i>مدیریت کاربران', 'url' => Yii::app()->createUrl('/users/manage')),
+                        array('label' => '<i class="fa fa-circle-o"></i>مدیریت مشتریان', 'url' => Yii::app()->createUrl('/users/manage')),
                     )
                 ),
                 array(
@@ -283,13 +283,13 @@ class Controller extends AuthController
                     )
                 ),
                 array(
-                    'label' => '<i class="fa fa-users"></i><span>کاربران</span> <i class="fa fa-angle-left pull-left"></i>',
+                    'label' => '<i class="fa fa-users"></i><span>مشتریان</span> <i class="fa fa-angle-left pull-left"></i>',
                     'url' => '#',
                     'itemOptions' => array('class' => 'treeview', 'tabindex' => "-1"),
                     'submenuOptions' => array('class' => 'treeview-menu'),
                     'items' => array(
                         array('label' => '<i class="fa fa-circle-o"></i>مدیریت تعیرکاران', 'url' => Yii::app()->createUrl('/users/manage/admin?role=2')),
-                        array('label' => '<i class="fa fa-circle-o"></i>مدیریت کاربران', 'url' => Yii::app()->createUrl('/users/manage')),
+                        array('label' => '<i class="fa fa-circle-o"></i>مدیریت مشتریان', 'url' => Yii::app()->createUrl('/users/manage')),
                     )
                 ),
                 array(

@@ -19,7 +19,12 @@ $this->menu=array(
     <div class="box-body">
         <?php $this->renderPartial("//partial-views/_flashMessage"); ?>
         <div class="table-responsive">
-            <?php $this->widget('zii.widgets.grid.CGridView', array(
+            <?php //$this->widget('zii.widgets.grid.CGridView', array(
+            $this->widget('ext.yiiSortableModel.widgets.SortableCGridView', array(
+                'orderField' => 'order',
+                'idField' => 'id',
+	            'orderUrl' => 'order',
+                'jqueryUiSortableOptions' => array('handle' => '.sortable-handle'),
                 'id'=>'categories-grid',
                 'dataProvider'=>$model->search(),
                 'filter'=>$model,
@@ -44,6 +49,7 @@ $this->menu=array(
                 ),
                 'pagerCssClass' => 'blank',
                 'columns'=>array(
+                    ['class'=>'SortableGridColumn'],
 		            'title',
 		            [
                         'name' => 'parent_id',

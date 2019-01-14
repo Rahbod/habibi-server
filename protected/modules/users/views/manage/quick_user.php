@@ -11,7 +11,7 @@ if(isset($_GET['mobile']))
 
 <div class="box box-primary">
     <div class="box-header with-border">
-        <h3 class="box-title">افزودن کاربر سریع</h3>
+        <h3 class="box-title">افزودن مشتری سریع</h3>
         <a href="<?= $this->createUrl($model->mobile?"/requests/offline/view?id=".$_GET['rid']:$_GET['return']) ?>" class="btn btn-primary btn-sm pull-left">
             <span class="hidden-xs">بازگشت</span>
             <i class="fa fa-arrow-left"></i>
@@ -32,7 +32,7 @@ if(isset($_GET['mobile']))
             <?php echo $form->errorSummary($address) ?>
             <h5 class="well">
                 <i class="fa fa-angle-left"></i>
-                اطلاعات کاربر</h5>
+                اطلاعات مشتری</h5>
             <div class="row">
                 <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
                     <div class="form-group">

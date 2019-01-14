@@ -62,7 +62,7 @@ class ZarinPal extends CComponent
                 throw new CHttpException(501, $e->getMessage());
             }
         } else
-            throw new CHttpException(500, 'عملیات پرداخت ناموفق بوده یا توسط کاربر لغو شده است.');
+            throw new CHttpException(500, 'عملیات پرداخت ناموفق بوده یا توسط مشتری لغو شده است.');
         $this->_status = $result->Status;
         $this->_ref_id = $result->RefID;
         return $this;

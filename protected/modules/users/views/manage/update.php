@@ -5,17 +5,17 @@
 /* @var $form CActiveForm */
 
 $this->breadcrumbs=array(
-	'مدیریت کاربران'=>array('admin'),
+	'مدیریت مشتریان'=>array('admin'),
 );
 
 $this->menu=array(
-	array('label'=>'لیست کاربران', 'url'=>array('admin')),
+	array('label'=>'لیست مشتریان', 'url'=>array('admin')),
 );
 ?>
 
 <div class="box box-primary">
 	<div class="box-header with-border">
-		<h3 class="box-title">تغییر وضعیت کاربر <?= $model->email ?></h3>
+		<h3 class="box-title">تغییر وضعیت مشتری <?= $model->email ?></h3>
 	</div>
 	<div class="box-body">
         <?php $this->renderPartial('_form', compact('model', 'avatar')); ?>

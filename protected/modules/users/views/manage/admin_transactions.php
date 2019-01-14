@@ -36,8 +36,8 @@
         'columns'=>array(
             array(
                 'name'=>'user_name',
-                'header'=>'کاربر',
-                'value'=>'$data->user && $data->user->userDetails?$data->user->userDetails->getShowName():"کاربر حذف شده"'
+                'header'=>'مشتری',
+                'value'=>'$data->user && $data->user->userDetails?$data->user->userDetails->getShowName():"مشتری حذف شده"'
             ),
             array(
                 'name'=>'token',

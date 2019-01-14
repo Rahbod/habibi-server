@@ -137,9 +137,12 @@ class ApiController extends ApiBaseController
         Yii::import('application.modules.requests.models.*');
         $devices = [];
 
-        if (isset($this->request['parent']))
-            $models = Categories::model()->findAll('parent_id = :pid', array(':pid' => $this->request['parent']));
-        else
+        if (isset($this->request['parent'])) {
+            $cr = new CDbCriteria();
+            $cr->addCondition('parent_id = :pid', array(':pid' => $this->request['parent']));
+            $cr->order = 't.order';
+            $models = Categories::model()->findAll($cr);
+        }else
             $models = Categories::Parents(false);
 
         foreach ($models as $category)

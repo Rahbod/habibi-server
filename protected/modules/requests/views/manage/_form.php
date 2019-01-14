@@ -80,11 +80,11 @@ echo $form->errorSummary($model);
                     'data-live-search' => true,
                     'data-fetch-url' => $this->createUrl('/users/manage/fetchAddresses'),
                     'data-target' => "#Requests_user_address_id",
-                    'prompt' => 'کاربر درخواست دهنده را انتخاب کنید...'
+                    'prompt' => 'مشتری درخواست دهنده را انتخاب کنید...'
                 )
             ); ?>
             <span class="input-group-btn">
-                <a class="btn btn-success" href="<?= Yii::app()->createUrl("/users/manage/quickUser?return=/$route") ?>"><i class="fa fa-plus"></i> افزودن کاربر جدید</a>
+                <a class="btn btn-success" href="<?= Yii::app()->createUrl("/users/manage/quickUser?return=/$route") ?>"><i class="fa fa-plus"></i> افزودن مشتری جدید</a>
             </span>
         </div>
 		<?php echo $form->error($model,'user_id'); ?>
@@ -93,7 +93,7 @@ echo $form->errorSummary($model);
 	<div class="form-group">
 		<?php echo $form->labelEx($model,'user_address_id'); ?>
         <div class="input-group">
-            <?php echo $form->dropDownList($model,'user_address_id', [],array('class'=>'form-control','prompt' => 'ابتدا کاربر را انتخاب کنید...','data-id' => $model->user_address_id,'disabled' => true)); ?>
+            <?php echo $form->dropDownList($model,'user_address_id', [],array('class'=>'form-control','prompt' => 'ابتدا مشتری را انتخاب کنید...','data-id' => $model->user_address_id,'disabled' => true)); ?>
             <span class="input-group-btn">
                 <a disabled="true" class="btn btn-success" id="add-address-btn" data-toggle="modal" data-target="#add-address" href="<?= Yii::app()->createUrl("/users/manage/addAddress?return=/$route") ?>"><i class="fa fa-plus"></i> افزودن آدرس جدید</a>
             </span>
@@ -200,7 +200,7 @@ Yii::app()->clientScript->registerScript('model-load', '
         var el = $(this),
             url = el.attr("href");
         if(el.data("foreign-id") === ""){
-            alert("لطفا یک کاربر انتخاب کنید.");
+            alert("لطفا یک مشتری انتخاب کنید.");
         }else{
             window.location = url+"&user="+el.data("foreign-id");
         }

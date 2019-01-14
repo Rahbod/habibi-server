@@ -10,22 +10,22 @@ Yii::app()->clientScript->registerCss('imgSize','
 ');
 
 $this->breadcrumbs=array(
-	'کاربران'=>array('index'),
+	'مشتریان'=>array('index'),
 	$model->userDetails->getShowName(),
 );
 if($model->role_id == 2)
 {
 	$this->menu=array(
-		array('label'=>'مدیرت کاربران', 'url'=>array($model->role_id == 2?'adminPublishers':'admin')),
-		array('label'=>'نمایش تراکنش های کاربر', 'url'=>array("userTransactions",'id'=>$model->id)),
-		array('label'=>'حذف کاربر', 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>'آیا از حذف کاربر اطمینان دارید؟')),
-//		array('label'=>'تایید اطلاعات کاربر', 'url'=>array('confirmPublisher', 'id'=>$model->id, 'view-page' => true), 'linkOptions' => array('style' => 'margin-top:30px')),
-//		array('label'=>'رد اطلاعات کاربر', 'url'=>array('refusePublisher', 'id'=>$model->id, 'view-page' => true)),
-//		array('label'=>'تایید شناسه درخواستی کاربر', 'url'=>array('confirmDevID', 'id'=>$model->id, 'view-page' => true), 'linkOptions' => array('style' => 'margin-top:30px')),
-//		array('label'=>'رد شناسه درخواستی کاربر', 'url'=>array('deleteDevID', 'id'=>$model->id, 'view-page' => true)),
-//		array('label'=>'تایید اطلاعات مالی کاربر', 'url'=>"#" , 'linkOptions' => array('style' => 'margin-top:30px', 'class' => 'change-finance-status', 'data-id' => $model->id, 'data-value' => "accepted")),
-//		array('label'=>'رد اطلاعات مالی کاربر', 'url'=>"#" , 'linkOptions' => array('class' => 'change-finance-status', 'data-id' => $model->id, 'data-value' => "refused")),
-//		array('label'=>'افزایش اعتبار کاربر', 'url'=>array('changeCredit', 'id'=>$model->id), 'linkOptions' => array('style' => 'margin-top:30px;font-weight:bold')),
+		array('label'=>'مدیرت مشتریان', 'url'=>array($model->role_id == 2?'adminPublishers':'admin')),
+		array('label'=>'نمایش تراکنش های مشتری', 'url'=>array("userTransactions",'id'=>$model->id)),
+		array('label'=>'حذف مشتری', 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>'آیا از حذف مشتری اطمینان دارید؟')),
+//		array('label'=>'تایید اطلاعات مشتری', 'url'=>array('confirmPublisher', 'id'=>$model->id, 'view-page' => true), 'linkOptions' => array('style' => 'margin-top:30px')),
+//		array('label'=>'رد اطلاعات مشتری', 'url'=>array('refusePublisher', 'id'=>$model->id, 'view-page' => true)),
+//		array('label'=>'تایید شناسه درخواستی مشتری', 'url'=>array('confirmDevID', 'id'=>$model->id, 'view-page' => true), 'linkOptions' => array('style' => 'margin-top:30px')),
+//		array('label'=>'رد شناسه درخواستی مشتری', 'url'=>array('deleteDevID', 'id'=>$model->id, 'view-page' => true)),
+//		array('label'=>'تایید اطلاعات مالی مشتری', 'url'=>"#" , 'linkOptions' => array('style' => 'margin-top:30px', 'class' => 'change-finance-status', 'data-id' => $model->id, 'data-value' => "accepted")),
+//		array('label'=>'رد اطلاعات مالی مشتری', 'url'=>"#" , 'linkOptions' => array('class' => 'change-finance-status', 'data-id' => $model->id, 'data-value' => "refused")),
+//		array('label'=>'افزایش اعتبار مشتری', 'url'=>array('changeCredit', 'id'=>$model->id), 'linkOptions' => array('style' => 'margin-top:30px;font-weight:bold')),
 	);
 
 	Yii::app()->clientScript->registerScript('changeFinanceStatus', "
@@ -48,11 +48,11 @@ if($model->role_id == 2)
 }
 else
 	$this->menu=array(
-		array('label'=>'مدیرت کاربران', 'url'=>array($model->role_id == 2?'adminPublishers':'admin')),
-		array('label'=>'حذف کاربر', 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>'آیا از حذف کاربر اطمینان دارید؟')),
-//		array('label'=>'تایید اطلاعات کاربر', 'url'=>array('confirmPublisher', 'id'=>$model->id, 'view-page' => true), 'linkOptions' => array('style' => 'margin-top:30px')),
-//		array('label'=>'رد اطلاعات کاربر', 'url'=>array('refusePublisher', 'id'=>$model->id, 'view-page' => true)),
-//		array('label'=>'افزایش اعتبار کاربر', 'url'=>array('changeCredit', 'id'=>$model->id), 'linkOptions' => array('style' => 'margin-top:30px;font-weight:bold')),
+		array('label'=>'مدیرت مشتریان', 'url'=>array($model->role_id == 2?'adminPublishers':'admin')),
+		array('label'=>'حذف مشتری', 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>'آیا از حذف مشتری اطمینان دارید؟')),
+//		array('label'=>'تایید اطلاعات مشتری', 'url'=>array('confirmPublisher', 'id'=>$model->id, 'view-page' => true), 'linkOptions' => array('style' => 'margin-top:30px')),
+//		array('label'=>'رد اطلاعات مشتری', 'url'=>array('refusePublisher', 'id'=>$model->id, 'view-page' => true)),
+//		array('label'=>'افزایش اعتبار مشتری', 'url'=>array('changeCredit', 'id'=>$model->id), 'linkOptions' => array('style' => 'margin-top:30px;font-weight:bold')),
 	);
 ?>
 

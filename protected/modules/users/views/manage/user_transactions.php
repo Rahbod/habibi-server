@@ -3,7 +3,7 @@
 /* @var $model UserTransactions */
 
 $this->menu=array(
-    array('label'=>'مدیرت کاربران', 'url'=>array($model->user->role_id == 2?'adminPublishers':'admin')),
+    array('label'=>'مدیرت مشتریان', 'url'=>array($model->user->role_id == 2?'adminPublishers':'admin')),
 );
 
 ?>

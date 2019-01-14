@@ -139,7 +139,7 @@ class UsersPublicController extends Controller
         $user = Users::model()->findByPk(Yii::app()->user->id);
         $this->pageTitle = 'پروفایل من';
         $this->pageHeader = 'تغییر مشخصات پروفایل';
-        $this->pageDescription = 'جهت تغییر اطلاعات حساب کاربری خود فرم زیر را پر کنید.';
+        $this->pageDescription = 'جهت تغییر اطلاعات حساب مشتریی خود فرم زیر را پر کنید.';
 
         $tmpDIR = Yii::getPathOfAlias("webroot") . '/uploads/temp/';
         $tmpUrl = Yii::app()->createAbsoluteUrl('/uploads/temp/');
@@ -757,7 +757,7 @@ class UsersPublicController extends Controller
                 }else
                     Yii::app()->user->setFlash('failed', Yii::app()->mellat->getError($ResponseCode));
             }else
-                Yii::app()->user->setFlash('failed', 'عملیات پرداخت ناموفق بوده یا توسط کاربر لغو شده است.');
+                Yii::app()->user->setFlash('failed', 'عملیات پرداخت ناموفق بوده یا توسط مشتری لغو شده است.');
         }else if($active_gateway == 'zarinpal'){
             if(!isset($_GET['Authority'])){
                 Yii::app()->user->setFlash('failed', 'Gateway Error: Authority Code not sent.');
@@ -789,7 +789,7 @@ class UsersPublicController extends Controller
                         }else
                             Yii::app()->user->setFlash('failed', Yii::app()->zarinpal->getError());
                     }else
-                        Yii::app()->user->setFlash('failed', 'عملیات پرداخت ناموفق بوده یا توسط کاربر لغو شده است.');
+                        Yii::app()->user->setFlash('failed', 'عملیات پرداخت ناموفق بوده یا توسط مشتری لغو شده است.');
                 }
             }
         }

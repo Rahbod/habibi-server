@@ -28,7 +28,7 @@ class RequestsCategoriesController extends Controller
 	{
 		return array(
 			'backend' => array(
-				'index', 'create', 'update', 'admin', 'delete', 'upload', 'deleteUpload'
+				'index', 'create', 'update', 'admin', 'delete', 'upload', 'deleteUpload', 'order'
 			)
 		);
 	}
@@ -50,7 +50,10 @@ class RequestsCategoriesController extends Controller
                 'attribute' => 'logo',
                 'uploadDir' => "/$this->logoPath/",
                 'storedMode' => 'field'
-            )
+            ),
+            'order' => array( // ordering models
+                'class' => 'ext.yiiSortableModel.actions.AjaxSortingAction',
+            ),
         );
     }
 

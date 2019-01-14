@@ -10,13 +10,13 @@ $this->breadcrumbs=array(
 if($model->user->role_id = 2)
 	$adminLink = array('label'=>'لیست ناشران', 'url'=>array('adminPublishers'));
 else
-	$adminLink = array('label'=>'لیست کاربران', 'url'=>array('/users/manage'));
+	$adminLink = array('label'=>'لیست مشتریان', 'url'=>array('/users/manage'));
 $this->menu=array(
 	$adminLink,
 );
 ?>
 
-<h1>تغییر اعتبار کاربر "<?= $model->fa_name ?>"</h1>
+<h1>تغییر اعتبار مشتری "<?= $model->fa_name ?>"</h1>
 
 <? $this->renderPartial('//partial-views/_flashMessage'); ?>
 <div class="form">
