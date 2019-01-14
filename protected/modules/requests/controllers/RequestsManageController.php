@@ -102,6 +102,12 @@ class RequestsManageController extends Controller
             $model->request_type = Requests::REQUEST_FROM_CALL;
             $model->operator_id = Yii::app()->user->type == 'admin' ? Yii::app()->user->getId() : null;
             if ($model->save()) {
+                PushNotification::sendDataToUser($model->user->userDetails->push_token, [
+                    'action' => 'selectRepairMan',
+                    'id' => $model->id,
+                    'message' => 'درخواست شما در آچارچی تایید شد.'
+                ]);
+
                 Yii::app()->user->setFlash('success', '<span class="icon-check"></span>&nbsp;&nbsp;اطلاعات با موفقیت ذخیره شد.');
                 $this->redirect(array('admin'));
             } else

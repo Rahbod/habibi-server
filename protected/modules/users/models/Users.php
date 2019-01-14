@@ -291,7 +291,7 @@ class Users extends CActiveRecord
             $model->additional_details = $this->additional_details;
             if (!$model->save())
                 $this->addErrors($model->errors);
-        } elseif ($this->scenario == 'update') {
+        } elseif ($this->scenario == 'update' || $this->scenario == 'quick') {
             $model = UserDetails::model()->findByPk($this->id);
             $model->first_name = $this->first_name;
             $model->last_name = $this->last_name;

@@ -21,6 +21,9 @@
  * @property string $service_time
  * @property string $status
  * @property string $request_type
+ * @property string $map_lat
+ * @property string $map_lng
+ * @property string $map_zoom
  *
  * The followings are the available model relations:
  * @property Invoices[] $invoices
@@ -31,6 +34,7 @@
  * @property Admins $operator
  * @property Users $repairman
  * @property UserAddresses $userAddress
+ * @property RepairmanRatings $rate
  */
 class Requests extends CActiveRecord
 {
@@ -93,6 +97,8 @@ class Requests extends CActiveRecord
             array('modified_date', 'default', 'value' => time()),
             array('requested_time, service_time', 'length', 'max' => 255),
             array('request_type, status', 'length', 'max' => 1),
+            array('map_lat, map_lng', 'length', 'max'=>30),
+            array('map_zoom', 'length', 'max'=>5),
             array('description', 'safe'),
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
@@ -116,6 +122,7 @@ class Requests extends CActiveRecord
             'operator' => array(self::BELONGS_TO, 'Admins', 'operator_id'),
             'repairman' => array(self::BELONGS_TO, 'Users', 'repairman_id'),
             'userAddress' => array(self::BELONGS_TO, 'UserAddresses', 'user_address_id'),
+            'rate' => array(self::HAS_ONE, 'RepairmanRatings', 'request_id'),
         );
     }
 
@@ -142,6 +149,9 @@ class Requests extends CActiveRecord
             'service_time' => 'زمان سرویس',
             'status' => 'وضعیت درخواست',
             'request_type' => 'نوع درخواست',
+            'map_lat' => 'طول',
+            'map_lng' => 'عرض',
+            'map_zoom' => 'بزرگنمایی',
         );
     }
 

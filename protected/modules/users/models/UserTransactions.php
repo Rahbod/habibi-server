@@ -53,7 +53,7 @@ class UserTransactions extends CActiveRecord
 	 */
 	public function tableName()
 	{
-		return 'ym_user_transactions';
+		return '{{user_transactions}}';
 	}
 
 	/**

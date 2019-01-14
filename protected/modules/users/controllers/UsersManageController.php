@@ -331,42 +331,53 @@ class UsersManageController extends Controller
 
     public function actionQuickUser()
     {
+        $model = new Users('quick');
+        $address = new UserAddresses('quick');
+
         if (isset($_GET['mobile'])) {
             $mobile = $_GET['mobile'];
             $mobile = TextMessagesReceive::NormalizePhone($mobile);
             $user = Users::model()->findByAttributes(['username' => $mobile]);
-            if ($user)
-                $this->redirect(array($_GET['return'], 'user_id' => $user->id));
+            if ($user) {
+                $model = $user;
+                $model->scenario = 'quick';
+            }
+//                $this->redirect(array($_GET['return'], 'user_id' => $user->id));
         }
-
-        $model = new Users('quick');
-        $address = new UserAddresses('quick');
 
         if (isset($_POST['Users'])) {
             $model->attributes = $_POST['Users'];
-            $model->username = $model->mobile;
-            $model->password = $model->mobile;
-            $model->status = 'active';
+            if($model->isNewRecord) {
+                $model->username = $model->mobile;
+                $model->password = $model->mobile;
+                $model->status = 'active';
+            }
             if ($model->save()) {
-                // @todo send sms to user; send username and pass and app download link
-                $this->sendDownload($model->mobile);
+
+                $return = $_GET['return'];
+                if (strpos($return, '?', 0) !== false) {
+                    list($uri, $query) = explode("?", $return);
+                    parse_str($query, $params);
+                    unset($params['user_id']);
+                    unset($params['address_id']);
+                } else {
+                    $uri = $return;
+                    $params = [];
+                }
+                $params['user_id'] = $model->id;
+                if($model->isNewRecord)
+                    $this->sendDownload($model->mobile);
+                else {
+                    $return = $uri . "?" . http_build_query($params);
+                    $this->redirect(array($return));
+                }
+
                 if (isset($_POST['UserAddresses'])) {
                     $address->attributes = $_POST['UserAddresses'];
                     $address->user_id = $model->id;
                     if ($address->save()) {
                         Yii::app()->user->setFlash('success', 'کاربر با موفقیت ثبت شد.');
 
-                        $return = $_GET['return'];
-                        if (strpos($return, '?', 0) !== false) {
-                            list($uri, $query) = explode("?", $return);
-                            parse_str($query, $params);
-                            unset($params['user_id']);
-                            unset($params['address_id']);
-                        } else {
-                            $uri = $return;
-                            $params = [];
-                        }
-                        $params['user_id'] = $model->id;
                         $params['address_id'] = $address->id;
                         $return = $uri . "?" . http_build_query($params);
 

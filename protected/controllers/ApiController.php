@@ -301,6 +301,7 @@ class ApiController extends ApiBaseController
                 'status' => intval($request->status),
                 'repairMan' => null,
                 'invoice' => null,
+                'rating' => null,
             ];
 
             if ($request->user_address_id) {
@@ -318,6 +319,13 @@ class ApiController extends ApiBaseController
                     'name' => $request->repairman->userDetails->getShowName(false),
                     'code' => $request->repairman->id,
                     'avatar' => $request->repairman->avatar ? Yii::app()->getBaseUrl(true) . '/uploads/users/avatar/' . $request->repairman->avatar : '',
+                ];
+            }
+
+            if ($request->rate) {
+                $temp['rating'] = [
+                    'rates' => $request->rate->rates,
+                    'comment' => $request->rate->comment,
                 ];
             }
 
@@ -399,5 +407,34 @@ class ApiController extends ApiBaseController
                 'description' => $user->getAdditionalDetails('description')
             ]), 'application/json');
         $this->_sendResponse(400, CJSON::encode(['status' => false, 'message' => 'Repairman not found.']), 'application/json');
+    }
+
+    public function actionRate()
+    {
+        $requestId = $this->request['requestID'];
+        $comment = isset($this->request['comment'])?strip_tags($this->request['comment']):"";
+        $rates = isset($this->request['rates'])?$this->request['rates']:[];
+        /** @var $request Requests */
+        $request = Requests::model()->findByPk($requestId);
+        if ($request) {
+            $rate = new RepairmanRatings();
+            $rate->request_id = $request->id;
+            $rate->repairman_id = $request->repairman_id;
+            $rate->rates = $rates;
+            $rate->comment = $comment;
+            if($rate->save())
+                $this->_sendResponse(200, CJSON::encode([
+                    'status' => true,
+                    'message' => 'نظر شما با موفقیت ثبت شد.',
+                ]), 'application/json');
+            else
+                $this->_sendResponse(200, CJSON::encode([
+                    'status' => false,
+                    'message' => 'ثبت نظر با مشکل مواجه شد، لطفا بعدا تلاش فرمایید.',
+                ]), 'application/json');
+        }
+        $this->_sendResponse(200, CJSON::encode([
+            'status' => true
+        ]), 'application/json');
     }
 }

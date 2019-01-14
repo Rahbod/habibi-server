@@ -70,78 +70,79 @@ if(isset($_GET['mobile']))
             </div>
 
 <!--            User Address-->
-            <hr>
-            <h5 class="well">
-                <i class="fa fa-angle-left"></i>
-                اطلاعات آدرس</h5>
-            <div class="row">
-                <?php if(!UserAddresses::$setDefaultLocation):?>
+            <?php if($model->isNewRecord):?>
+                <hr>
+                <h5 class="well">
+                    <i class="fa fa-angle-left"></i>
+                    اطلاعات آدرس</h5>
+                <div class="row">
+                    <?php if(!UserAddresses::$setDefaultLocation):?>
+                        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
+                            <div class="form-group">
+                                <?php echo $form->labelEx($address,'town_id'); ?>
+                                <?php echo $form->dropDownList($address,'town_id', Towns::getList(),array(
+                                    'class'=>'form-control town-change-trigger',
+                                    'prompt' => 'استان موردنظر را انتخاب کنید...',
+                                    'data-fetch-url' => $this->createUrl('/places/towns/fetchPlaces'),
+                                    'data-target' => "#UserAddresses_place_id"
+                                )); ?>
+                                <?php echo $form->error($address,'town_id'); ?>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
+                            <div class="form-group">
+                                <?php echo $form->labelEx($address,'place_id'); ?>
+                                <?php echo $form->dropDownList($address,'place_id', [],array('class'=>'form-control','prompt' => 'ابتدا یک استان انتخاب کنید...','disabled' => true)); ?>
+                                <?php echo $form->error($address,'place_id'); ?>
+                            </div>
+                        </div>
+                    <?php endif;?>
+                </div>
+                <div class="row">
                     <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
                         <div class="form-group">
-                            <?php echo $form->labelEx($address,'town_id'); ?>
-                            <?php echo $form->dropDownList($address,'town_id', Towns::getList(),array(
-                                'class'=>'form-control town-change-trigger',
-                                'prompt' => 'استان موردنظر را انتخاب کنید...',
-                                'data-fetch-url' => $this->createUrl('/places/towns/fetchPlaces'),
-                                'data-target' => "#UserAddresses_place_id"
-                            )); ?>
-                            <?php echo $form->error($address,'town_id'); ?>
+                            <?php echo $form->labelEx($address,'transferee'); ?>
+                            <?php echo $form->textField($address,'transferee',array('class'=>"form-control",'size'=>60,'maxlength'=>255)); ?>
+                            <?php echo $form->error($address,'transferee'); ?>
                         </div>
                     </div>
                     <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
                         <div class="form-group">
-                            <?php echo $form->labelEx($address,'place_id'); ?>
-                            <?php echo $form->dropDownList($address,'place_id', [],array('class'=>'form-control','prompt' => 'ابتدا یک استان انتخاب کنید...','disabled' => true)); ?>
-                            <?php echo $form->error($address,'place_id'); ?>
+                            <?php echo $form->labelEx($address,'landline_tel'); ?>
+                            <?php echo $form->telField($address,'landline_tel',array('class'=>"form-control", 'maxlength' => 11));?>
+                            <?php echo $form->error($address,'landline_tel'); ?>
                         </div>
                     </div>
-                <?php endif;?>
-            </div>
-            <div class="row">
-                <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
-                    <div class="form-group">
-                        <?php echo $form->labelEx($address,'transferee'); ?>
-                        <?php echo $form->textField($address,'transferee',array('class'=>"form-control",'size'=>60,'maxlength'=>255)); ?>
-                        <?php echo $form->error($address,'transferee'); ?>
+
+    <!--                <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">-->
+    <!--                    <div class="form-group">-->
+    <!--                        --><?php //echo $form->labelEx($address,'emergency_tel'); ?>
+    <!--                        --><?php //echo $form->telField($address,'emergency_tel',array('class'=>"form-control", 'maxlength' => 11));?>
+    <!--                        --><?php //echo $form->error($address,'emergency_tel'); ?>
+    <!--                    </div>-->
+    <!--                </div>-->
+                    <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
+                        <div class="form-group">
+                            <?php echo $form->labelEx($address,'district'); ?>
+                            <?php echo $form->textField($address,'district',array('class'=>"form-control", 'maxlength' => 255));?>
+                            <?php echo $form->error($address,'district'); ?>
+                        </div>
                     </div>
-                </div>
-                <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
-                    <div class="form-group">
-                        <?php echo $form->labelEx($address,'landline_tel'); ?>
-                        <?php echo $form->telField($address,'landline_tel',array('class'=>"form-control", 'maxlength' => 11));?>
-                        <?php echo $form->error($address,'landline_tel'); ?>
+                    <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
+                        <div class="form-group">
+                            <?php echo $form->labelEx($address,'postal_code'); ?>
+                            <?php echo $form->textField($address,'postal_code',array('class'=>"form-control", 'maxlength' => 10));?>
+                            <?php echo $form->error($address,'postal_code'); ?>
+                        </div>
                     </div>
                 </div>
 
-<!--                <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">-->
-<!--                    <div class="form-group">-->
-<!--                        --><?php //echo $form->labelEx($address,'emergency_tel'); ?>
-<!--                        --><?php //echo $form->telField($address,'emergency_tel',array('class'=>"form-control", 'maxlength' => 11));?>
-<!--                        --><?php //echo $form->error($address,'emergency_tel'); ?>
-<!--                    </div>-->
-<!--                </div>-->
-                <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
-                    <div class="form-group">
-                        <?php echo $form->labelEx($address,'district'); ?>
-                        <?php echo $form->textField($address,'district',array('class'=>"form-control", 'maxlength' => 255));?>
-                        <?php echo $form->error($address,'district'); ?>
-                    </div>
+                <div class="form-group">
+                    <?php echo $form->labelEx($address,'postal_address'); ?>
+                    <?php echo $form->textArea($address,'postal_address',array('class'=>"form-control"));?>
+                    <?php echo $form->error($address,'postal_address'); ?>
                 </div>
-                <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
-                    <div class="form-group">
-                        <?php echo $form->labelEx($address,'postal_code'); ?>
-                        <?php echo $form->textField($address,'postal_code',array('class'=>"form-control", 'maxlength' => 10));?>
-                        <?php echo $form->error($address,'postal_code'); ?>
-                    </div>
-                </div>
-            </div>
-
-            <div class="form-group">
-                <?php echo $form->labelEx($address,'postal_address'); ?>
-                <?php echo $form->textArea($address,'postal_address',array('class'=>"form-control"));?>
-                <?php echo $form->error($address,'postal_address'); ?>
-            </div>
-
+            <?php endif;?>
 
             <div class="form-group">
                 <?php echo CHtml::submitButton($model->isNewRecord ? 'ثبت و ادامه' : 'ذخیره', array('class' => 'btn btn-success')); ?>
