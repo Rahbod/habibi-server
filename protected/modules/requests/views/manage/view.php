@@ -114,69 +114,72 @@ $invoice = $model->getLastInvoice(true);
                 </div>
             </div>
         <?php endif;?>
+        <div class="row">
+            <div class="col-lg-8 col-md-8 col-sm-8 col-xs-12">
+                <?php $this->widget('zii.widgets.CDetailView', array(
+                    'data'=>$model,
+                    'itemCssClass'=>array('',''),
+                    'htmlOptions' => array('class'=>'detail-view table table-striped'),
+                    'attributes'=>array(
+                        'id',
+                        [
+                            'label' => $model->getAttributeLabel('category_id'),
+                            'value' => $model->category?$model->category->title:'<span class="text-danger">حذف شده</span>',
+                        ],
+                        [
+                            'label' => $model->getAttributeLabel('user_id'),
+                            'value' => $model->user && $model->user->userDetails?$model->user->userDetails->getShowName():'<span class="text-danger">حذف شده</span>',
+                        ],
+                        [
+                            'label' => $model->getAttributeLabel('operator_id'),
+                            'value' => $model->operator?$model->operator->name_family:'<span class="text-danger">حذف شده</span>',
+                            'type' => 'raw'
+                        ],
+                        [
+                            'label' => $model->getAttributeLabel('repairman_id'),
+                            'value' => $model->repairman_id?($model->repairman && $model->repairman->userDetails?$model->repairman->userDetails->getShowName(false):'<span class="text-danger">حذف شده</span>'):null,
+                            'type' => 'raw'
+                        ],
 
-        <?php $this->widget('zii.widgets.CDetailView', array(
-            'data'=>$model,
-            'itemCssClass'=>array('',''),
-            'htmlOptions' => array('class'=>'detail-view table table-striped'),
-            'attributes'=>array(
-                'id',
-                [
-                    'label' => $model->getAttributeLabel('category_id'),
-                    'value' => $model->category?$model->category->title:'<span class="text-danger">حذف شده</span>',
-                ],
-                [
-                    'label' => $model->getAttributeLabel('user_id'),
-                    'value' => $model->user && $model->user->userDetails?$model->user->userDetails->getShowName():'<span class="text-danger">حذف شده</span>',
-                ],
-                [
-                    'label' => $model->getAttributeLabel('user_address_id'),
-                    'value' => $model->userAddress?$model->userAddress->showAddress():'<span class="text-danger">حذف شده</span>',
-                    'type' => 'raw'
-                ],
-                [
-                    'label' => $model->getAttributeLabel('operator_id'),
-                    'value' => $model->operator?$model->operator->name_family:'<span class="text-danger">حذف شده</span>',
-                    'type' => 'raw'
-                ],
-                [
-                    'label' => $model->getAttributeLabel('repairman_id'),
-                    'value' => $model->repairman_id?($model->repairman && $model->repairman->userDetails?$model->repairman->userDetails->getShowName(false):'<span class="text-danger">حذف شده</span>'):null,
-                    'type' => 'raw'
-                ],
-
-                [
-                    'label' => $model->getAttributeLabel('requested_date'),
-                    'value' => $model->requested_date?"<span dir='ltr' class='text-right'>".JalaliDate::date('Y/m/d', $model->requested_date)."</span>":null,
-                    'type' => 'raw'
-                ],
-                [
-                    'label' => $model->getAttributeLabel('requested_time'),
-                    'value' => $model->requested_time?Requests::$serviceTimes[$model->requested_time]:null,
-                    'type' => 'raw'
-                ],
-                [
-                    'label' => $model->getAttributeLabel('service_date'),
-                    'value' => $model->service_date?"<span dir='ltr' class='text-right'>".JalaliDate::date('Y/m/d', $model->service_date)."</span>":null,
-                    'type' => 'raw'
-                ],
-                [
-                    'label' => $model->getAttributeLabel('service_time'),
-                    'value' => $model->service_time?Requests::$serviceTimes[$model->service_time]:null,
-                    'type' => 'raw'
-                ],
-                [
-                    'label' => $model->getAttributeLabel('create_date'),
-                    'value' => "<span dir='ltr' class='text-right'>".JalaliDate::date('Y/m/d H:i', $model->create_date)."</span>",
-                    'type' => 'raw'
-                ],
-                [
-                    'label' => $model->getAttributeLabel('modified_date'),
-                    'value' => "<span dir='ltr' class='text-right'>".JalaliDate::date('Y/m/d H:i', $model->modified_date)."</span>",
-                    'type' => 'raw'
-                ]
-            ),
-        )); ?>
+                        [
+                            'label' => $model->getAttributeLabel('requested_date'),
+                            'value' => $model->requested_date?"<span dir='ltr' class='text-right'>".JalaliDate::date('Y/m/d', $model->requested_date)."</span>":null,
+                            'type' => 'raw'
+                        ],
+                        [
+                            'label' => $model->getAttributeLabel('requested_time'),
+                            'value' => $model->requested_time?Requests::$serviceTimes[$model->requested_time]:null,
+                            'type' => 'raw'
+                        ],
+                        [
+                            'label' => $model->getAttributeLabel('service_date'),
+                            'value' => $model->service_date?"<span dir='ltr' class='text-right'>".JalaliDate::date('Y/m/d', $model->service_date)."</span>":null,
+                            'type' => 'raw'
+                        ],
+                        [
+                            'label' => $model->getAttributeLabel('service_time'),
+                            'value' => $model->service_time?Requests::$serviceTimes[$model->service_time]:null,
+                            'type' => 'raw'
+                        ],
+                        [
+                            'label' => $model->getAttributeLabel('create_date'),
+                            'value' => "<span dir='ltr' class='text-right'>".JalaliDate::date('Y/m/d H:i', $model->create_date)."</span>",
+                            'type' => 'raw'
+                        ],
+                        [
+                            'label' => $model->getAttributeLabel('modified_date'),
+                            'value' => "<span dir='ltr' class='text-right'>".JalaliDate::date('Y/m/d H:i', $model->modified_date)."</span>",
+                            'type' => 'raw'
+                        ]
+                    ),
+                )); ?>
+            </div>
+            <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">
+                <h4>آدرس مشتری</h4>
+                <p><?= $model->userAddress?$model->userAddress->showAddress():'<span class="text-danger">حذف شده</span>' ?></p>
+                <?php $this->renderPartial('users.views.manage._view_map', array('map_model' => $model->userAddress)); ?>
+            </div>
+        </div>
     </div>
 </div>
 

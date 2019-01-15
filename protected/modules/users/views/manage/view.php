@@ -69,6 +69,10 @@ else
 				'value'=>$model->userDetails->getShowName(),
 			),
 			array(
+				'name'=>'اعتبار',
+				'value'=>$model->userDetails->credit?Controller::parseNumbers(number_format($model->userDetails->credit))." تومان":0,
+			),
+			array(
 				'name'=>'شماره تماس',
 				'value'=>$model->userDetails->phone,
 			),

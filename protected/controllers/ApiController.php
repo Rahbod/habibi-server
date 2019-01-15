@@ -36,6 +36,7 @@ class ApiController extends ApiBaseController
                 $user->password = $mobile;
                 $user->status = Users::STATUS_PENDING;
                 $user->mobile = $mobile;
+//                $user->credit = SiteSetting::getOption('base_credit');
             }
 
             $user->verification_token = $code;
@@ -129,6 +130,12 @@ class ApiController extends ApiBaseController
             $this->_sendResponse(400, CJSON::encode(['status' => false, 'message' => 'Token variable is required.']));
     }
 
+    public function actionCredit()
+    {
+        $userDetails = UserDetails::model()->findByAttributes(['user_id' => $this->user->id]);
+        $this->_sendResponse(200, CJSON::encode(['status' => true,'credit' => (int)$userDetails->credit ,'showCredit' => number_format($userDetails->credit).' تومان']));
+    }
+
     /**
      * Get list of devices
      */
@@ -139,7 +146,8 @@ class ApiController extends ApiBaseController
 
         if (isset($this->request['parent'])) {
             $cr = new CDbCriteria();
-            $cr->addCondition('parent_id = :pid', array(':pid' => $this->request['parent']));
+            $cr->addCondition('parent_id = :pid');
+            $cr->params = array(':pid' => $this->request['parent']);
             $cr->order = 't.order';
             $models = Categories::model()->findAll($cr);
         }else

@@ -14,6 +14,7 @@
  * @property string $mobile
  * @property string $push_token
  * @property string $additional_details
+ * @property double $credit
  *
  * The followings are the available model relations:
  * @property Users $user
@@ -45,6 +46,7 @@ class UserDetails extends CActiveRecord
             array('avatar', 'length', 'max' => 255),
             array('push_token, additional_details', 'safe'),
             array('phone, mobile', 'numerical', 'integerOnly' => true),
+            array('credit', 'numerical'),
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
             array('user_id, first_name, last_name, phone, zip_code, address, avatar, mobile, push_token', 'safe', 'on' => 'search'),
@@ -73,6 +75,7 @@ class UserDetails extends CActiveRecord
             'first_name' => 'نام',
             'last_name' => 'نام خانوادگی',
             'phone' => 'تلفن',
+            'credit' => 'اعتبار',
             'zip_code' => 'کد پستی',
             'address' => 'آدرس',
             'avatar' => 'آواتار',
