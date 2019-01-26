@@ -4736,4 +4736,5 @@ td{
   text-indent: -9999px;
   background: url("../svg/move.svg") no-repeat scroll center transparent;
   background-size: 16px;
+  cursor: grab;
 }

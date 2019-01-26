@@ -19,5 +19,5 @@ $this->breadcrumbs=array(
         </a>
 	</div>
 	<div class="box-body">
-		<?php $this->renderPartial('_invoice_form', array('model'=>$model, 'invoice' => $invoice, 'invoiceItems' => $invoiceItems)); ?>	</div>
+		<?php $this->renderPartial('_invoice_form_new', array('model'=>$model, 'invoice' => $invoice, 'invoiceItems' => $invoiceItems)); ?>	</div>
 </div>
