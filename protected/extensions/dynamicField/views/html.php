@@ -1,37 +1,30 @@
 <?php
-/* @var $model CActiveRecord */
-/* @var $attributeName */
-/* @var $attributeValue array */
-/* @var $max string */
-/* @var $inputType string */
-/* @var $htmlOptions array */
+/* @var $models CActiveRecord[] */
+/* @var $attributes array */
+/* @var $max integer */
 /* @var $id string */
-
-if(isset($htmlOptions['class']))
-    $htmlOptions['class'].=' dynamic-field';
-else
-    $htmlOptions['class']='dynamic-field';
+/* @var $template string */
+/* @var $addBtnClass string */
+/* @var $addBtnTitle string */
 ?>
-<?php if($model->isNewRecord):?>
-    <div id="<?php echo $id;?>" class="dynamic-field-container" data-name="<?php echo get_class($model).'['.$attributeName.']';?>" data-max="<?php echo $max;?>">
-        <div class="input-container">
-            <?php echo CHtml::$inputType(get_class($model).'['.$attributeName.'][0]', '', $htmlOptions);?>
+<div id="<?php echo $id;?>">
+    <?php foreach($models as $modelKey => $model):?>
+        <div class="dynamic-input-container">
+            <?php
+            $temp = $template;
+            foreach($attributes as $key => $attribute):
+                $name = $attribute['name'];
+                $inputType = $attribute['inputType'];
+                $htmlOptions = isset($attribute['htmlOptions']) ? $attribute['htmlOptions'] : [];
+                $input = CHtml::$inputType(get_class($model).'['.$name.']['.$modelKey.']', $model->$name, $htmlOptions);
+                $temp = str_replace("{input-$key}", $input, $temp);
+            endforeach;
+            ?>
+            <a href="#" class="remove-dynamic-field"><i class="icon icon-trash"></i></a>
+            <?php echo $temp;?>
         </div>
-        <a href="#" class="add-dynamic-field"><i class="icon icon-plus"></i></a>
-        <a href="#" class="remove-dynamic-field"><i class="icon icon-trash"></i></a>
-    </div>
-<?php else:?>
-    <div id="<?php echo $id;?>" class="dynamic-field-container" data-name="<?php echo get_class($model).'['.$attributeName.']';?>" data-max="<?php echo $max;?>">
-        <div class="input-container">
-            <?php if(empty($attributeValue)):?>
-                <?php echo CHtml::$inputType(get_class($model).'['.$attributeName.'][0]', '', $htmlOptions);?>
-            <?php else:?>
-                <?php foreach($attributeValue as $key=>$value):?>
-                    <?php echo CHtml::$inputType(get_class($model).'['.$attributeName.']['.$key.']', $value, $htmlOptions);?>
-                <?php endforeach;?>
-            <?php endif;?>
-        </div>
-        <a href="#" class="add-dynamic-field"><i class="icon icon-plus"></i></a>
-        <a href="#" class="remove-dynamic-field"><i class="icon icon-trash"></i></a>
-    </div>
-<?php endif;?>
+    <?php endforeach;?>
+</div>
+<div class="form-group">
+    <button class="<?php echo $addBtnClass;?> add-dynamic-input" data-input-container="#<?php echo $id;?>" data-count="1" type="button"><?php echo $addBtnTitle?></button>
+</div>

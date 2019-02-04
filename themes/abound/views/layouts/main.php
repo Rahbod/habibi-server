@@ -37,6 +37,7 @@
 
     $cs->registerCoreScript('jquery');
     $cs->registerCoreScript('jquery.ui');
+    $cs->registerCssFile(Yii::app()->clientScript->getCoreScriptUrl().'/jui/css/base/jquery-ui.css');
     $cs->registerScriptFile($baseUrl . '/js/bootstrap.min.js');
     $cs->registerScriptFile($baseUrl . '/js/bootstrap-select.min.js');
     $cs->registerScriptFile($baseUrl . '/js/app.min.js', CClientScript::POS_END);

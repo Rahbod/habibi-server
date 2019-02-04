@@ -46,8 +46,9 @@ class RequestsTariffsController extends Controller
 	/**
 	 * Creates a new model.
 	 * If creation is successful, the browser will be redirected to the 'view' page.
+     * @param $title string
 	 */
-	public function actionCreate()
+	public function actionCreate($title)
 	{
 		$model=new Tariffs;
 
@@ -63,6 +64,7 @@ class RequestsTariffsController extends Controller
 
 		$this->render('create',array(
 			'model'=>$model,
+			'type'=>$title,
 		));
 	}
 
@@ -115,16 +117,24 @@ class RequestsTariffsController extends Controller
 
 	/**
 	 * Manages all models.
+     * @param $title string
 	 */
-	public function actionAdmin()
+	public function actionAdmin($title)
 	{
 		$model=new Tariffs('search');
 		$model->unsetAttributes();  // clear any default values
 		if(isset($_GET['Tariffs']))
 			$model->attributes=$_GET['Tariffs'];
 
+		$types = [
+			'tariffs' => 0,
+			'pieces' => 1,
+		];
+		$model->type = $types[$title];
+
 		$this->render('admin',array(
 			'model'=>$model,
+            'type' => $title,
 		));
 	}
 

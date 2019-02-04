@@ -1,7 +1,12 @@
 <?php
 /* @var $this RequestsTariffsController */
 /* @var $model Tariffs */
+/* @var $type string */
 /* @var $form CActiveForm */
+
+$typeValue = $model->type;
+if($model->getIsNewRecord())
+	$typeValue = ($type == 'tariffs' ? Tariffs::TYPE_TARIFF : Tariffs::TYPE_PIECE);
 ?>
 <?php $this->renderPartial("//partial-views/_flashMessage"); ?><?php $form=$this->beginWidget('CActiveForm', array(
 	'id'=>'tariffs-form',
@@ -24,18 +29,7 @@
 		<?php echo $form->error($model,'description'); ?>
 	</div>
 
-	<div class="form-group">
-		<?php echo $form->labelEx($model,'cost'); ?>
-        <div class="row">
-            <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">
-                <div class="input-group">
-                    <?php echo $form->textField($model,'cost',array('class'=>'form-control digitFormat','size'=>10,'maxlength'=>10)); ?>
-                    <span class="input-group-addon">تومان</span>
-                </div>
-            </div>
-        </div>
-		<?php echo $form->error($model,'cost'); ?>
-	</div>
+	<?php echo $form->hiddenField($model, 'type', ['value' => $typeValue])?>
 
 	<div class="buttons">
 		<?php echo CHtml::submitButton($model->isNewRecord ? 'افزودن' : 'ویرایش',array('class' => 'btn btn-success')); ?>

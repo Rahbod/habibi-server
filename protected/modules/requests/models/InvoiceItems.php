@@ -5,8 +5,13 @@
  *
  * The followings are the available columns in table '{{invoice_items}}':
  * @property string $invoice_id
+ * @property string $piece_id
  * @property string $tariff_id
  * @property string $cost
+ * @property string $piece_title
+ * @property string $piece_cost
+ * @property string $tariff_title
+ * @property string $tariff_cost
  *
  * The followings are the available model relations:
  * @property Invoices $invoice
@@ -14,6 +19,11 @@
  */
 class InvoiceItems extends CActiveRecord
 {
+	public $piece_title;
+	public $piece_cost;
+	public $tariff_title;
+	public $tariff_cost;
+
 	/**
 	 * @return string the associated database table name
 	 */
@@ -30,7 +40,7 @@ class InvoiceItems extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('invoice_id, tariff_id', 'required'),
+			//array('invoice_id, tariff_id, cost', 'required'),
 			array('invoice_id, tariff_id, cost', 'length', 'max'=>10),
 			// The following rule is used by search().
 			// @todo Please remove those attributes that should not be searched.
@@ -58,8 +68,9 @@ class InvoiceItems extends CActiveRecord
 	{
 		return array(
             'invoice_id' => 'شناسه فاکتور',
+            'piece_id' => 'قطعه',
             'tariff_id' => 'اجرت',
-            'cost' => 'هزینه سرویس',
+            'cost' => 'مبلغ',
 		);
 	}
 
@@ -99,5 +110,18 @@ class InvoiceItems extends CActiveRecord
 	public static function model($className=__CLASS__)
 	{
 		return parent::model($className);
+	}
+
+	public function afterFind()
+	{
+		parent::afterFind();
+
+		if ($this->tariff->type == Tariffs::TYPE_PIECE) {
+			$this->piece_title = $this->tariff->title;
+			$this->piece_cost = $this->cost;
+		} else {
+			$this->tariff_title = $this->tariff->title;
+			$this->tariff_cost = $this->cost;
+		}
 	}
 }
