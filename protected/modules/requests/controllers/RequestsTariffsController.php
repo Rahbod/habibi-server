@@ -57,7 +57,8 @@ class RequestsTariffsController extends Controller
 			$model->attributes=$_POST['Tariffs'];
 			if($model->save()){
 				Yii::app()->user->setFlash('success', '<span class="icon-check"></span>&nbsp;&nbsp;اطلاعات با موفقیت ذخیره شد.');
-				$this->redirect(array('admin'));
+				$path = ($model->type == Tariffs::TYPE_PIECE) ? 'pieces' : 'tariffs';
+				$this->redirect(array('/requests/tariffs/admin/'.$path));
 			}else
 				Yii::app()->user->setFlash('failed', 'در ثبت اطلاعات خطایی رخ داده است! لطفا مجددا تلاش کنید.');
 		}

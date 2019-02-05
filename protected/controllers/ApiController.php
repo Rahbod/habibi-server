@@ -36,11 +36,14 @@ class ApiController extends ApiBaseController
                 $user->password = $mobile;
                 $user->status = Users::STATUS_PENDING;
                 $user->mobile = $mobile;
-//                $user->credit = SiteSetting::getOption('base_credit');
             }
 
             $user->verification_token = $code;
-            $user->save();
+            if($user->save()){
+                $userDetails = UserDetails::model()->findByAttributes(['user_id' => $user->id]);
+                $userDetails->credit = SiteSetting::getOption('base_credit');
+                $userDetails->save();
+            }
 
             Notify::SendSms("کد فعال سازی شما در آچارچی:\n" . $code, $mobile);
 
@@ -105,9 +108,25 @@ class ApiController extends ApiBaseController
             $userDetails->first_name = $this->request['name'];
             $userDetails->mobile = $this->user->username;
             $userDetails->push_token = $this->request['token'];
-            if ($userDetails->save())
+
+            $reagent = null;
+            if(isset($this->request['reagent']) and !empty($this->request['reagent'])){
+                $reagentID = substr($this->request['reagent'], 2);
+                if($reagent = Users::model()->findByPk($reagentID))
+                    $userDetails->reagent_id = $reagentID;
+            }
+            if ($userDetails->save()) {
+                if($reagent){
+                    /* @var UserDetails $reagentDetails */
+                    $reagentDetails = UserDetails::model()->findByAttributes(['user_id' => $reagent->id]);
+                    $reagentReward = SiteSetting::getOption('reagent_reward');
+                    $reagentDetails->credit += $reagentReward;
+                    if($reagentDetails->save())
+                        PushNotification::sendNotificationToUser($reagentDetails->push_token, 'افزایش اعتبار', 'مبلغ '.number_format($reagentReward).' تومان بابت معرفی "'.$userDetails->first_name.'" به کیف پول شما اضافه گردید.');
+                }
+
                 $this->_sendResponse(200, CJSON::encode(['status' => true, 'message' => 'اطلاعات با موفقیت ثبت شد.']));
-            else
+            }else
                 $this->_sendResponse(400, CJSON::encode(['status' => false, 'message' => 'در ثبت اطلاعات خطایی رخ داده است. لطفا مجددا تلاش کنید.']));
         } else
             $this->_sendResponse(400, CJSON::encode(['status' => false, 'message' => 'Name and Token variables is required.']));

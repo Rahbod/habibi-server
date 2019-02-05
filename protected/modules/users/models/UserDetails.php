@@ -15,6 +15,7 @@
  * @property string $push_token
  * @property string $additional_details
  * @property double $credit
+ * @property int $reagent_id
  *
  * The followings are the available model relations:
  * @property Users $user
@@ -38,7 +39,7 @@ class UserDetails extends CActiveRecord
         // will receive user inputs.
         return array(
             array('user_id', 'required'),
-            array('user_id, zip_code', 'length', 'max' => 10),
+            array('user_id, zip_code, reagent_id', 'length', 'max' => 10),
             array('first_name, last_name', 'length', 'max' => 50),
             array('mobile', 'length', 'is' => 11, 'message' => 'شماره موبایل اشتباه است'),
             array('phone', 'length', 'max' => 11),
@@ -49,7 +50,7 @@ class UserDetails extends CActiveRecord
             array('credit', 'numerical'),
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
-            array('user_id, first_name, last_name, phone, zip_code, address, avatar, mobile, push_token', 'safe', 'on' => 'search'),
+            array('user_id, first_name, last_name, phone, zip_code, address, avatar, mobile, push_token, reagent_id', 'safe', 'on' => 'search'),
         );
     }
 
@@ -62,6 +63,7 @@ class UserDetails extends CActiveRecord
         // class name for the relations automatically generated below.
         return array(
             'user' => array(self::BELONGS_TO, 'Users', 'user_id'),
+            'reagent' => array(self::BELONGS_TO, 'Users', 'reagent_id'),
         );
     }
 
@@ -82,6 +84,7 @@ class UserDetails extends CActiveRecord
             'mobile' => 'موبایل',
             'push_token' => 'Push Token',
             'additional_details' => 'اطلاعات اضافی',
+            'reagent_id' => 'معرف',
         );
     }
 
@@ -112,6 +115,7 @@ class UserDetails extends CActiveRecord
         $criteria->compare('avatar', $this->avatar, true);
         $criteria->compare('mobile', $this->mobile, true);
         $criteria->compare('push_token', $this->push_token, true);
+        $criteria->compare('reagent_id', $this->reagent_id, true);
 
         return new CActiveDataProvider($this, array(
             'criteria' => $criteria,
