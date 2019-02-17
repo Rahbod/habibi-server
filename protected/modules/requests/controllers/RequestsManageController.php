@@ -327,31 +327,38 @@ class RequestsManageController extends Controller
         }
 
         $invoice = $model->getLastInvoice();
-        if (!$invoice)
+        if (!$invoice) { // Save invoice
             $invoice = new Invoices();
-
-        // Save invoice
-        if (isset($_POST['Invoices'])) {
-            $model->status = Requests::STATUS_INVOICING;
-            $model->save();
-
             $invoice->request_id = $id;
             $invoice->creator_id = Yii::app()->user->getId();
-            $invoice->additional_cost = $_POST['Invoices']['additional_cost'];
-            $invoice->additional_description = $_POST['Invoices']['additional_description'];
-            $invoice->payment_method = $_POST['Invoices']['payment_method'];
+            $invoice->create_date = time();
             $invoice->modified_date = time();
             $invoice->status = Invoices::STATUS_UNPAID;
-
-            if ($invoice->getIsNewRecord())
-                $invoice->create_date = time();
-
-            if ($invoice->save()) {
-                Yii::app()->user->setFlash("success", "فاکتور با موفقیت صادر شد.");
-                $this->refresh();
-            } else
-                Yii::app()->user->setFlash("failed", "متاسفانه در ثبت اطلاعات مشکلی بوجود آمده است.");
+            $this->refresh();
         }
+
+        $model->status = Requests::STATUS_INVOICING;
+        $model->save();
+
+
+//        if (isset($_POST['Invoices'])) {
+//            $invoice->request_id = $id;
+//            $invoice->creator_id = Yii::app()->user->getId();
+//            $invoice->additional_cost = $_POST['Invoices']['additional_cost'];
+//            $invoice->additional_description = $_POST['Invoices']['additional_description'];
+//            $invoice->payment_method = $_POST['Invoices']['payment_method'];
+//            $invoice->modified_date = time();
+//            $invoice->status = Invoices::STATUS_UNPAID;
+//
+//            if ($invoice->getIsNewRecord())
+//                $invoice->create_date = time();
+//
+//            if ($invoice->save()) {
+//                Yii::app()->user->setFlash("success", "فاکتور با موفقیت صادر شد.");
+//                $this->refresh();
+//            } else
+//                Yii::app()->user->setFlash("failed", "متاسفانه در ثبت اطلاعات مشکلی بوجود آمده است.");
+//        }
 
         // Save invoice items
         if (isset($_POST['InvoiceItems'])) {
