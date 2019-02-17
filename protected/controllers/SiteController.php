@@ -61,7 +61,8 @@ class SiteController extends Controller
      */
     public function actionIndex()
     {
-        var_dump(md5('Rahbod-habibi-server-app-clientID-'.time()), md5('Rahbod-habibi-server-app-clientSecret-'.time()));exit;
+        $this->redirect(['/admins/login']);
+        //var_dump(md5('Rahbod-habibi-server-app-clientID-'.time()), md5('Rahbod-habibi-server-app-clientSecret-'.time()));exit;
 
         Yii::app()->theme = "frontend";
         $this->layout = "public";

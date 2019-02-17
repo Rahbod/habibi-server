@@ -139,7 +139,8 @@ class Controller extends AuthController
                     'items' => array(
                         array('label' => '<i class="fa fa-circle-o"></i>مدیریت درخواست ها', 'url' => Yii::app()->createUrl('/requests/manage/admin/')),
                         array('label' => '<i class="fa fa-circle-o"></i>مدیریت انواع لوازم', 'url' => Yii::app()->createUrl('/requests/categories/admin')),
-                        array('label' => '<i class="fa fa-circle-o"></i>مدیریت اجرت خدمات', 'url' => Yii::app()->createUrl('/requests/tariffs/admin/')),
+                        array('label' => '<i class="fa fa-circle-o"></i>مدیریت اجرت خدمات', 'url' => Yii::app()->createUrl('/requests/tariffs/admin/tariffs')),
+                        array('label' => '<i class="fa fa-circle-o"></i>مدیریت قطعه', 'url' => Yii::app()->createUrl('/requests/tariffs/admin/pieces')),
 //                        array('label' => '<i class="fa fa-circle-o"></i>مدیریت برندها و مدل ها', 'url' => Yii::app()->createUrl('/requests/brands/admin')),
                     )
                 ),

@@ -8,12 +8,21 @@
  * @property string $title
  * @property string $description
  * @property string $cost
+ * @property int $type
  *
  * The followings are the available model relations:
  * @property Invoices[] $ymInvoices
  */
 class Tariffs extends CActiveRecord
 {
+	const TYPE_TARIFF = 0;
+	const TYPE_PIECE = 1;
+
+	public static $typeLabels = [
+		self::TYPE_TARIFF => 'اجرت',
+		self::TYPE_PIECE => 'قطعه'
+	];
+
 	/**
 	 * @return string the associated database table name
 	 */
@@ -30,13 +39,15 @@ class Tariffs extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('title, cost', 'required'),
+			array('title', 'required'),
 			array('title', 'length', 'max'=>255),
 			array('description', 'length', 'max'=>1024),
 			array('cost', 'length', 'max'=>10),
+			array('type', 'length', 'max'=>1),
+            array('type', 'numerical', 'integerOnly' => true),
 			// The following rule is used by search().
 			// @todo Please remove those attributes that should not be searched.
-			array('id, title, description, cost', 'safe', 'on'=>'search'),
+			array('id, title, description, cost, type', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -62,6 +73,7 @@ class Tariffs extends CActiveRecord
 			'title' => 'عنوان',
 			'description' => 'توضیحات',
 			'cost' => 'مبلغ',
+			'type' => 'نوع',
 		);
 	}
 
@@ -87,7 +99,7 @@ class Tariffs extends CActiveRecord
 		$criteria->compare('title',$this->title,true);
 		$criteria->compare('description',$this->description,true);
 		$criteria->compare('cost',$this->cost,true);
-		$criteria->addCondition('id <> 1');
+		$criteria->compare('type',$this->type);
 		$criteria->order = 'id DESC';
 		return new CActiveDataProvider($this, array(
 			'criteria'=>$criteria,

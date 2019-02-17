@@ -1,0 +1,17 @@
+.remove-dynamic-field{
+    width: 20px;
+    height:34px;
+    float: right;
+    margin-left: 15px;
+    vertical-align: middle;
+}
+.remove-dynamic-field .icon-trash{
+    width: 20px;
+    height:34px;
+    display: inline-block;
+    background: url("trash.svg") no-repeat center;
+    background-size: 20px;
+}
+.dynamic-input-container:first-child .remove-dynamic-field{
+    display: none;
+}

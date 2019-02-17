@@ -39,6 +39,8 @@ class RequestsManageController extends Controller
                 'my',
                 'deleteInvoiceItem',
                 'print',
+                'searchPiece',
+                'searchTariff',
             )
         );
     }
@@ -327,68 +329,90 @@ class RequestsManageController extends Controller
         }
 
         $invoice = $model->getLastInvoice();
-        if (!$invoice) { // Save invoice
+        if (!$invoice)
             $invoice = new Invoices();
-            $invoice->request_id = $id;
-            $invoice->creator_id = Yii::app()->user->getId();
-            $invoice->create_date = time();
-            $invoice->modified_date = time();
-            $invoice->status = Invoices::STATUS_UNPAID;
-            $this->refresh();
-        }
-
-        $model->status = Requests::STATUS_INVOICING;
-        $model->save();
-
-
-//        if (isset($_POST['Invoices'])) {
-//            $invoice->request_id = $id;
-//            $invoice->creator_id = Yii::app()->user->getId();
-//            $invoice->additional_cost = $_POST['Invoices']['additional_cost'];
-//            $invoice->additional_description = $_POST['Invoices']['additional_description'];
-//            $invoice->payment_method = $_POST['Invoices']['payment_method'];
-//            $invoice->modified_date = time();
-//            $invoice->status = Invoices::STATUS_UNPAID;
-//
-//            if ($invoice->getIsNewRecord())
-//                $invoice->create_date = time();
-//
-//            if ($invoice->save()) {
-//                Yii::app()->user->setFlash("success", "فاکتور با موفقیت صادر شد.");
-//                $this->refresh();
-//            } else
-//                Yii::app()->user->setFlash("failed", "متاسفانه در ثبت اطلاعات مشکلی بوجود آمده است.");
-//        }
 
         // Save invoice items
-        if (isset($_POST['InvoiceItems'])) {
-            if (!InvoiceItems::model()->find('invoice_id = :inID AND tariff_id = :tID', [':inID' => $invoice->id, ':tID' => $_POST['InvoiceItems']['tariff_id']])) {
-                $invoiceItem = new InvoiceItems();
-                $invoiceItem->attributes = $_POST['InvoiceItems'];
-                $tariff = Tariffs::model()->findByPk($invoiceItem->tariff_id);
-                if (!$invoiceItem->cost)
-                    $invoiceItem->cost = $tariff->cost;
-                else if ($invoiceItem->cost < $tariff->cost) {
-                    $invoice->total_discount += intval($tariff->cost - $invoiceItem->cost);
-                    $invoice->save(false);
-                }
-                $invoiceItem->invoice_id = $invoice->id;
+        if (isset($_POST['saveItems'])) {
+            InvoiceItems::model()->deleteAll('invoice_id = :id', [':id' => $invoice->id]);
 
-                if ($invoiceItem->save()) {
-                    Yii::app()->user->setFlash("success", "اجرت با موفقیت ثبت شد.");
-                    $this->refresh();
-                } else
-                    Yii::app()->user->setFlash("failed", "متاسفانه در ثبت اطلاعات مشکلی بوجود آمده است.");
+            // Save pieces
+            foreach ($_POST['InvoiceItems']['piece_title'] as $key => $invoiceItem) {
+                /* @var Tariffs $piece */
+                $piece = Tariffs::model()->find('title = :title', [':title' => $invoiceItem]);
+
+                if (!$piece) {
+                    $piece = new Tariffs();
+                    $piece->title = $invoiceItem;
+                    $piece->type = Tariffs::TYPE_PIECE;
+                    $piece->save();
+                }
+
+                $invoiceItem = new InvoiceItems();
+                $invoiceItem->tariff_id = $piece->id;
+                $invoiceItem->invoice_id = $invoice->id;
+                $invoiceItem->cost = $_POST['InvoiceItems']['piece_cost'][$key];
+                $invoiceItem->save();
+            }
+
+            // Save tariffs
+            foreach ($_POST['InvoiceItems']['tariff_title'] as $key => $invoiceItem) {
+                /* @var Tariffs $tariff */
+                $tariff = Tariffs::model()->find('title = :title', [':title' => $invoiceItem]);
+
+                if (!$tariff) {
+                    $tariff = new Tariffs();
+                    $tariff->title = $invoiceItem;
+                    $tariff->type = Tariffs::TYPE_TARIFF;
+                    $tariff->save();
+                }
+
+                $invoiceItem = new InvoiceItems();
+                $invoiceItem->tariff_id = $tariff->id;
+                $invoiceItem->invoice_id = $invoice->id;
+                $invoiceItem->cost = $_POST['InvoiceItems']['tariff_cost'][$key];
+                $invoiceItem->save();
+            }
+
+            $invoice->additional_cost = $_POST['Invoices']['additional_cost'] ?: 0;
+            $invoice->discount_percent = $_POST['Invoices']['discount_percent'] ?: 0;
+            $invoice->credit_increase_percent = $_POST['Invoices']['credit_increase_percent'] ?: 0;
+            $invoice->total_discount = $invoice->totalDiscount();
+
+            if ($invoice->save()) {
+                Yii::app()->user->setFlash("success", "اجرت با موفقیت ثبت شد.");
+                $this->refresh();
             } else
-                Yii::app()->user->setFlash("failed", "این اجرت قبلا در فاکتور ثبت شده!");
+                Yii::app()->user->setFlash("failed", "متاسفانه در ثبت اطلاعات مشکلی بوجود آمده است.");
+        }
+
+        // Save invoice
+        if (isset($_POST['Invoices']['payment_method'])) {
+            $model->status = Requests::STATUS_INVOICING;
+            $model->save();
+
+            $invoice->request_id = $id;
+            $invoice->creator_id = Yii::app()->user->getId();
+            $invoice->payment_method = $_POST['Invoices']['payment_method'];
+            $invoice->modified_date = time();
+            $invoice->status = Invoices::STATUS_UNPAID;
+
+            if ($invoice->getIsNewRecord())
+                $invoice->create_date = time();
+
+            if ($invoice->save()) {
+                Yii::app()->user->setFlash("success", "اطلاعات با موفقیت ثبت شد.");
+                $this->refresh();
+            } else
+                Yii::app()->user->setFlash("failed", "متاسفانه در ثبت اطلاعات مشکلی بوجود آمده است.");
         }
 
         // Confirm invoice
         if (isset($_POST['confirm'])) {
-            $model->status = Requests::STATUS_PAID;
+            $model->status = Requests::STATUS_AWAITING_PAYMENT;
             $model->save();
 
-            $invoice->final_cost = $invoice->totalCost();
+            $invoice->final_cost = $invoice->finalCost();
             $invoice->save();
 
             PushNotification::sendDataToUser($model->user->userDetails->push_token, [
@@ -400,11 +424,20 @@ class RequestsManageController extends Controller
             $this->redirect(array('/requests/' . $model->id . '#invoice-panel'));
         }
 
-        $invoiceItems = new InvoiceItems('search');
-        $invoiceItems->unsetAttributes();
-        $invoiceItems->invoice_id = $invoice->id;
+        $pieceModels = [new InvoiceItems()];
+        $tariffModels = [new InvoiceItems()];
+        if (!$invoice->getIsNewRecord() and $invoice->items) {
+            $pieceModels = [];
+            $tariffModels = [];
+            foreach ($invoice->items as $item) {
+                if ($item->tariff->type == Tariffs::TYPE_PIECE)
+                    $pieceModels[] = $item;
+                else
+                    $tariffModels[] = $item;
+            }
+        }
 
-        $this->render('create_invoice', compact('model', 'invoice', 'invoiceItems'));
+        $this->render('create_invoice', compact('model', 'invoice', 'pieceModels', 'tariffModels'));
     }
 
     public function actionDeleteInvoiceItem()
@@ -429,5 +462,33 @@ class RequestsManageController extends Controller
         $model = $this->loadModel($id);
         $invoice = $model->getLastInvoice();
         $this->render('print', compact('model', 'invoice'));
+    }
+
+    public function actionSearchPiece()
+    {
+        $term = $_GET['term'];
+
+        /* @var Tariffs[] $tariffs */
+        $tariffs = Tariffs::model()->findAll('title LIKE :term AND type = 1', [':term' => "%$term%"]);
+
+        $result = [];
+        foreach($tariffs as $tariff)
+            $result[] = $tariff->title;
+
+        echo json_encode($result);
+    }
+
+    public function actionSearchTariff()
+    {
+        $term = $_GET['term'];
+
+        /* @var Tariffs[] $tariffs */
+        $tariffs = Tariffs::model()->findAll('title LIKE :term AND type = 0', [':term' => "%$term%"]);
+
+        $result = [];
+        foreach($tariffs as $tariff)
+            $result[] = $tariff->title;
+
+        echo json_encode($result);
     }
 }

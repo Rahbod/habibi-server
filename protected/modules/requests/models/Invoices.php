@@ -15,6 +15,8 @@
  * @property string $final_cost
  * @property string $status
  * @property string $total_discount
+ * @property string $discount_percent
+ * @property string $credit_increase_percent
  *
  * The followings are the available model relations:
  * @property InvoiceItems[] $items
@@ -56,13 +58,14 @@ class Invoices extends CActiveRecord
 		return array(
 			array('request_id, creator_id, create_date, modified_date', 'required'),
 			array('total_discount, request_id, creator_id, additional_cost, final_cost', 'length', 'max'=>10),
+			//array('discount_percent, credit_increase_percent', 'length', 'max'=>3),
 			array('payment_method', 'length', 'max'=>7),
 			array('status', 'length', 'max'=>1),
 			array('create_date, modified_date', 'length', 'max'=>12),
 			array('additional_description', 'safe'),
 			// The following rule is used by search().
 			// @todo Please remove those attributes that should not be searched.
-			array('id, total_discount, request_id, creator_id, additional_cost, additional_description, payment_method, create_date, modified_date, final_cost', 'safe', 'on'=>'search'),
+			array('id, total_discount, discount_percent, credit_increase_percent, request_id, creator_id, additional_cost, additional_description, payment_method, create_date, modified_date, final_cost', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -98,6 +101,8 @@ class Invoices extends CActiveRecord
             'final_cost' => 'هزینه کل',
             'status' => 'وضعیت',
             'total_discount' => 'جمع تخفیفات',
+            'discount_percent' => 'تخفیف',
+            'credit_increase_percent' => 'تخصیص اعتبار به کاربر',
 		);
 	}
 
@@ -129,6 +134,8 @@ class Invoices extends CActiveRecord
 		$criteria->compare('modified_date',$this->modified_date,true);
 		$criteria->compare('final_cost',$this->final_cost,true);
 		$criteria->compare('total_discount',$this->total_discount,true);
+		$criteria->compare('discount_percent',$this->discount_percent,true);
+		$criteria->compare('credit_increase_percent',$this->credit_increase_percent,true);
 		$criteria->order = 'id DESC';
 		return new CActiveDataProvider($this, array(
 			'criteria'=>$criteria,
@@ -176,8 +183,24 @@ class Invoices extends CActiveRecord
 	{
 		$itemsCost = 0;
 		foreach($this->items as $item)
-			$itemsCost += $item->cost;
+			$itemsCost += floatval($item->cost);
 
-		return $itemsCost + $this->additional_cost;
+		return $itemsCost + floatval($this->additional_cost);
 	}
+
+    public function finalCost()
+	{
+        return $this->totalCost() - $this->totalDiscount();
+	}
+
+    public function totalDiscount()
+	{
+        $total = $this->totalCost();
+		return ($total * $this->discount_percent) / 100;
+	}
+
+    public function creditIncrease()
+    {
+        return ($this->totalCost() * $this->credit_increase_percent) / 100;
+    }
 }

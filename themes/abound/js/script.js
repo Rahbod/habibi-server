@@ -27,6 +27,8 @@ $(function () {
             $(this).remove();
         });
     },5000);
+
+    $('.auto-complete').autoComplete();
 });
 
 
@@ -47,6 +49,16 @@ $.fn.numericFormat = function () {
         $(this).val(function (index, value) {
             return value
                 .replace(/\D/g, "");
+        });
+    });
+};
+
+$.fn.autoComplete = function () {
+    this.each(function () {
+        var source = $(this).data('source');
+
+        $(this).autocomplete({
+            source: source
         });
     });
 };

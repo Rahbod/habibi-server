@@ -1,23 +1,21 @@
 <?php
 /* @var $this RequestsTariffsController */
 /* @var $model Tariffs */
+/* @var $type string */
 
 $this->breadcrumbs=array(
 	'مدیریت',
-);
-
-$this->menu=array(
-	array('label'=>'افزودن Tariffs', 'url'=>array('create')),
 );
 ?>
 
 <div class="box box-primary">
     <div class="box-header with-border">
-        <h3 class="box-title">مدیریت اجرت ها</h3>
-        <a href="<?= $this->createUrl('create') ?>" class="btn btn-default btn-sm">افزودن اجرت جدید</a>
+        <h3 class="box-title"><?php echo $type == 'tariffs' ? 'مدیریت اجرت ها' : 'مدیریت قطعات'?></h3>
+        <a href="<?= $this->createUrl('tariffs/create/'.$type) ?>" class="btn btn-default btn-sm">افزودن <?php echo $type == 'tariffs' ? 'اجرت' : 'قطعه'?> جدید</a>
     </div>
     <div class="box-body">
-        <?php $this->renderPartial("//partial-views/_flashMessage"); ?>        <div class="table-responsive">
+        <?php $this->renderPartial("//partial-views/_flashMessage"); ?>
+        <div class="table-responsive">
             <?php $this->widget('zii.widgets.grid.CGridView', array(
                 'id'=>'tariffs-grid',
                 'dataProvider'=>$model->search(),
@@ -44,10 +42,6 @@ $this->menu=array(
                 'pagerCssClass' => 'blank',
                 'columns'=>array(
                     'title',
-                    [
-                        'name' => 'cost',
-                        'value' => function($data){ return Controller::parseNumbers(number_format($data->cost)).' تومان';}
-                    ],
                     array(
                         'class'=>'CButtonColumn',
                         'template' => '{update} {delete}'

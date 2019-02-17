@@ -2,59 +2,59 @@
 class dynamicField extends CInputWidget
 {
     public $id;
-    public $attributeName = null;
-    public $attributeValue = array();
-    public $inputType = null;
-    public $htmlOptions = array();
-    public $max = 10;
+    public $attributes = [];
+    public $template = '{input-0}';
+    public $addButton = [];
+    public $afterAdd = null;
+    public $max = false;
+    public $models;
+
+    private $publishedAssetsPath;
 
     public function init()
     {
-        if(is_null($this->attributeName))
-            throw new CHttpException( 500, 'attributeName تنظیم نشده است.' );
+        if (empty($this->attributes))
+            throw new CHttpException(500, 'attributes تنظیم نشده است.');
 
-        if(!is_array($this->attributeValue) and !is_null($this->attributeValue))
-            throw new CHttpException( 500, 'attributeValue باید از نوع آرایه باشد.' );
+        foreach ($this->attributes as $key => $value)
+            if (strpos($this->template, "{input-$key}") === false)
+                throw new CHttpException(500, "رشته {input-$key} در مشخصه template وجود ندارد.");
 
-        if(is_null($this->inputType))
-            throw new CHttpException( 500, 'inputType تنظیم نشده است.' );
+        if (Yii::getPathOfAlias('dynamicField') === false)
+            Yii::setPathOfAlias('dynamicField', realpath(dirname(__FILE__) . '/..'));
 
-        if(Yii::getPathOfAlias('dynamicField') === false) Yii::setPathOfAlias('dynamicField', realpath(dirname(__FILE__) . '/..'));
         $cs = Yii::app()->clientScript;
+        $cs->registerScriptFile($this->getAssetsUrl() . DIRECTORY_SEPARATOR . 'dynamic-field.js');
+        $cs->registerCssFile($this->getAssetsUrl() . DIRECTORY_SEPARATOR . 'dynamic-field.css');
 
-        $js = "
-            $('body').on('click', '#$this->id .add-dynamic-field', function () {
-                var parent = $(this).parents('.dynamic-field-container'),
-                    input = document.createElement('input');
-                if (parent.find('.dynamic-field').length < parseInt(parent.data('max'))) {
-                    input.type = parent.find('.dynamic-field').attr('type');
-                    input.name = parent.data('name') + '[' + parent.find('.dynamic-field').length + ']';
-                    if(typeof parent.find('.dynamic-field').attr('placeholder') != 'undefined')
-                        input.placeholder = parent.find('.dynamic-field').attr('placeholder');
-                    input.className = parent.find('.dynamic-field').attr('class');
-                    $(parent).find('.input-container').append(input);
-                }
-                return false;
-            });
+        if (!is_null($this->afterAdd))
+            $cs->registerScript(__CLASS__ . $this->id, 'window.dynamicFieldCallback = ' . $this->afterAdd, CClientScript::POS_END);
 
-            $('body').on('click', '#$this->id .remove-dynamic-field', function () {
-                var parent = $(this).parents('.dynamic-field-container');
-                if (parent.find('.dynamic-field').length > 1)
-                    parent.find('.dynamic-field:last').remove();
-                return false;
-            });
-        ";
-        $cs->registerScript(__CLASS__ . $this->id, $js, CClientScript::POS_READY);
-//        $inputType = $this->inputType;
-//        echo CHtml::$inputType($this->id, '', $this->htmlOptions);
+        if(!isset($this->addButton['class']))
+            $this->addButton['class'] = 'btn btn-primary';
+
+        if(!isset($this->addButton['title']))
+            $this->addButton['title'] = 'افزودن ردیف جدید';
+
         $this->render('html', array(
-            'model'=>$this->model,
-            'attributeName'=>$this->attributeName,
-            'attributeValue'=>$this->attributeValue?$this->attributeValue:array(),
-            'max'=>$this->max,
-            'inputType'=>$this->inputType,
-            'htmlOptions'=>$this->htmlOptions,
-            'id'=>$this->id,
+            'models' => $this->models,
+            'attributes' => $this->attributes,
+            'max' => $this->max,
+            'id' => $this->id,
+            'template' => $this->template,
+            'addBtnClass' => $this->addButton['class'],
+            'addBtnTitle' => $this->addButton['title'],
         ));
+    }
+
+    public function getAssetsUrl()
+    {
+        if (!isset($this->publishedAssetsPath)) {
+            $assetsSourcePath = Yii::getPathOfAlias('ext.dynamicField.assets');
+
+            $publishedAssetsPath = Yii::app()->assetManager->publish($assetsSourcePath, false, -1);
+
+            return $this->publishedAssetsPath = $publishedAssetsPath;
+        } else return $this->publishedAssetsPath;
     }
 }
