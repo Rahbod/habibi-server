@@ -39,7 +39,7 @@ class ApiController extends ApiBaseController
             }
 
             $user->verification_token = $code;
-            if($user->save()){
+            if ($user->save()) {
                 $userDetails = UserDetails::model()->findByAttributes(['user_id' => $user->id]);
                 $userDetails->credit = SiteSetting::getOption('base_credit');
                 $userDetails->save();
@@ -110,23 +110,27 @@ class ApiController extends ApiBaseController
             $userDetails->push_token = $this->request['token'];
 
             $reagent = null;
-            if(isset($this->request['reagent']) and !empty($this->request['reagent'])){
+            if (isset($this->request['reagent']) and !empty($this->request['reagent'])) {
                 $reagentID = substr($this->request['reagent'], 2);
-                if($reagent = Users::model()->findByPk($reagentID))
+                if ($reagent = Users::model()->findByPk($reagentID))
                     $userDetails->reagent_id = $reagentID;
             }
             if ($userDetails->save()) {
-                if($reagent){
+                if ($reagent) {
                     /* @var UserDetails $reagentDetails */
                     $reagentDetails = UserDetails::model()->findByAttributes(['user_id' => $reagent->id]);
                     $reagentReward = SiteSetting::getOption('reagent_reward');
                     $reagentDetails->credit += $reagentReward;
-                    if($reagentDetails->save())
-                        PushNotification::sendNotificationToUser($reagentDetails->push_token, 'افزایش اعتبار', 'مبلغ '.number_format($reagentReward).' تومان بابت معرفی "'.$userDetails->first_name.'" به کیف پول شما اضافه گردید.');
+                    if ($reagentDetails->save())
+                        PushNotification::sendNotificationToUser($reagentDetails->push_token, 'افزایش اعتبار', 'مبلغ ' . number_format($reagentReward) . ' تومان بابت معرفی "' . $userDetails->first_name . '" به کیف پول شما اضافه گردید.');
                 }
 
-                $this->_sendResponse(200, CJSON::encode(['status' => true, 'message' => 'اطلاعات با موفقیت ثبت شد.']));
-            }else
+                $this->_sendResponse(200, CJSON::encode([
+                    'status' => true,
+                    'reagentCode' => 'AR' . $this->user->id,
+                    'message' => 'اطلاعات با موفقیت ثبت شد.'
+                ]));
+            } else
                 $this->_sendResponse(400, CJSON::encode(['status' => false, 'message' => 'در ثبت اطلاعات خطایی رخ داده است. لطفا مجددا تلاش کنید.']));
         } else
             $this->_sendResponse(400, CJSON::encode(['status' => false, 'message' => 'Name and Token variables is required.']));
@@ -152,7 +156,7 @@ class ApiController extends ApiBaseController
     public function actionCredit()
     {
         $userDetails = UserDetails::model()->findByAttributes(['user_id' => $this->user->id]);
-        $this->_sendResponse(200, CJSON::encode(['status' => true,'credit' => (int)$userDetails->credit ,'showCredit' => number_format($userDetails->credit).' تومان']));
+        $this->_sendResponse(200, CJSON::encode(['status' => true, 'credit' => (int)$userDetails->credit, 'showCredit' => number_format($userDetails->credit) . ' تومان']));
     }
 
     /**
@@ -169,7 +173,7 @@ class ApiController extends ApiBaseController
             $cr->params = array(':pid' => $this->request['parent']);
             $cr->order = 't.order';
             $models = Categories::model()->findAll($cr);
-        }else
+        } else
             $models = Categories::Parents(false);
 
         foreach ($models as $category)
@@ -219,9 +223,9 @@ class ApiController extends ApiBaseController
             $address->place_id = 274;
             $address->emergency_tel = $this->request['telephone'];
             $address->postal_address = $this->request['address'];
-            $address->map_lat = isset($this->request['map_lat'])?$this->request['map_lat']:"";
-            $address->map_lng = isset($this->request['map_lng'])?$this->request['map_lng']:"";
-            $address->map_zoom = isset($this->request['map_zoom'])?$this->request['map_zoom']:15;
+            $address->map_lat = isset($this->request['map_lat']) ? $this->request['map_lat'] : "";
+            $address->map_lng = isset($this->request['map_lng']) ? $this->request['map_lng'] : "";
+            $address->map_zoom = isset($this->request['map_zoom']) ? $this->request['map_zoom'] : 15;
 
             if ($address->save())
                 $this->_sendResponse(200, CJSON::encode([
@@ -332,7 +336,7 @@ class ApiController extends ApiBaseController
                 'description' => $request->description,
                 'requestedDate' => JalaliDate::date("d F Y", ($request->requested_date ?: $request->service_date)),
                 'requestedTime' => $request->requested_time ?: $request->service_time,
-                'status' => intval($request->status),
+                'status' => $request->status,
                 'repairMan' => null,
                 'invoice' => null,
                 'rating' => null,
@@ -363,7 +367,7 @@ class ApiController extends ApiBaseController
                 ];
             }
 
-            if ($invoice = $request->getLastInvoice() and $request->status != Requests::STATUS_DELETED) {
+            if ($invoice = $request->getLastInvoice(true) and $request->status != Requests::STATUS_DELETED) {
                 $tariffs = [];
 
                 foreach ($invoice->items as $item)
@@ -372,12 +376,20 @@ class ApiController extends ApiBaseController
                         'cost' => number_format($item->cost) . ' تومان',
                     ];
 
+                if ($invoice->additional_cost)
+                    $tariffs[] = [
+                        'title' => 'هزینه اضافی',
+                        'cost' => number_format($invoice->additional_cost) . ' تومان',
+                    ];
+
                 $temp['invoice'] = [
-                    'cost' => number_format($invoice->final_cost) . ' تومان',
-                    'totalDiscount' => $invoice->total_discount ? number_format($invoice->total_discount) . ' تومان' : 0,
+                    'id' => intval($invoice->id),
+                    'sum' => number_format($invoice->totalCost()) . ' تومان',
+                    'finalCost' => number_format($invoice->finalCost()) . ' تومان',
+                    'discountPercent' => $invoice->discount_percent ? '('.$invoice->discount_percent . '%)' : 0,
+                    'discount' => $invoice->total_discount ? number_format($invoice->total_discount) . ' تومان' : 0,
                     'additionalCost' => $invoice->additional_cost ? number_format($invoice->additional_cost) . ' تومان' : 0,
                     'description' => $invoice->additional_description,
-                    'paymentMethod' => $invoice->payment_method,
                     'status' => $invoice->status,
                     'tariffs' => $tariffs,
                 ];
@@ -446,8 +458,8 @@ class ApiController extends ApiBaseController
     public function actionRate()
     {
         $requestId = $this->request['requestID'];
-        $comment = isset($this->request['comment'])?strip_tags($this->request['comment']):"";
-        $rates = isset($this->request['rates'])?$this->request['rates']:[];
+        $comment = isset($this->request['comment']) ? strip_tags($this->request['comment']) : "";
+        $rates = isset($this->request['rates']) ? $this->request['rates'] : [];
         /** @var $request Requests */
         $request = Requests::model()->findByPk($requestId);
         if ($request) {
@@ -456,7 +468,7 @@ class ApiController extends ApiBaseController
             $rate->repairman_id = $request->repairman_id;
             $rate->rates = $rates;
             $rate->comment = $comment;
-            if($rate->save())
+            if ($rate->save())
                 $this->_sendResponse(200, CJSON::encode([
                     'status' => true,
                     'message' => 'نظر شما با موفقیت ثبت شد.',
@@ -487,7 +499,7 @@ class ApiController extends ApiBaseController
                 $transaction->gateway_name = UserTransactions::GATEWAY_ZARINPAL;
                 $transaction->model_name = Requests::class;
                 $transaction->model_id = $model->id;
-                if($transaction->save()) {
+                if ($transaction->save()) {
                     $CallbackURL = Yii::app()->getBaseUrl(true) . '/verifyPlan/' . $id;
                     $result = Yii::app()->zarinpal->PayRequest(
                         doubleval($transaction->amount),
@@ -520,7 +532,7 @@ class ApiController extends ApiBaseController
         $transaction = UserTransactions::model()->findByPk($id);
         if ($transaction and $transaction->status == 'unpaid') {
             $Amount = doubleval($transaction->amount);
-            if($transaction->user_id == 150)
+            if ($transaction->user_id == 150)
                 $Amount = 100 * 10; //Amount will be based on Toman  - Required
             $CallbackURL = Yii::app()->getBaseUrl(true) . '/api/verifyTransaction';  // Required
             if ($transaction->gateway == UserTransactions::GATEWAY_MELLAT) {
@@ -600,6 +612,34 @@ class ApiController extends ApiBaseController
             $this->_sendResponse(200, CJSON::encode([
                 'status' => false,
                 'message' => 'ID variable is required.'
+            ]));
+    }
+
+    public function actionSetPaymentMethod()
+    {
+        if (isset($this->request['id']) and isset($this->request['method'])) {
+            /* @var Invoices $invoice */
+            $invoice = Invoices::model()->findByPk($this->request['id']);
+
+            $invoice->payment_method = $this->request['method'];
+            $invoice->status = Invoices::STATUS_PAID;
+            if ($invoice->save()) {
+                $invoice->request->status = Requests::STATUS_PAID;
+                $invoice->request->save();
+
+                $this->_sendResponse(200, CJSON::encode([
+                    'status' => true,
+                    'message' => 'عملیات با موفقیت انجام شد.'
+                ]));
+            }else
+                $this->_sendResponse(200, CJSON::encode([
+                    'status' => false,
+                    'message' => 'در ثبت اطلاعات خطایی رخ داده است لطفا مجددا تلاش کنید.'
+                ]));
+        } else
+            $this->_sendResponse(200, CJSON::encode([
+                'status' => false,
+                'message' => 'ID and Method variables is required.'
             ]));
     }
 }

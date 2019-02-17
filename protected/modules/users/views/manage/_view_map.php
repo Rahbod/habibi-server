@@ -11,7 +11,7 @@ $mapZoom = 15;
 $cssClass = isset($cssClass)?$cssClass:"";
 $id = isset($id)?$id:"google-map";
 
-if($map_model) {
+if($map_model->map_lat) {
     Yii::app()->clientScript->registerScriptFile('https://maps.googleapis.com/maps/api/js?key=AIzaSyDbhMDAxCreEWc5Due7477QxAVuBAJKdTM');
     Yii::app()->clientScript->registerScript('googleMap', "
     var map;

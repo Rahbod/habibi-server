@@ -409,7 +409,7 @@ class RequestsManageController extends Controller
 
         // Confirm invoice
         if (isset($_POST['confirm'])) {
-            $model->status = Requests::STATUS_PAID;
+            $model->status = Requests::STATUS_AWAITING_PAYMENT;
             $model->save();
 
             $invoice->final_cost = $invoice->finalCost();
