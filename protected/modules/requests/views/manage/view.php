@@ -192,6 +192,12 @@ $invoice = $model->getLastInvoice(true);
             <i class="fa fa-print"></i>
             چاپ فاکتور
         </a>
+        <?php if(empty($invoice->final_cost)): ?>
+        <a href="<?= $this->createUrl("invoicing", array("id" => $model->id)) ?>" class="pull-left btn btn-sm btn-gray" style="margin-left: 5px">
+            <i class="fa fa-pencil"></i>
+            ویرایش فاکتور
+        </a>
+        <?php endif;?>
     </div>
     <div class="panel-body">
         <?php $this->renderPartial('//partial-views/_flashMessage', array('prefix' => 'invoice-')) ?>

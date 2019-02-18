@@ -8,7 +8,9 @@
 
 <?php $this->renderPartial("//partial-views/_flashMessage"); ?>
 
-<div class="panel panel-primary">
+<? /*
+// select payment method form 
+ <div class="panel panel-primary">
     <div class="panel-heading">نوع پرداخت</div>
     <div class="panel-body">
         <?php $invoiceForm=$this->beginWidget('CActiveForm', array(
@@ -36,16 +38,25 @@
         <?php $this->endWidget(); ?>
     </div>
 </div>
+*/?>
 
 <?php if(!$invoice->getIsNewRecord()):?>
-    <?php $form=$this->beginWidget('CActiveForm', array(
-        'id'=>'invoice-pieces-form',
+    <?php $invoiceForm=$this->beginWidget('CActiveForm', array(
+        'id'=>'invoice-form',
         'enableAjaxValidation'=>false,
         'enableClientValidation'=>true,
         'clientOptions' => [
             'validateOnSubmit' => true,
         ]
     )); ?>
+<!--    --><?php //$form=$this->beginWidget('CActiveForm', array(
+//        'id'=>'invoice-pieces-form',
+//        'enableAjaxValidation'=>false,
+//        'enableClientValidation'=>true,
+//        'clientOptions' => [
+//            'validateOnSubmit' => true,
+//        ]
+//    )); ?>
         <div class="panel panel-primary">
             <div class="panel-heading">قطعات و اجرت</div>
             <div class="panel-body">

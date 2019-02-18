@@ -329,8 +329,16 @@ class RequestsManageController extends Controller
         }
 
         $invoice = $model->getLastInvoice();
-        if (!$invoice)
+        if (!$invoice) {
             $invoice = new Invoices();
+            $invoice->request_id = $id;
+            $invoice->creator_id = Yii::app()->user->getId();
+            $invoice->create_date = time();
+            $invoice->modified_date = time();
+            $invoice->status = Invoices::STATUS_UNPAID;
+            $invoice->save();
+            $this->refresh();
+        }
 
         // Save invoice items
         if (isset($_POST['saveItems'])) {
@@ -387,25 +395,25 @@ class RequestsManageController extends Controller
         }
 
         // Save invoice
-        if (isset($_POST['Invoices']['payment_method'])) {
-            $model->status = Requests::STATUS_INVOICING;
-            $model->save();
-
-            $invoice->request_id = $id;
-            $invoice->creator_id = Yii::app()->user->getId();
-            $invoice->payment_method = $_POST['Invoices']['payment_method'];
-            $invoice->modified_date = time();
-            $invoice->status = Invoices::STATUS_UNPAID;
-
-            if ($invoice->getIsNewRecord())
-                $invoice->create_date = time();
-
-            if ($invoice->save()) {
-                Yii::app()->user->setFlash("success", "اطلاعات با موفقیت ثبت شد.");
-                $this->refresh();
-            } else
-                Yii::app()->user->setFlash("failed", "متاسفانه در ثبت اطلاعات مشکلی بوجود آمده است.");
-        }
+//        if (isset($_POST['Invoices']['payment_method'])) {
+//            $model->status = Requests::STATUS_INVOICING;
+//            $model->save();
+//
+//            $invoice->request_id = $id;
+//            $invoice->creator_id = Yii::app()->user->getId();
+//            $invoice->payment_method = $_POST['Invoices']['payment_method'];
+//            $invoice->modified_date = time();
+//            $invoice->status = Invoices::STATUS_UNPAID;
+//
+//            if ($invoice->getIsNewRecord())
+//                $invoice->create_date = time();
+//
+//            if ($invoice->save()) {
+//                Yii::app()->user->setFlash("success", "اطلاعات با موفقیت ثبت شد.");
+//                $this->refresh();
+//            } else
+//                Yii::app()->user->setFlash("failed", "متاسفانه در ثبت اطلاعات مشکلی بوجود آمده است.");
+//        }
 
         // Confirm invoice
         if (isset($_POST['confirm'])) {
