@@ -227,7 +227,7 @@
 
         <div class="form-group" style="overflow:hidden;">
             <?php echo CHtml::button('ثبت اطلاعات', ['name' => 'saveItems', 'type' => 'submit', 'class' => 'btn btn-success btn-lg pull-left'])?>
-            <?php echo CHtml::link('مشاهده درخواست', array('/requests/'.$model->id.'#invoice-panel'), array('style' => 'margin:0 15px;','class' => 'btn btn-primary btn-lg pull-right')); ?>
+            <?php echo CHtml::link('ارسال فاکتور به مشتری', array('/requests/'.$model->id.'#invoice-panel'), array('style' => 'margin:0 15px;','class' => 'btn btn-primary btn-lg pull-right')); ?>
         </div>
 
     <?php $this->endWidget(); ?>

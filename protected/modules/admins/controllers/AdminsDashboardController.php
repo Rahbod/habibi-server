@@ -36,8 +36,14 @@ class AdminsDashboardController extends Controller
         $appRequestsCr->compare('status', Requests::STATUS_PENDING);
         $appRequestsCr->compare('request_type', '<>' . Requests::REQUEST_OFFLINE);
 
+        $todayRequestsCr = new CDbCriteria();
+        $todayRequestsCr->addCondition('status < :paidStatus');
+        $todayRequestsCr->addBetweenCondition('service_date', strtotime(date('Y/m/d 00:00')), strtotime(date('Y/m/d 23:59')));
+        $todayRequestsCr->params[':paidStatus'] = Requests::STATUS_INVOICING;
+
         $statistics = [
-            'contact' => ContactMessages::model()->count('seen = 0'),
+            //'contact' => ContactMessages::model()->count('seen = 0'),
+            'todayRequests' => Requests::model()->count($todayRequestsCr),
             'appRequests' => Requests::model()->count($appRequestsCr),
             'offlineRequests' => Requests::model()->countByAttributes(['status' => Requests::STATUS_PENDING, 'request_type' => Requests::REQUEST_OFFLINE]),
             'cooperationRequests' => CooperationRequests::model()->count('status = 0'),

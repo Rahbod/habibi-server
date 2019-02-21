@@ -121,8 +121,10 @@ class ApiController extends ApiBaseController
                     $reagentDetails = UserDetails::model()->findByAttributes(['user_id' => $reagent->id]);
                     $reagentReward = SiteSetting::getOption('reagent_reward');
                     $reagentDetails->credit += $reagentReward;
-                    if ($reagentDetails->save())
+                    if ($reagentDetails->save()) {
                         PushNotification::sendNotificationToUser($reagentDetails->push_token, 'افزایش اعتبار', 'مبلغ ' . number_format($reagentReward) . ' تومان بابت معرفی "' . $userDetails->first_name . '" به کیف پول شما اضافه گردید.');
+                        Notify::SendSms( 'مبلغ ' . number_format($reagentReward) . ' تومان بابت معرفی "' . $userDetails->first_name . '" به کیف پول شما اضافه گردید.', $reagent->username);
+                    }
                 }
 
                 $this->_sendResponse(200, CJSON::encode([

@@ -10,7 +10,7 @@ $permissions = [
     'statistics' => false,
 ];
 if(Yii::app()->user->roles == 'admin'){
-    $permissions['contact'] = true;
+    $permissions['todayRequests'] = true;
     $permissions['appRequests'] = true;
     $permissions['offlineRequests'] = true;
     $permissions['cooperationRequests'] = true;
@@ -18,7 +18,7 @@ if(Yii::app()->user->roles == 'admin'){
     $permissions['transactionStatistics'] = true;
 }
 if(Yii::app()->user->roles == 'operator'){
-    $permissions['contact'] = true;
+    $permissions['todayRequests'] = true;
     $permissions['appRequests'] = true;
     $permissions['offlineRequests'] = true;
     $permissions['cooperationRequests'] = true;
@@ -36,12 +36,33 @@ if(Yii::app()->user->roles == 'operator'){
             <div class="small-box bg-red">
                 <div class="inner">
                     <h3><?php echo $statistics['appRequests'];?></h3>
-                    <p>درخواست های تعمیرات جدید</p>
+                    <p>درخواست های جدید</p>
                 </div>
                 <div class="icon">
                     <i class="ion ion-document-text"></i>
                 </div>
                 <a href="<?php echo $this->createUrl('/requests/manage/pending');?>" class="small-box-footer">مشاهده درخواست ها <i class="fa fa-arrow-circle-left"></i></a>
+            </div>
+        </div>
+        <?php
+    endif;
+    ?>
+
+    <!-- Contact Us Messages-->
+    <?php
+    if($permissions['todayRequests']):
+        ?>
+        <div class="col-lg-3 col-xs-6">
+            <!-- small box -->
+            <div class="small-box bg-aqua">
+                <div class="inner">
+                    <h3><?php echo $statistics['todayRequests'];?></h3>
+                    <p>درخواست های امروز</p>
+                </div>
+                <div class="icon">
+                    <i class="ion ion-clock"></i>
+                </div>
+                <a href="<?php echo $this->createUrl('/requests/manage/today');?>" class="small-box-footer">مشاهده درخواست ها <i class="fa fa-arrow-circle-left"></i></a>
             </div>
         </div>
         <?php
@@ -63,27 +84,6 @@ if(Yii::app()->user->roles == 'operator'){
                     <i class="ion ion-android-car"></i>
                 </div>
                 <a href="<?php echo $this->createUrl('/users/manage/cooperationRequests');?>" class="small-box-footer">مشاهده درخواست ها <i class="fa fa-arrow-circle-left"></i></a>
-            </div>
-        </div>
-        <?php
-    endif;
-    ?>
-
-    <!-- Contact Us Messages-->
-    <?php
-    if($permissions['contact']):
-        ?>
-        <div class="col-lg-3 col-xs-6">
-            <!-- small box -->
-            <div class="small-box bg-aqua">
-                <div class="inner">
-                    <h3><?php echo $statistics['contact'];?></h3>
-                    <p>پیام خوانده نشده</p>
-                </div>
-                <div class="icon">
-                    <i class="ion ion-headphone"></i>
-                </div>
-                <a href="<?php echo $this->createUrl('/contact/messages/admin');?>" class="small-box-footer">مشاهده پیام ها <i class="fa fa-arrow-circle-left"></i></a>
             </div>
         </div>
         <?php

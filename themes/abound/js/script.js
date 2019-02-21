@@ -58,7 +58,9 @@ $.fn.autoComplete = function () {
         var source = $(this).data('source');
 
         $(this).autocomplete({
-            source: source
+            source: source,
+            //search: function( event, ui ) {console.log('search')},
+            response: function( event, ui ) {console.log('response', event, ui)}
         });
     });
 };

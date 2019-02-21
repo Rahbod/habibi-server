@@ -188,6 +188,16 @@ class Invoices extends CActiveRecord
 		return $itemsCost + floatval($this->additional_cost);
 	}
 
+	public function totalTariffs()
+	{
+		$itemsCost = 0;
+		foreach($this->items as $item)
+			if($item->tariff->type == Tariffs::TYPE_TARIFF)
+				$itemsCost += floatval($item->cost);
+
+		return $itemsCost;
+	}
+
     public function finalCost()
 	{
         return $this->totalCost() - $this->totalDiscount();
@@ -195,12 +205,12 @@ class Invoices extends CActiveRecord
 
     public function totalDiscount()
 	{
-        $total = $this->totalCost();
+        $total = $this->totalTariffs();
 		return ($total * $this->discount_percent) / 100;
 	}
 
     public function creditIncrease()
     {
-        return ($this->totalCost() * $this->credit_increase_percent) / 100;
+        return ($this->totalTariffs() * $this->credit_increase_percent) / 100;
     }
 }

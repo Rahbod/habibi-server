@@ -1,6 +1,16 @@
 <?php
 /* @var $this RequestsManageController */
 /* @var $model Requests */
+$days = [];
+for($i=1;$i<=31;$i++)
+    $days[$i] = $i;
+$months = [];
+for($i=1;$i<=12;$i++)
+    $months[$i] = $i;
+$years = [];
+for($i=1397;$i<=1410;$i++)
+    $years[$i] = $i;
+
 $steps =explode('/',$this->route);
 $recycleBin = end($steps) === 'recycleBin';
 $this->breadcrumbs=array(
@@ -74,23 +84,41 @@ $pending = isset($_GET['pending']);
                         'value' => '$data->user && $data->user->userDetails?$data->user->userDetails->getShowName():"-"',
                         'filter' => Users::getUsersByRole('user',true)
                     ],
-                    [
-                        'name' => 'operator_id',
-                        'value' => '$data->operator?$data->operator->name_family:"-"',
-                        'filter' => Admins::getByRole('operator',true)
-                    ],
+//                    [
+//                        'name' => 'operator_id',
+//                        'value' => '$data->operator?$data->operator->name_family:"-"',
+//                        'filter' => Admins::getByRole('operator',true)
+//                    ],
                     [
                         'name' => 'repairman_id',
                         'value' => '$data->repairman && $data->repairman->userDetails?$data->repairman->userDetails->getShowName(false):"-"',
                         'filter' => Users::getUsersByRole('repairman',true)
                     ],
                     [
-                        'name' => 'modified_date',
+                        'name' => 'requested_date',
                         'value' => function($data){
-                            return "<b dir='ltr'>".JalaliDate::date("Y/m/d H:i", $data->modified_date)."</b>";
+                            return "<b dir='ltr'>".JalaliDate::date("Y/m/d", $data->requested_date)."</b>";
                         },
                         'type' => 'raw',
-                        'filter' => false
+                        'htmlOptions' => [
+                            'style' => 'width: 180px'
+                        ],
+                        'filter' => CHtml::dropDownList('Requests[requested_date][day]', isset($_GET['Requests']['requested_date']['day']) ? $_GET['Requests']['requested_date']['day'] : null, $days, ['prompt'=>'روز','style'=>'float:right;width:40px']).
+                            CHtml::dropDownList('Requests[requested_date][month]', isset($_GET['Requests']['requested_date']['month']) ? $_GET['Requests']['requested_date']['month'] : null, $months, ['prompt'=>'ماه','style'=>'float:right;width:40px']).
+                            CHtml::dropDownList('Requests[requested_date][year]', isset($_GET['Requests']['requested_date']['year']) ? $_GET['Requests']['requested_date']['year'] : null, $years, ['prompt'=>'سال','style'=>'float:right;width:60px'])
+                    ],
+                    [
+                        'name' => 'service_date',
+                        'value' => function($data){
+                            return $data->service_date ? "<b dir='ltr'>".JalaliDate::date("Y/m/d", $data->service_date)."</b>" : '-';
+                        },
+                        'type' => 'raw',
+                        'htmlOptions' => [
+                            'style' => 'width: 180px'
+                        ],
+                        'filter' => CHtml::dropDownList('Requests[service_date][day]', isset($_GET['Requests']['service_date']['day']) ? $_GET['Requests']['service_date']['day'] : null, $days, ['prompt'=>'روز','style'=>'float:right;width:40px']).
+                            CHtml::dropDownList('Requests[service_date][month]', isset($_GET['Requests']['service_date']['month']) ? $_GET['Requests']['service_date']['month'] : null, $months, ['prompt'=>'ماه','style'=>'float:right;width:40px']).
+                            CHtml::dropDownList('Requests[service_date][year]', isset($_GET['Requests']['service_date']['year']) ? $_GET['Requests']['service_date']['year'] : null, $years, ['prompt'=>'سال','style'=>'float:right;width:60px'])
                     ],
                     [
                         'name' => 'request_type',

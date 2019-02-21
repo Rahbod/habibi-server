@@ -53,7 +53,7 @@ class Requests extends CActiveRecord
         self::STATUS_DELETED => 'معلق',
         self::STATUS_PENDING => 'در انتظار بررسی',
         self::STATUS_OPERATOR_CHECKING => 'در حال بررسی اپراتور',
-        self::STATUS_CONFIRMED => 'تایید شده',
+        self::STATUS_CONFIRMED => 'در صف سرویس',
         self::STATUS_INVOICING => 'در حال صدور فاکتور',
         self::STATUS_AWAITING_PAYMENT => 'در انتظار پرداخت',
         self::STATUS_PAID => 'پرداخت شده',
@@ -138,10 +138,10 @@ class Requests extends CActiveRecord
             'create_date' => 'تاریخ ثبت',
             'modified_date' => 'تاریخ تغییرات',
             'description' => 'توضیحات مشتری',
-            'requested_date' => 'تاریخ حضور درخواستی',
-            'requested_time' => 'زمان حضور درخواستی',
-            'service_date' => 'تاریخ سرویس',
-            'service_time' => 'زمان سرویس',
+            'requested_date' => 'تاریخ درخواستی',
+            'requested_time' => 'زمان درخواستی',
+            'service_date' => 'تاریخ تایید شده',
+            'service_time' => 'زمان تایید شده',
             'status' => 'وضعیت درخواست',
             'request_type' => 'نوع درخواست'
         );
@@ -175,10 +175,10 @@ class Requests extends CActiveRecord
         $criteria->compare('create_date', $this->create_date, true);
         $criteria->compare('modified_date', $this->modified_date, true);
         $criteria->compare('description', $this->description, true);
-        $criteria->compare('requested_date', $this->requested_date);
-        $criteria->compare('requested_time', $this->requested_time, true);
-        $criteria->compare('service_date', $this->service_date, true);
-        $criteria->compare('service_time', $this->service_time, true);
+//        $criteria->compare('requested_date', $this->requested_date);
+//        $criteria->compare('requested_time', $this->requested_time, true);
+//        $criteria->compare('service_date', $this->service_date, true);
+//        $criteria->compare('service_time', $this->service_time, true);
         $criteria->compare('request_type', $this->request_type);
         if ($recycleBin)
             $criteria->addCondition('status = -1');
@@ -187,7 +187,46 @@ class Requests extends CActiveRecord
             $criteria->addCondition('status > 0');
         }
 
-        $criteria->order = 'id DESC';
+        $criteria->order = 'create_date DESC';
+
+        // add requested date filter
+        $day = null;
+        if (isset($_GET['Requests']['requested_date']['day']))
+            $day = $_GET['Requests']['requested_date']['day'];
+
+        $month = null;
+        if (isset($_GET['Requests']['requested_date']['month']))
+            $month = $_GET['Requests']['requested_date']['month'];
+
+        $year = null;
+        if (isset($_GET['Requests']['requested_date']['year']))
+            $year = $_GET['Requests']['requested_date']['year'];
+
+        if($day and $month and $year){
+            $from = JalaliDate::mktime(0, 0, 0, $month, $day, $year);
+            $to = JalaliDate::mktime(23, 59, 59, $month, $day, $year);
+            $criteria->addBetweenCondition('requested_date', $from, $to);
+        }
+
+        // add service date filter
+        $day = null;
+        if (isset($_GET['Requests']['service_date']['day']))
+            $day = $_GET['Requests']['service_date']['day'];
+
+        $month = null;
+        if (isset($_GET['Requests']['service_date']['month']))
+            $month = $_GET['Requests']['service_date']['month'];
+
+        $year = null;
+        if (isset($_GET['Requests']['service_date']['year']))
+            $year = $_GET['Requests']['service_date']['year'];
+
+        if($day and $month and $year){
+            $from = JalaliDate::mktime(0, 0, 0, $month, $day, $year);
+            $to = JalaliDate::mktime(23, 59, 59, $month, $day, $year);
+            $criteria->addBetweenCondition('service_date', $from, $to);
+        }
+
 
         if (isset($_GET['pendingAjax'])) {
             if (isset($_GET['last']))
@@ -254,15 +293,15 @@ class Requests extends CActiveRecord
         if ($cssClass) {
             switch ($this->status) {
                 case self::STATUS_PAID:
-                case self::STATUS_CONFIRMED:
                     return 'success';
                 case self::STATUS_DELETED:
+                case self::STATUS_INVOICING:
                     return 'danger';
                 case self::STATUS_OPERATOR_CHECKING:
                 case self::STATUS_AWAITING_PAYMENT:
                     return 'warning';
                 case self::STATUS_PENDING:
-                case self::STATUS_INVOICING:
+                case self::STATUS_CONFIRMED:
                     return 'info';
                 case self::STATUS_DONE:
                     return 'primary';
