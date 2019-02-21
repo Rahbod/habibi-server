@@ -158,7 +158,11 @@ class ApiController extends ApiBaseController
     public function actionCredit()
     {
         $userDetails = UserDetails::model()->findByAttributes(['user_id' => $this->user->id]);
-        $this->_sendResponse(200, CJSON::encode(['status' => true, 'credit' => (int)$userDetails->credit, 'showCredit' => number_format($userDetails->credit) . ' تومان']));
+        $this->_sendResponse(200, CJSON::encode([
+            'status' => true,
+            'credit' => (int)$userDetails->credit,
+            'showCredit' => number_format($userDetails->credit) . ' تومان'
+        ]));
     }
 
     /**
@@ -243,6 +247,33 @@ class ApiController extends ApiBaseController
                 $this->_sendResponse(400, CJSON::encode(['status' => false, 'message' => 'در ثبت اطلاعات خطایی رخ داده است. لطفا مجددا تلاش کنید.']));
         } else
             $this->_sendResponse(400, CJSON::encode(['status' => false, 'message' => 'Telephone and Address variables is required.']));
+    }
+
+    public function actionUpdateAddress()
+    {
+        if (isset($this->request['id']) and isset($this->request['telephone']) and isset($this->request['address'])) {
+            /* @var $address UserAddresses */
+            $address = UserAddresses::model()->findByPk($this->request['id']);
+            $address->emergency_tel = $this->request['telephone'];
+            $address->postal_address = $this->request['address'];
+            $address->map_lat = isset($this->request['map_lat']) ? $this->request['map_lat'] : $address->map_lat;
+            $address->map_lng = isset($this->request['map_lng']) ? $this->request['map_lng'] : $address->map_lng;
+            $address->map_zoom = isset($this->request['map_zoom']) ? $this->request['map_zoom'] : $address->map_zoom;
+
+            if ($address->save())
+                $this->_sendResponse(200, CJSON::encode([
+                    'status' => true,
+                    'message' => 'اطلاعات با موفقیت ثبت شد.',
+                    'address' => [
+                        'id' => intval($address->id),
+                        'telephone' => $address->emergency_tel,
+                        'address' => $address->postal_address,
+                    ]
+                ]));
+            else
+                $this->_sendResponse(400, CJSON::encode(['status' => false, 'message' => 'در ثبت اطلاعات خطایی رخ داده است. لطفا مجددا تلاش کنید.']));
+        } else
+            $this->_sendResponse(400, CJSON::encode(['status' => false, 'message' => 'ID, Telephone and Address variables is required.']));
     }
 
     /**
@@ -388,12 +419,16 @@ class ApiController extends ApiBaseController
                     'id' => intval($invoice->id),
                     'sum' => number_format($invoice->totalCost()) . ' تومان',
                     'finalCost' => number_format($invoice->finalCost()) . ' تومان',
+                    'finalCostInt' => intval($invoice->finalCost()),
                     'discountPercent' => $invoice->discount_percent ? '('.$invoice->discount_percent . '%)' : 0,
                     'discount' => $invoice->total_discount ? number_format($invoice->total_discount) . ' تومان' : 0,
                     'additionalCost' => $invoice->additional_cost ? number_format($invoice->additional_cost) . ' تومان' : 0,
                     'description' => $invoice->additional_description,
                     'status' => $invoice->status,
                     'tariffs' => $tariffs,
+                    'decreaseCredit' => boolval($invoice->decrease_credit),
+                    'decreasedCreditInt' => intval($invoice->decreased_credit),
+                    'decreasedCredit' => number_format($invoice->decreased_credit) . ' تومان',
                 ];
             }
 
@@ -625,9 +660,26 @@ class ApiController extends ApiBaseController
 
             $invoice->payment_method = $this->request['method'];
             $invoice->status = Invoices::STATUS_PAID;
+
+            $decreasedCredit = 0;
+            if(isset($this->request['decreaseCredit'])){
+                if($this->user->userDetails->credit <= $invoice->finalCost())
+                    $decreasedCredit = $this->user->userDetails->credit;
+                else
+                    $decreasedCredit = $this->user->userDetails->credit - $invoice->finalCost();
+
+                $invoice->decrease_credit = 1;
+                $invoice->decreased_credit = $decreasedCredit;
+            }
+
             if ($invoice->save()) {
                 $invoice->request->status = Requests::STATUS_PAID;
                 $invoice->request->save();
+
+                if($invoice->decrease_credit) {
+                    $this->user->userDetails->credit = $this->user->userDetails->credit - $decreasedCredit;
+                    $this->user->userDetails->save();
+                }
 
                 $this->_sendResponse(200, CJSON::encode([
                     'status' => true,
@@ -642,6 +694,42 @@ class ApiController extends ApiBaseController
             $this->_sendResponse(200, CJSON::encode([
                 'status' => false,
                 'message' => 'ID and Method variables is required.'
+            ]));
+    }
+
+    public function actionCancelRequest()
+    {
+        if (isset($this->request['id'])) {
+            /* @var Requests $request */
+            $request = Requests::model()->findByPk($this->request['id']);
+
+            if($request->user_id != $this->user->id)
+                $this->_sendResponse(200, CJSON::encode([
+                    'status' => false,
+                    'message' => 'شما اجازه انصراف از این درخواست را ندارید.'
+                ]));
+
+            if($request->status < Requests::STATUS_INVOICING){
+                $request->status = Requests::STATUS_CANCELED;
+                if($request->save())
+                    $this->_sendResponse(200, CJSON::encode([
+                        'status' => true,
+                        'message' => 'عملیات با موفقیت انجام شد.'
+                    ]));
+                else
+                    $this->_sendResponse(200, CJSON::encode([
+                        'status' => false,
+                        'message' => 'در انجام عملیات خطایی رخ داده است. لطفا مجددا تلاش کنید.'
+                    ]));
+            } else
+                $this->_sendResponse(200, CJSON::encode([
+                    'status' => false,
+                    'message' => 'امکان انصراف از این درخواست وجود ندارد.'
+                ]));
+        } else
+            $this->_sendResponse(200, CJSON::encode([
+                'status' => false,
+                'message' => 'ID variable is required.'
             ]));
     }
 }

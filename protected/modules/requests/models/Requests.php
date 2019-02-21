@@ -35,6 +35,7 @@
  */
 class Requests extends CActiveRecord
 {
+    const STATUS_CANCELED = -2;
     const STATUS_DELETED = -1;
     const STATUS_PENDING = 1;
     const STATUS_OPERATOR_CHECKING = 2;
@@ -50,6 +51,7 @@ class Requests extends CActiveRecord
     const REQUEST_OFFLINE = 4;
 
     public $statusLabels = array(
+        self::STATUS_CANCELED => 'انصرافی',
         self::STATUS_DELETED => 'معلق',
         self::STATUS_PENDING => 'در انتظار بررسی',
         self::STATUS_OPERATOR_CHECKING => 'در حال بررسی اپراتور',
