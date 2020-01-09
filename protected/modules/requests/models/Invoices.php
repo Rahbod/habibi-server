@@ -28,6 +28,8 @@
  */
 class Invoices extends CActiveRecord
 {
+    const STATUS_PREPARE = 2;
+    const STATUS_ISSUING = 3;
     const STATUS_UNPAID = 0;
     const STATUS_PAID = 1;
 

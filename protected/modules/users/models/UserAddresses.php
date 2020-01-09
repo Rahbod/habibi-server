@@ -51,7 +51,7 @@ class UserAddresses extends CActiveRecord
             array('emergency_tel', 'length', 'max' => 11),
             array('landline_tel', 'length', 'max' => 15),
             array('map_lat, map_lng', 'length', 'max'=>30),
-            array('map_zoom', 'length', 'max'=>5),
+            array('map_zoom', 'safe'),
             array('district', 'length', 'max' => 50),
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.

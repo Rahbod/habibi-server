@@ -61,6 +61,12 @@ class SiteController extends Controller
      */
     public function actionIndex()
     {
+        var_dump(Pusheh::sendDataToUser('pid_62b7-cfe8-39', [
+            'action' => 'selectRepairMan',
+            'id' => '1',
+            'message' => 'درخواست شما در آچارچی تایید شد.'
+        ]));exit;
+
         $this->redirect(['/admins/login']);
         //var_dump(md5('Rahbod-habibi-server-app-clientID-'.time()), md5('Rahbod-habibi-server-app-clientSecret-'.time()));exit;
 

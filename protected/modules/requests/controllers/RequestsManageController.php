@@ -73,7 +73,7 @@ class RequestsManageController extends Controller
             $model->service_time = $_POST['Requests']['service_time'];
             $model->repairman_id = $_POST['Requests']['repairman_id'];
             if ($model->save()) {
-                PushNotification::sendDataToUser($model->user->userDetails->push_token, [
+                Pusheh::sendDataToUser($model->user->userDetails->push_token, [
                     'action' => 'selectRepairMan',
                     'id' => $model->id,
                     'message' => 'درخواست شما در آچارچی تایید شد.'
@@ -333,6 +333,28 @@ class RequestsManageController extends Controller
             $this->redirect(array('admin'));
         }
 
+        // Confirm invoice
+        if (isset($_POST['confirm'])) {
+            $model->status = Requests::STATUS_AWAITING_PAYMENT;
+            $model->save();
+
+            $invoice = $model->getLastIssuedInvoice();
+            $invoice->final_cost = $invoice->finalCost();
+            $invoice->status = Invoices::STATUS_UNPAID;
+            $invoice->save();
+
+            Pusheh::sendDataToUser($model->user->userDetails->push_token, [
+                'action' => 'invoicing',
+                'id' => $id,
+                'message' => 'فاکتور درخواست شما در آچارچی صادر شد.'
+            ]);
+
+            Notify::SendSms('فاکتور درخواست شما در آچارچی صادر شد.', $model->user->username);
+
+            Yii::app()->user->setFlash('invoice-success', 'فاکتور با موفقیت تایید نهایی و برای مشتری ارسال گردید.');
+            $this->redirect(array('/requests/' . $model->id . '#invoice-panel'));
+        }
+
         $invoice = $model->getLastInvoice();
         if (!$invoice) {
             $invoice = new Invoices();
@@ -340,7 +362,7 @@ class RequestsManageController extends Controller
             $invoice->creator_id = Yii::app()->user->getId();
             $invoice->create_date = time();
             $invoice->modified_date = time();
-            $invoice->status = Invoices::STATUS_UNPAID;
+            $invoice->status = Invoices::STATUS_PREPARE;
             $invoice->save();
             $this->refresh();
         }
@@ -350,7 +372,7 @@ class RequestsManageController extends Controller
             InvoiceItems::model()->deleteAll('invoice_id = :id', [':id' => $invoice->id]);
 
             // Save pieces
-            if(isset($_POST['InvoiceItems']['piece_title'])) {
+            if (isset($_POST['InvoiceItems']['piece_title'])) {
                 foreach ($_POST['InvoiceItems']['piece_title'] as $key => $invoiceItem) {
                     if (!$invoiceItem)
                         continue;
@@ -374,7 +396,7 @@ class RequestsManageController extends Controller
             }
 
             // Save tariffs
-            if(isset($_POST['InvoiceItems']['tariff_title'])) {
+            if (isset($_POST['InvoiceItems']['tariff_title'])) {
                 foreach ($_POST['InvoiceItems']['tariff_title'] as $key => $invoiceItem) {
                     if (!$invoiceItem)
                         continue;
@@ -401,11 +423,11 @@ class RequestsManageController extends Controller
             $invoice->discount_percent = $_POST['Invoices']['discount_percent'] ?: 0;
             $invoice->credit_increase_percent = $_POST['Invoices']['credit_increase_percent'] ?: 0;
             $invoice->total_discount = $invoice->totalDiscount();
+            $invoice->status = Invoices::STATUS_ISSUING;
 
-            if ($invoice->save()) {
+            if ($invoice->save())
                 Yii::app()->user->setFlash("success", "اطلاعات با موفقیت ثبت شد.");
-                $this->refresh();
-            } else
+            else
                 Yii::app()->user->setFlash("failed", "متاسفانه در ثبت اطلاعات مشکلی بوجود آمده است.");
         }
 
@@ -429,26 +451,6 @@ class RequestsManageController extends Controller
 //            } else
 //                Yii::app()->user->setFlash("failed", "متاسفانه در ثبت اطلاعات مشکلی بوجود آمده است.");
 //        }
-
-        // Confirm invoice
-        if (isset($_POST['confirm'])) {
-            $model->status = Requests::STATUS_AWAITING_PAYMENT;
-            $model->save();
-
-            $invoice->final_cost = $invoice->finalCost();
-            $invoice->save();
-
-            PushNotification::sendDataToUser($model->user->userDetails->push_token, [
-                'action' => 'invoicing',
-                'id' => $id,
-                'message' => 'فاکتور درخواست شما در آچارچی صادر شد.'
-            ]);
-
-            Notify::SendSms('فاکتور درخواست شما در آچارچی صادر شد.', $model->user->username);
-
-            Yii::app()->user->setFlash('invoice-success', 'فاکتور با موفقیت تایید نهایی و برای مشتری ارسال گردید.');
-            $this->redirect(array('/requests/' . $model->id . '#invoice-panel'));
-        }
 
         $pieceModels = [new InvoiceItems()];
         $tariffModels = [new InvoiceItems()];

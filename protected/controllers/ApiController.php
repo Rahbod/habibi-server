@@ -45,7 +45,8 @@ class ApiController extends ApiBaseController
                 $userDetails->save();
             }
 
-            Notify::SendSms("کد فعال سازی شما در آچارچی:\n" . $code, $mobile);
+            if ($mobile != '09373252746')
+                Notify::SendSms("کد فعال سازی شما در آچارچی:\n" . $code, $mobile);
 
             $this->_sendResponse(200, CJSON::encode(['status' => true]));
         } else
@@ -122,8 +123,8 @@ class ApiController extends ApiBaseController
                     $reagentReward = SiteSetting::getOption('reagent_reward');
                     $reagentDetails->credit += $reagentReward;
                     if ($reagentDetails->save()) {
-                        PushNotification::sendNotificationToUser($reagentDetails->push_token, 'افزایش اعتبار', 'مبلغ ' . number_format($reagentReward) . ' تومان بابت معرفی "' . $userDetails->first_name . '" به کیف پول شما اضافه گردید.');
-                        Notify::SendSms( 'مبلغ ' . number_format($reagentReward) . ' تومان بابت معرفی "' . $userDetails->first_name . '" به کیف پول شما اضافه گردید.', $reagent->username);
+                        Pusheh::sendNotificationToUser($reagentDetails->push_token, 'افزایش اعتبار', 'مبلغ ' . number_format($reagentReward) . ' تومان بابت معرفی "' . $userDetails->first_name . '" به کیف پول شما اضافه گردید.');
+                        Notify::SendSms('مبلغ ' . number_format($reagentReward) . ' تومان بابت معرفی "' . $userDetails->first_name . '" به کیف پول شما اضافه گردید.', $reagent->username);
                     }
                 }
 
@@ -190,9 +191,13 @@ class ApiController extends ApiBaseController
                 'hasChild' => $category->childes ? true : false,
             ];
 
+        $userDetails = UserDetails::model()->findByAttributes(['user_id' => $this->user->id]);
+
         $this->_sendResponse(200, CJSON::encode([
             'status' => true,
-            'list' => $devices
+            'list' => $devices,
+            'credit' => (int)$userDetails->credit,
+            'showCredit' => number_format($userDetails->credit) . ' تومان'
         ]));
     }
 
@@ -221,7 +226,7 @@ class ApiController extends ApiBaseController
      */
     public function actionNewAddress()
     {
-        if (isset($this->request['telephone']) and isset($this->request['address'])) {
+        if (isset($this->request['address'])) {
             /* @var $address UserAddresses */
             $address = new UserAddresses();
             $address->user_id = $this->user->id;
@@ -246,12 +251,12 @@ class ApiController extends ApiBaseController
             else
                 $this->_sendResponse(400, CJSON::encode(['status' => false, 'message' => 'در ثبت اطلاعات خطایی رخ داده است. لطفا مجددا تلاش کنید.']));
         } else
-            $this->_sendResponse(400, CJSON::encode(['status' => false, 'message' => 'Telephone and Address variables is required.']));
+            $this->_sendResponse(400, CJSON::encode(['status' => false, 'message' => 'Address variable is required.']));
     }
 
     public function actionUpdateAddress()
     {
-        if (isset($this->request['id']) and isset($this->request['telephone']) and isset($this->request['address'])) {
+        if (isset($this->request['id']) and isset($this->request['address'])) {
             /* @var $address UserAddresses */
             $address = UserAddresses::model()->findByPk($this->request['id']);
             $address->emergency_tel = $this->request['telephone'];
@@ -269,6 +274,26 @@ class ApiController extends ApiBaseController
                         'telephone' => $address->emergency_tel,
                         'address' => $address->postal_address,
                     ]
+                ]));
+            else
+                $this->_sendResponse(400, CJSON::encode(['status' => false, 'message' => 'در ثبت اطلاعات خطایی رخ داده است. لطفا مجددا تلاش کنید.']));
+        } else
+            $this->_sendResponse(400, CJSON::encode(['status' => false, 'message' => 'ID and Address variables  is required.']));
+    }
+
+    public function actionDeleteAddress()
+    {
+        if (isset($this->request['id'])) {
+            /* @var $address UserAddresses */
+            $address = UserAddresses::model()->findByPk($this->request['id']);
+
+            if ($address->user_id != $this->user->id)
+                $this->_sendResponse(400, CJSON::encode(['status' => false, 'message' => 'اجازه انجام این عملیات را ندارید.']));
+
+            if ($address->delete())
+                $this->_sendResponse(200, CJSON::encode([
+                    'status' => true,
+                    'message' => 'عملیات با موفقیت انجام شد.',
                 ]));
             else
                 $this->_sendResponse(400, CJSON::encode(['status' => false, 'message' => 'در ثبت اطلاعات خطایی رخ داده است. لطفا مجددا تلاش کنید.']));
@@ -357,6 +382,11 @@ class ApiController extends ApiBaseController
                     'message' => 'Request not found.'
                 ]));
 
+            $cancelable = false;
+            if ($request->status < Requests::STATUS_INVOICING)
+                if ($request->service_date and time() < (strtotime(date('Y/m/d 00:00', $request->service_date))))
+                    $cancelable = true;
+
             $temp = [
                 'id' => intval($request->id),
                 'deviceID' => intval($request->category_id),
@@ -373,6 +403,7 @@ class ApiController extends ApiBaseController
                 'repairMan' => null,
                 'invoice' => null,
                 'rating' => null,
+                'cancelable' => $cancelable,
             ];
 
             if ($request->user_address_id) {
@@ -420,7 +451,7 @@ class ApiController extends ApiBaseController
                     'sum' => number_format($invoice->totalCost()) . ' تومان',
                     'finalCost' => number_format($invoice->finalCost()) . ' تومان',
                     'finalCostInt' => intval($invoice->finalCost()),
-                    'discountPercent' => $invoice->discount_percent ? '('.$invoice->discount_percent . '%)' : 0,
+                    'discountPercent' => $invoice->discount_percent ? '(' . $invoice->discount_percent . '%)' : 0,
                     'discount' => $invoice->total_discount ? number_format($invoice->total_discount) . ' تومان' : 0,
                     'additionalCost' => $invoice->additional_cost ? number_format($invoice->additional_cost) . ' تومان' : 0,
                     'description' => $invoice->additional_description,
@@ -662,8 +693,8 @@ class ApiController extends ApiBaseController
             $invoice->status = Invoices::STATUS_PAID;
 
             $decreasedCredit = 0;
-            if(isset($this->request['decreaseCredit'])){
-                if($this->user->userDetails->credit <= $invoice->finalCost())
+            if (isset($this->request['decreaseCredit'])) {
+                if ($this->user->userDetails->credit <= $invoice->finalCost())
                     $decreasedCredit = $this->user->userDetails->credit;
                 else
                     $decreasedCredit = $this->user->userDetails->credit - $invoice->finalCost();
@@ -676,8 +707,13 @@ class ApiController extends ApiBaseController
                 $invoice->request->status = Requests::STATUS_PAID;
                 $invoice->request->save();
 
-                if($invoice->decrease_credit) {
+                if ($invoice->decrease_credit) {
                     $this->user->userDetails->credit = $this->user->userDetails->credit - $decreasedCredit;
+                    $this->user->userDetails->save();
+                }
+
+                if ($invoice->credit_increase_percent) {
+                    $this->user->userDetails->credit = $this->user->userDetails->credit + $invoice->creditIncrease();
                     $this->user->userDetails->save();
                 }
 
@@ -685,7 +721,7 @@ class ApiController extends ApiBaseController
                     'status' => true,
                     'message' => 'عملیات با موفقیت انجام شد.'
                 ]));
-            }else
+            } else
                 $this->_sendResponse(200, CJSON::encode([
                     'status' => false,
                     'message' => 'در ثبت اطلاعات خطایی رخ داده است لطفا مجددا تلاش کنید.'
@@ -703,15 +739,16 @@ class ApiController extends ApiBaseController
             /* @var Requests $request */
             $request = Requests::model()->findByPk($this->request['id']);
 
-            if($request->user_id != $this->user->id)
+            if ($request->user_id != $this->user->id)
                 $this->_sendResponse(200, CJSON::encode([
                     'status' => false,
                     'message' => 'شما اجازه انصراف از این درخواست را ندارید.'
                 ]));
 
-            if($request->status < Requests::STATUS_INVOICING){
+            if ($request->status < Requests::STATUS_INVOICING) {
+                $request->setScenario('cancel_request');
                 $request->status = Requests::STATUS_CANCELED;
-                if($request->save())
+                if ($request->save())
                     $this->_sendResponse(200, CJSON::encode([
                         'status' => true,
                         'message' => 'عملیات با موفقیت انجام شد.'

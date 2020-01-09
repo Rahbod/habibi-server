@@ -88,14 +88,15 @@ class Requests extends CActiveRecord
         // will receive user inputs.
         return array(
             array('request_type,category_id, user_id, user_address_id, requested_date', 'required'),
-            array('operator_id', 'required', 'except' => 'request_by_app'),
+            array('operator_id', 'required', 'except' => 'request_by_app, cancel_request'),
             array('request_type,requested_date', 'numerical', 'integerOnly' => true),
             array('category_id, brand_id, model_id, user_id, user_address_id, operator_id, repairman_id', 'length', 'max' => 10),
             array('create_date, modified_date, service_date', 'length', 'max' => 12),
             array('create_date', 'default', 'value' => time()),
             array('modified_date', 'default', 'value' => time()),
             array('requested_time, service_time', 'length', 'max' => 255),
-            array('request_type, status', 'length', 'max' => 1),
+            array('request_type', 'length', 'max' => 1),
+            array('status', 'length', 'max' => 2),
             array('description', 'safe'),
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
@@ -186,7 +187,7 @@ class Requests extends CActiveRecord
             $criteria->addCondition('status = -1');
         else {
             $criteria->compare('status', $this->status);
-            $criteria->addCondition('status > 0');
+            $criteria->addCondition('status > 0 OR status = -2');
         }
 
         $criteria->order = 'create_date DESC';
@@ -344,7 +345,15 @@ class Requests extends CActiveRecord
     {
         if ($any)
             return Invoices::model()->findByAttributes(['request_id' => $this->id]);
-        return Invoices::model()->findByAttributes(['request_id' => $this->id, 'status' => Invoices::STATUS_UNPAID]);
+        return Invoices::model()->findByAttributes(['request_id' => $this->id, 'status' => Invoices::STATUS_PREPARE]);
+    }
+
+    /**
+     * @return Invoices
+     */
+    public function getLastIssuedInvoice()
+    {
+        return Invoices::model()->findByAttributes(['request_id' => $this->id, 'status' => Invoices::STATUS_ISSUING]);
     }
 
     /**
