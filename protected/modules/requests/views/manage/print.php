@@ -88,7 +88,7 @@
     <?php endforeach;?>
     <tr class="warning">
         <td><?= $key+2 ?></td>
-        <td><b>هزینه اضافی</b><p style="margin: 0"><small><?= $invoice->additional_description ?></small></p></td>
+        <td><b>هزینه جانبی</b><p style="margin: 0"><small><?= $invoice->additional_description ?></small></p></td>
         <td><?= Controller::parseNumbers(number_format($invoice->additional_cost)) ?> <small>تومان</small></td>
         <td>--</td>
         <td><?= Controller::parseNumbers(number_format($invoice->additional_cost)) ?> <small>تومان</small></td>

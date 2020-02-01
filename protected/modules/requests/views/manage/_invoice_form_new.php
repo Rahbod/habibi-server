@@ -183,6 +183,10 @@
                             </div>
                         </div>
                         <div class="col-lg-3 col-md-3 col-sm-4 col-xs-12">
+                            <?php echo $invoiceForm->labelEx($invoice,'additional_description'); ?>
+                            <?php echo $invoiceForm->textArea($invoice,'additional_description', ['class' => 'form-control']); ?>
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-4 col-xs-12">
                             <?php echo $invoiceForm->labelEx($invoice,'discount_percent'); ?>
                             <div class="input-group">
                                 <?php echo $invoiceForm->textField($invoice,'discount_percent', ['class' => 'form-control']); ?>

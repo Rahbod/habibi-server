@@ -53,7 +53,7 @@ class SiteController extends Controller
         );
     }
 
-    
+
 
     /**
      * This is the default 'index' action that is invoked
@@ -61,11 +61,17 @@ class SiteController extends Controller
      */
     public function actionIndex()
     {
-        var_dump(Pusheh::sendDataToUser('pid_62b7-cfe8-39', [
-            'action' => 'selectRepairMan',
-            'id' => '1',
-            'message' => 'درخواست شما در آچارچی تایید شد.'
-        ]));exit;
+        /* @var $records UserDetails[] */
+        /*$records = UserDetails::model()->findAll('push_token IS NOT null');
+        foreach($records as $record) {
+            $push = Pusheh::sendDataToUser($record->push_token, [
+                'action' => 'selectRepairMan',
+                'id' => '1',
+                'message' => 'درخواست شما در آچارچی تایید شد.'
+            ]);
+            var_dump($push);
+        }
+        exit;*/
 
         $this->redirect(['/admins/login']);
         //var_dump(md5('Rahbod-habibi-server-app-clientID-'.time()), md5('Rahbod-habibi-server-app-clientSecret-'.time()));exit;
@@ -137,7 +143,7 @@ class SiteController extends Controller
                     <span style='font-size:10px'>
                     ارسال شده توسط وبسايت {$siteName}
                     </span>
-                    </div>                  
+                    </div>
                     ";
                 $receivers = [];
                 $receivers[] = SiteSetting::getOption('master_email');

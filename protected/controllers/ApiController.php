@@ -45,8 +45,7 @@ class ApiController extends ApiBaseController
                 $userDetails->save();
             }
 
-            if ($mobile != '09373252746')
-                Notify::SendSms("کد فعال سازی شما در آچارچی:\n" . $code, $mobile);
+            Notify::SendSms("کد فعال سازی شما در آچارچی:\n" . $code, $mobile);
 
             $this->_sendResponse(200, CJSON::encode(['status' => true]));
         } else
@@ -397,8 +396,10 @@ class ApiController extends ApiBaseController
                 'serviceTime' => null,
                 'createDate' => JalaliDate::date("d F Y - H:i", $request->create_date),
                 'description' => $request->description,
-                'requestedDate' => JalaliDate::date("d F Y", ($request->requested_date ?: $request->service_date)),
-                'requestedTime' => $request->requested_time ?: $request->service_time,
+//                'requestedDate' => JalaliDate::date("d F Y", ($request->requested_date ?: $request->service_date)),
+//                'requestedTime' => $request->requested_time ?: $request->service_time,
+                'requestedDate' => JalaliDate::date("d F Y", $request->service_date),
+                'requestedTime' => $request->service_time,
                 'status' => $request->status,
                 'repairMan' => null,
                 'invoice' => null,
@@ -442,7 +443,7 @@ class ApiController extends ApiBaseController
 
                 if ($invoice->additional_cost)
                     $tariffs[] = [
-                        'title' => 'هزینه اضافی',
+                        'title' => 'هزینه جانبی',
                         'cost' => number_format($invoice->additional_cost) . ' تومان',
                     ];
 

@@ -41,7 +41,8 @@ class RequestsManageController extends Controller
                 'print',
                 'searchPiece',
                 'searchTariff',
-                'today'
+                'today',
+                'report',
             )
         );
     }
@@ -355,16 +356,20 @@ class RequestsManageController extends Controller
             $this->redirect(array('/requests/' . $model->id . '#invoice-panel'));
         }
 
-        $invoice = $model->getLastInvoice();
-        if (!$invoice) {
-            $invoice = new Invoices();
-            $invoice->request_id = $id;
-            $invoice->creator_id = Yii::app()->user->getId();
-            $invoice->create_date = time();
-            $invoice->modified_date = time();
-            $invoice->status = Invoices::STATUS_PREPARE;
-            $invoice->save();
-            $this->refresh();
+        if ($invoiceID = Yii::app()->request->getQuery('inv'))
+            $invoice = Invoices::model()->findByPk($invoiceID);
+        else {
+            $invoice = $model->getLastInvoice();
+            if (!$invoice) {
+                $invoice = new Invoices();
+                $invoice->request_id = $id;
+                $invoice->creator_id = Yii::app()->user->getId();
+                $invoice->create_date = time();
+                $invoice->modified_date = time();
+                $invoice->status = Invoices::STATUS_PREPARE;
+                $invoice->save();
+                $this->redirect(['invoicing', 'id' => $id, 'inv' => $invoice->id]);
+            }
         }
 
         // Save invoice items
@@ -420,10 +425,14 @@ class RequestsManageController extends Controller
             }
 
             $invoice->additional_cost = $_POST['Invoices']['additional_cost'] ?: 0;
+            $invoice->additional_description = $_POST['Invoices']['additional_description'];
             $invoice->discount_percent = $_POST['Invoices']['discount_percent'] ?: 0;
             $invoice->credit_increase_percent = $_POST['Invoices']['credit_increase_percent'] ?: 0;
             $invoice->total_discount = $invoice->totalDiscount();
             $invoice->status = Invoices::STATUS_ISSUING;
+
+            $invoice->request->status = Requests::STATUS_INVOICING;
+            $invoice->request->save();
 
             if ($invoice->save())
                 Yii::app()->user->setFlash("success", "اطلاعات با موفقیت ثبت شد.");
@@ -503,7 +512,7 @@ class RequestsManageController extends Controller
         $tariffs = Tariffs::model()->findAll('title LIKE :term AND type = 1', [':term' => "%$term%"]);
 
         $result = [];
-        foreach($tariffs as $tariff)
+        foreach ($tariffs as $tariff)
             $result[] = $tariff->title;
 
         echo json_encode($result);
@@ -517,7 +526,7 @@ class RequestsManageController extends Controller
         $tariffs = Tariffs::model()->findAll('title LIKE :term AND type = 0', [':term' => "%$term%"]);
 
         $result = [];
-        foreach($tariffs as $tariff)
+        foreach ($tariffs as $tariff)
             $result[] = $tariff->title;
 
         echo json_encode($result);
@@ -535,5 +544,47 @@ class RequestsManageController extends Controller
                 'criteria' => $criteria,
             ]),
         ));
+    }
+
+    public function actionReport()
+    {
+        $requestsCount = $sumIncome = $doneRequests = $dataProvider = null;
+
+        if (isset($_POST['from_date_altField'])) {
+            $from = $_POST['from_date_altField'];
+            $to = $_POST['to_date_altField'];
+            $repairman = $_POST['repairman'];
+
+            $from = strtotime(date('Y/m/d 00:00', $from));
+            $to = strtotime(date('Y/m/d 23:59', $to));
+
+            /* @var $requests Requests[] */
+            $sql = 'repairman_id = :repairman AND service_date >= :from AND service_date <= :to';
+            $criteria = new CDbCriteria();
+            $criteria->condition = $sql;
+            $criteria->params = [
+                ':from' => $from,
+                ':to' => $to,
+                ':repairman' => $repairman,
+            ];
+            $dataProvider = new CActiveDataProvider('Requests', ['criteria' => $criteria]);
+            $requests = $dataProvider->getData();
+            $requestsCount = count($requests);
+            $sumIncome = $doneRequests = 0;
+            foreach ($requests as $request)
+                if ($request->status == Requests::STATUS_PAID) {
+                    $doneRequests++;
+                    foreach ($request->invoices as $invoice)
+                        if ($invoice->status == Invoices::STATUS_PAID)
+                            $sumIncome += (int)$invoice->final_cost;
+                }
+        }
+
+        $this->render('report', [
+            'requestsCount' => $requestsCount,
+            'doneRequests' => $doneRequests,
+            'sumIncome' => $sumIncome,
+            'dataProvider' => $dataProvider,
+        ]);
     }
 }

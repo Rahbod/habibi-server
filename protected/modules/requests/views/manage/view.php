@@ -13,7 +13,7 @@ if (isset($_GET['pending']))
     $query = '?pending';
 
 
-$invoice = $model->getLastInvoice(true);
+$invoice = $model->getLastIssuedInvoice();
 ?>
 
 <div class="box box-primary">
@@ -33,7 +33,13 @@ $invoice = $model->getLastInvoice(true);
         <div class="form-group buttons text-left">
             <!-- Invoicing -->
             <?php if($model->status >= Requests::STATUS_CONFIRMED && $model->status <= Requests::STATUS_AWAITING_PAYMENT): ?>
-                <a href="<?= $this->createUrl('invoicing')."/$model->id" ?>" class="btn btn-info">صدور فاکتور</a>
+                <?php if($invoice):?>
+                    <a href="<?= $this->createUrl('invoicing', ['id' => $model->id, 'inv' => $invoice->id]) ?>" class="btn btn-info">صدور فاکتور</a>
+                <?php elseif($unpaidInvoice = $model->getLastUnpaidInvoice()):?>
+                    <a href="<?= $this->createUrl('invoicing', ['id' => $model->id, 'inv' => $unpaidInvoice->id]) ?>" class="btn btn-info">تغییر فاکتور</a>
+                <?php else:?>
+                    <a href="<?= $this->createUrl('invoicing', ['id' => $model->id]) ?>" class="btn btn-info">صدور فاکتور</a>
+                <?php endif; ?>
             <?php endif; ?>
 
             <!-- Manually Approve Payment -->
@@ -170,7 +176,8 @@ $invoice = $model->getLastInvoice(true);
                             'label' => $model->getAttributeLabel('modified_date'),
                             'value' => "<span dir='ltr' class='text-right'>".JalaliDate::date('Y/m/d H:i', $model->modified_date)."</span>",
                             'type' => 'raw'
-                        ]
+                        ],
+                        'description'
                     ),
                 )); ?>
             </div>
@@ -222,7 +229,7 @@ $invoice = $model->getLastInvoice(true);
                 <?php endforeach;?>
                 <tr class="warning">
                     <td><?= $key+2 ?></td>
-                    <td><b>هزینه اضافی</b><p style="margin: 0"><small><?= $invoice->additional_description ?></small></p></td>
+                    <td><b>هزینه جانبی</b><p style="margin: 0"><small><?= $invoice->additional_description ?></small></p></td>
                     <td>--</td>
                     <td><?= Controller::parseNumbers(number_format($invoice->additional_cost)) ?> <small>تومان</small></td>
                 </tr>
@@ -257,7 +264,7 @@ $invoice = $model->getLastInvoice(true);
 <!--        </div>-->
 
         <?php
-        if(empty($invoice->final_cost)):
+        if($model->status == Requests::STATUS_INVOICING and $invoice):
             $form=$this->beginWidget('CActiveForm', array(
                 'action' => array('/requests/manage/invoicing/'.$model->id),
                 'id'=>'invoice-form',

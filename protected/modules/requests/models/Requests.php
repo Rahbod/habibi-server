@@ -357,6 +357,14 @@ class Requests extends CActiveRecord
     }
 
     /**
+     * @return Invoices
+     */
+    public function getLastUnpaidInvoice()
+    {
+        return Invoices::model()->findByAttributes(['request_id' => $this->id, 'status' => Invoices::STATUS_UNPAID]);
+    }
+
+    /**
      * @return mixed
      */
     public static function getMaxID()
