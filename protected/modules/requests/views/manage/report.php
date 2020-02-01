@@ -74,7 +74,7 @@ for($i=1397;$i<=1410;$i++)
                 <h5>تعداد درخواست های انجام شده: <small><?php echo $doneRequests;?></small></h5>
             </div>
             <div class="form-group">
-                <h5>مجموع دریافتی های امروز: <small><?php echo number_format($sumIncome);?> تومان</small></h5>
+                <h5>مجموع دریافتی ها: <small><?php echo number_format($sumIncome);?> تومان</small></h5>
             </div>
             <hr>
             <div class="form-group">
@@ -117,19 +117,6 @@ for($i=1397;$i<=1410;$i++)
                             'filter' => Users::getUsersByRole('repairman',true)
                         ],
                         [
-                            'name' => 'requested_date',
-                            'value' => function($data){
-                                return "<b dir='ltr'>".JalaliDate::date("Y/m/d", $data->requested_date)."</b>";
-                            },
-                            'type' => 'raw',
-                            'htmlOptions' => [
-                                'style' => 'width: 180px'
-                            ],
-                            'filter' => CHtml::dropDownList('Requests[requested_date][day]', isset($_GET['Requests']['requested_date']['day']) ? $_GET['Requests']['requested_date']['day'] : null, $days, ['prompt'=>'روز','style'=>'float:right;width:40px']).
-                                CHtml::dropDownList('Requests[requested_date][month]', isset($_GET['Requests']['requested_date']['month']) ? $_GET['Requests']['requested_date']['month'] : null, $months, ['prompt'=>'ماه','style'=>'float:right;width:40px']).
-                                CHtml::dropDownList('Requests[requested_date][year]', isset($_GET['Requests']['requested_date']['year']) ? $_GET['Requests']['requested_date']['year'] : null, $years, ['prompt'=>'سال','style'=>'float:right;width:60px'])
-                        ],
-                        [
                             'name' => 'service_date',
                             'value' => function($data){
                                 return $data->service_date ? "<b dir='ltr'>".JalaliDate::date("Y/m/d", $data->service_date)."</b>" : '-';
@@ -141,26 +128,6 @@ for($i=1397;$i<=1410;$i++)
                             'filter' => CHtml::dropDownList('Requests[service_date][day]', isset($_GET['Requests']['service_date']['day']) ? $_GET['Requests']['service_date']['day'] : null, $days, ['prompt'=>'روز','style'=>'float:right;width:40px']).
                                 CHtml::dropDownList('Requests[service_date][month]', isset($_GET['Requests']['service_date']['month']) ? $_GET['Requests']['service_date']['month'] : null, $months, ['prompt'=>'ماه','style'=>'float:right;width:40px']).
                                 CHtml::dropDownList('Requests[service_date][year]', isset($_GET['Requests']['service_date']['year']) ? $_GET['Requests']['service_date']['year'] : null, $years, ['prompt'=>'سال','style'=>'float:right;width:60px'])
-                        ],
-                        [
-                            'name' => 'request_type',
-                            'header' => '',
-                            'value' => function($data){
-                                /** @var $data Requests */
-                                return $data->getRequestTypeLabel(true);
-                            },
-                            'htmlOptions' => ['class' => 'text-center'],
-                            'type' => 'raw',
-                            'filter' => (new Requests())->requestTypeLabels
-                        ],
-                        [
-                            'name' => 'status',
-                            'value' => function($data){
-                                /** @var $data Requests */
-                                return "<span class='label label-{$data->getStatusLabel(true)}'>{$data->getStatusLabel()}</span>";
-                            },
-                            'type' => 'raw',
-                            'filter' => (new Requests())->statusLabels
                         ],
                         array(
                             'class'=>'CButtonColumn',

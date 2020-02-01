@@ -144,6 +144,10 @@ class Controller extends AuthController
 //                        array('label' => '<i class="fa fa-circle-o"></i>مدیریت برندها و مدل ها', 'url' => Yii::app()->createUrl('/requests/brands/admin')),
                     )
                 ),
+                array(
+                    'label' => '<i class="fa fa-bars"></i>گزارش گیری',
+                    'url' => array('/requests/manage/admin')
+                ),
 //                array(
 //                    'label' => '<i class="fa fa-map-marker"></i><span>مکان ها</span> <i class="fa fa-angle-left pull-left"></i>',
 //                    'url' => '#',
